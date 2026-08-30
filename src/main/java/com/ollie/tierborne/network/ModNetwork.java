@@ -1,0 +1,8 @@
+package com.ollie.tierborne.network;
+import com.ollie.tierborne.Tierborne; import net.minecraft.resources.ResourceLocation; import net.minecraft.server.level.ServerPlayer; import net.minecraftforge.network.*; import net.minecraftforge.network.simple.SimpleChannel;
+public final class ModNetwork {
+ private static final String VERSION="1"; public static final SimpleChannel CHANNEL=NetworkRegistry.newSimpleChannel(new ResourceLocation(Tierborne.MOD_ID,"main"),()->VERSION,VERSION::equals,VERSION::equals);
+ private ModNetwork(){} public static void register(){int id=0;CHANNEL.registerMessage(id++,ChoosePlayerClassPacket.class,ChoosePlayerClassPacket::encode,ChoosePlayerClassPacket::decode,ChoosePlayerClassPacket::handle);CHANNEL.registerMessage(id++,UnlockSkillPacket.class,UnlockSkillPacket::encode,UnlockSkillPacket::decode,UnlockSkillPacket::handle);CHANNEL.registerMessage(id++,SyncProgressPacket.class,SyncProgressPacket::encode,SyncProgressPacket::decode,SyncProgressPacket::handle);CHANNEL.registerMessage(id++,SelectAlternateAttackPacket.class,SelectAlternateAttackPacket::encode,SelectAlternateAttackPacket::decode,SelectAlternateAttackPacket::handle);CHANNEL.registerMessage(id++,AbilityActionPacket.class,AbilityActionPacket::encode,AbilityActionPacket::decode,AbilityActionPacket::handle);CHANNEL.registerMessage(id,SyncAbilityStatePacket.class,SyncAbilityStatePacket::encode,SyncAbilityStatePacket::decode,SyncAbilityStatePacket::handle);}
+ public static void sync(ServerPlayer p){CHANNEL.send(PacketDistributor.PLAYER.with(()->p),SyncProgressPacket.from(p));}
+ public static void syncAbilities(ServerPlayer p){CHANNEL.send(PacketDistributor.PLAYER.with(()->p),new SyncAbilityStatePacket(com.ollie.tierborne.combat.AbilityRuntime.statuses(p)));}
+}

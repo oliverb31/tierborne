@@ -37,6 +37,8 @@ import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.ShieldBlockEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
@@ -54,6 +56,8 @@ public final class TierborneEvents {
     private static final UUID SUBCLASS_MOVEMENT_SPEED_ID = UUID.fromString("55ccdcaf-63c6-40f2-b739-dc9087b36e23");
     private static final UUID ROGUE_HEALTH_ID = UUID.fromString("613cc152-92bb-44dd-94ef-56bcd4c7ab77");
     private static final UUID HEAVY_REACH_ID = UUID.fromString("399f91e1-951f-4097-b29a-9791d7f32bd7");
+    private static final UUID SWORD_CHARGE_SPEED_ID = UUID.fromString("5f6de030-2995-4c1c-bd2b-ddf8536aa637");
+    private static final UUID MOVEMENT_SPEED_LIMIT_ID = UUID.fromString("82d6df8a-a98c-4c02-8582-85707844e6b4");
     private static final java.util.Set<UUID> SHIELD_BLOCKING_DAMAGE = new java.util.HashSet<>();
 
     @SubscribeEvent
@@ -66,17 +70,46 @@ public final class TierborneEvents {
 
     @SubscribeEvent
     public void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if(event.getEntity() instanceof ServerPlayer player)AbilityRuntime.resetTransient(player);
         sync(event.getEntity());
+    }
+
+    @SubscribeEvent
+    public void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        if(event.getEntity() instanceof ServerPlayer player)AbilityRuntime.resetTransient(player);
     }
 
     @SubscribeEvent
     public void onRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        if(event.getEntity() instanceof ServerPlayer player)AbilityRuntime.resetTransient(player);
         sync(event.getEntity());
     }
 
     @SubscribeEvent
+    public void onDeath(LivingDeathEvent event) {
+        if(event.getEntity() instanceof ServerPlayer player)AbilityRuntime.resetTransient(player);
+    }
+
+    @SubscribeEvent
+    public void onLivingAttack(LivingAttackEvent event) {
+        if(!(event.getSource().getEntity() instanceof ServerPlayer player)
+                ||!(player.getMainHandItem().getItem() instanceof SwordItem))return;
+        PlayerProgress progress=PlayerProgressSavedData.get(player.getServer()).get(player.getUUID());
+        if(progress.hasSkill(SwordsmanPlayerClass.DUAL))event.getEntity().invulnerableTime=0;
+    }
+
+    @SubscribeEvent
     public void onChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if(event.getEntity() instanceof ServerPlayer player)AbilityRuntime.resetTransient(player);
         sync(event.getEntity());
+    }
+
+    @SubscribeEvent
+    public void onStartTracking(PlayerEvent.StartTracking event) {
+        if (event.getEntity() instanceof ServerPlayer viewer && event.getTarget() instanceof ServerPlayer target) {
+            if (AbilityRuntime.isCloaked(target)) ModNetwork.syncCloak(viewer,target,true);
+            if (AbilityRuntime.isBlocking(target)) ModNetwork.syncBlock(viewer,target,true);
+        }
     }
 
     @SubscribeEvent
@@ -205,11 +238,14 @@ public final class TierborneEvents {
         AttributeInstance movementSpeed = player.getAttribute(Attributes.MOVEMENT_SPEED);
         AttributeInstance maxHealth = player.getAttribute(Attributes.MAX_HEALTH);
         AttributeInstance reach = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
-        if (movementSpeed == null || maxHealth == null || reach == null) return;
+        AttributeInstance attackSpeed = player.getAttribute(Attributes.ATTACK_SPEED);
+        if (movementSpeed == null || maxHealth == null || reach == null || attackSpeed == null) return;
         movementSpeed.removeModifier(INTRINSIC_MOVEMENT_SPEED_ID);
         movementSpeed.removeModifier(SUBCLASS_MOVEMENT_SPEED_ID);
+        movementSpeed.removeModifier(MOVEMENT_SPEED_LIMIT_ID);
         maxHealth.removeModifier(ROGUE_HEALTH_ID);
         reach.removeModifier(HEAVY_REACH_ID);
+        attackSpeed.removeModifier(SWORD_CHARGE_SPEED_ID);
         int bonus = progress.totalBonus(SkillBonusType.MOVEMENT_SPEED);
         if (bonus > 0) {
             movementSpeed.addPermanentModifier(new AttributeModifier(
@@ -224,11 +260,14 @@ public final class TierborneEvents {
         if (progress.hasSkill(SwordsmanPlayerClass.ROGUE)) subclassSpeed += RpgBalanceConfig.ROGUE_SPEED.get();
         if (progress.hasSkill(SwordsmanPlayerClass.HEAVY) && AbilityRuntime.heavyMovementPenaltyActive(player)) subclassSpeed += RpgBalanceConfig.HEAVY_MOVE_PENALTY.get();
         if (subclassSpeed != 0) movementSpeed.addPermanentModifier(new AttributeModifier(SUBCLASS_MOVEMENT_SPEED_ID,"Tierborne subclass movement speed",subclassSpeed/100.0,AttributeModifier.Operation.MULTIPLY_TOTAL));
+        if(progress.movementSpeedLimitPercent()<100)movementSpeed.addPermanentModifier(new AttributeModifier(MOVEMENT_SPEED_LIMIT_ID,"Tierborne voluntary movement speed limit",progress.movementSpeedLimitPercent()/100.0-1.0,AttributeModifier.Operation.MULTIPLY_TOTAL));
         if (progress.hasSkill(SwordsmanPlayerClass.ROGUE)) {
             maxHealth.addPermanentModifier(new AttributeModifier(ROGUE_HEALTH_ID,"Tierborne Rogue health penalty",-RpgBalanceConfig.ROGUE_HEALTH_PENALTY.get(),AttributeModifier.Operation.ADDITION));
             if (player.getHealth() > player.getMaxHealth()) player.setHealth(player.getMaxHealth());
         }
         if (progress.hasSkill(SwordsmanPlayerClass.HEAVY_RANGE)) reach.addPermanentModifier(new AttributeModifier(HEAVY_REACH_ID,"Tierborne Heavy Swordsman reach",RpgBalanceConfig.HEAVY_RANGE.get(),AttributeModifier.Operation.ADDITION));
+        double swordChargeSpeed=progress.hasSkill(SwordsmanPlayerClass.HEAVY)?RpgBalanceConfig.HEAVY_ATTACK_SPEED.get():progress.hasSkill(SwordsmanPlayerClass.DUAL_SPEED)?RpgBalanceConfig.DUAL_SPEED_UPGRADE.get():progress.hasSkill(SwordsmanPlayerClass.DUAL)?RpgBalanceConfig.DUAL_ATTACK_SPEED.get():0.0;
+        if(swordChargeSpeed!=0.0 && player.getMainHandItem().getItem() instanceof SwordItem)attackSpeed.addPermanentModifier(new AttributeModifier(SWORD_CHARGE_SPEED_ID,"Tierborne sword charge speed",swordChargeSpeed/100.0,AttributeModifier.Operation.MULTIPLY_TOTAL));
     }
 
     private void sync(Player entity) {

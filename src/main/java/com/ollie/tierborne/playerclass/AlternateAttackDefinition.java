@@ -5,7 +5,7 @@ import java.util.List;
 public record AlternateAttackDefinition(String id, String skillId, String displayName, String description) {
     public static final List<AlternateAttackDefinition> ALL = List.of(
             new AlternateAttackDefinition("dash_strike", SwordsmanPlayerClass.DASH_STRIKE, "Dash Strike", "Dash forward and strike for increased damage."),
-            new AlternateAttackDefinition("multislash", SwordsmanPlayerClass.MULTISLASH, "Multislash", "Alternate four fully charged attacks using two swords."),
+            new AlternateAttackDefinition("multislash", SwordsmanPlayerClass.MULTISLASH, "Multislash", "Perform two fully charged strikes with one sword or four with two swords."),
             new AlternateAttackDefinition("heavy_attack", SwordsmanPlayerClass.HEAVY_ATTACK, "Heavy Attack", "Deliver a powerful sword strike."),
             new AlternateAttackDefinition("cloak", SwordsmanPlayerClass.CLOAK, "Cloak", "Become invisible and shed hostile attention."),
             new AlternateAttackDefinition("leap_strike", SwordsmanPlayerClass.LEAP_STRIKE, "Leap Strike", "Leap upward and strike nearby enemies on landing."));

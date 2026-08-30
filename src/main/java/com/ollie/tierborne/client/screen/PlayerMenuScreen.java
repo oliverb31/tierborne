@@ -12,6 +12,7 @@ import com.ollie.tierborne.playerclass.SwordsmanPlayerClass;
 import com.ollie.tierborne.playerclass.AlternateAttackDefinition;
 import com.ollie.tierborne.network.ModNetwork;
 import com.ollie.tierborne.network.SelectAlternateAttackPacket;
+import com.ollie.tierborne.network.SetMovementSpeedLimitPacket;
 import com.ollie.tierborne.playerclass.SwordsmanStats;
 import com.ollie.tierborne.playerclass.SubclassMetadata;
 import com.ollie.tierborne.config.RpgBalanceConfig;
@@ -22,6 +23,7 @@ import net.minecraft.network.chat.Component;
 
 public final class PlayerMenuScreen extends Screen {
     private int alternateLeft, alternateTop, alternateRight, alternateBottom;
+    private int speedLimitLeft, speedLimitRight, speedLimitTop;
     public PlayerMenuScreen() {
         super(Component.literal("Player"));
     }
@@ -81,6 +83,13 @@ public final class PlayerMenuScreen extends Screen {
                 (left + right) / 2.0F - mouseX,
                 bottom / 2.0F - mouseY,
                 minecraft.player);
+        speedLimitLeft=left+10;speedLimitRight=right-10;speedLimitTop=bottom-29;
+        GuiComponent.fill(poseStack,left+6,bottom-42,right-6,bottom-6,0xE0101319);
+        drawString(poseStack,font,Component.literal("Movement Speed Limit: "+ClientProgress.movementSpeedLimitPercent()+"%"),speedLimitLeft,bottom-39,RpgUi.TEXT);
+        GuiComponent.fill(poseStack,speedLimitLeft,speedLimitTop,speedLimitRight,speedLimitTop+7,RpgUi.LOCKED);
+        int filled=(speedLimitRight-speedLimitLeft)*ClientProgress.movementSpeedLimitPercent()/100;
+        GuiComponent.fill(poseStack,speedLimitLeft,speedLimitTop,speedLimitLeft+filled,speedLimitTop+7,RpgUi.GOLD);
+        RpgUi.border(poseStack,speedLimitLeft,speedLimitTop,speedLimitRight,speedLimitTop+7,RpgUi.GOLD_DARK);
     }
 
     private void renderClassPanel(PoseStack poseStack, int left, int top, int right, int bottom) {
@@ -140,8 +149,8 @@ public final class PlayerMenuScreen extends Screen {
         java.util.List<String> details=new java.util.ArrayList<>();
         switch(subclass.id()){
             case SwordsmanPlayerClass.SWORDMASTER->{details.add("Dash: Available");details.add("Cooldown: "+one(RpgBalanceConfig.DASH_COOLDOWN_SECONDS.get())+"s");}
-            case SwordsmanPlayerClass.DUAL->{details.add("Dual Wield: Active");details.add("Block: "+one(ClientProgress.hasSkill(SwordsmanPlayerClass.IMPROVED_BLOCK)?RpgBalanceConfig.IMPROVED_BLOCK_PERCENT.get():RpgBalanceConfig.BLOCK_PERCENT.get())+"%");details.add("Damage/Sword: "+signed(ClientProgress.hasSkill(SwordsmanPlayerClass.DUAL_DAMAGE)?RpgBalanceConfig.DUAL_DAMAGE_UPGRADE.get():RpgBalanceConfig.DUAL_DAMAGE.get())+"%");if(ClientProgress.hasSkill(SwordsmanPlayerClass.PARRY))details.add("Parry: Unlocked");}
-            case SwordsmanPlayerClass.HEAVY->{details.add("Attack Speed: "+signed(RpgBalanceConfig.HEAVY_ATTACK_SPEED.get())+"%");details.add("Draw Delay: "+one(RpgBalanceConfig.HEAVY_DRAW_DELAY_SECONDS.get())+"s");details.add("Sword Movement: "+signed(RpgBalanceConfig.HEAVY_MOVE_PENALTY.get())+"%");if(ClientProgress.hasSkill(SwordsmanPlayerClass.HEAVY_RANGE))details.add("Range: +"+one(RpgBalanceConfig.HEAVY_RANGE.get()));if(ClientProgress.hasSkill(SwordsmanPlayerClass.LEAP_STRIKE))details.add("Leap Strike: Unlocked");}
+            case SwordsmanPlayerClass.DUAL->{details.add("Dual Wield: Active");details.add("Block: "+one(ClientProgress.hasSkill(SwordsmanPlayerClass.IMPROVED_BLOCK)?RpgBalanceConfig.IMPROVED_BLOCK_PERCENT.get():RpgBalanceConfig.BLOCK_PERCENT.get())+"%");details.add("Damage/Sword: "+signed(ClientProgress.hasSkill(SwordsmanPlayerClass.DUAL_DAMAGE)?RpgBalanceConfig.DUAL_DAMAGE_UPGRADE.get():RpgBalanceConfig.DUAL_DAMAGE.get())+"%");details.add("Sword Charge Speed: "+signed(ClientProgress.hasSkill(SwordsmanPlayerClass.DUAL_SPEED)?RpgBalanceConfig.DUAL_SPEED_UPGRADE.get():RpgBalanceConfig.DUAL_ATTACK_SPEED.get())+"%");if(ClientProgress.hasSkill(SwordsmanPlayerClass.PARRY))details.add("Parry: Unlocked");}
+            case SwordsmanPlayerClass.HEAVY->{details.add("Sword Charge Speed: "+signed(RpgBalanceConfig.HEAVY_ATTACK_SPEED.get())+"%");details.add("Draw Delay: "+one(RpgBalanceConfig.HEAVY_DRAW_DELAY_SECONDS.get())+"s");details.add("Sword Movement: "+signed(RpgBalanceConfig.HEAVY_MOVE_PENALTY.get())+"%");if(ClientProgress.hasSkill(SwordsmanPlayerClass.HEAVY_RANGE))details.add("Range: +"+one(RpgBalanceConfig.HEAVY_RANGE.get()));if(ClientProgress.hasSkill(SwordsmanPlayerClass.LEAP_STRIKE))details.add("Leap Strike: Unlocked");}
             case SwordsmanPlayerClass.ROGUE->{details.add("Maximum Health: -"+one(RpgBalanceConfig.ROGUE_HEALTH_PENALTY.get()));details.add("Lower Mob Target Priority");if(ClientProgress.hasSkill(SwordsmanPlayerClass.BACKSTAB))details.add("Backstab: +"+one(RpgBalanceConfig.BACKSTAB_DAMAGE.get())+"%");if(ClientProgress.hasSkill(SwordsmanPlayerClass.FIRST_HIT))details.add("First Hit: +"+one(RpgBalanceConfig.FIRST_HIT_DAMAGE.get())+"%");if(ClientProgress.hasSkill(SwordsmanPlayerClass.NON_AGGRO))details.add("Non-Aggro: +"+one(RpgBalanceConfig.NON_AGGRO_DAMAGE.get())+"%");}
         }
         for(String detail:details){if(y>bottom-10)break;drawString(poseStack,font,Component.literal(detail),left+5,y,RpgUi.TEXT);y+=11;}
@@ -154,7 +163,7 @@ public final class PlayerMenuScreen extends Screen {
         AlternateAttackDefinition active=AlternateAttackDefinition.find(ClientProgress.selectedAlternateAttack());
         drawString(poseStack,font,Component.literal("Active Alternate Attack"),left+8,top+7,RpgUi.MUTED);
         drawString(poseStack,font,Component.literal(active==null?"Click to select":active.displayName()),left+8,top+20,RpgUi.GOLD);
-        drawString(poseStack,font,Component.literal("Click to cycle unlocked attacks"),right-150,top+20,RpgUi.MUTED);
+        drawString(poseStack,font,Component.literal("Click to cycle unlocked attacks"),left+8,top+31,RpgUi.MUTED);
     }
 
     private void renderGeneralSubclassSlot(PoseStack poseStack, int left, int top, int right, int bottom) {
@@ -196,6 +205,7 @@ public final class PlayerMenuScreen extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0 && RpgTabBar.mouseClicked(mouseX, mouseY, width, 15, RpgTab.PLAYER)) return true;
+        if(button==0&&RpgUi.inside(mouseX,mouseY,speedLimitLeft,speedLimitTop-4,speedLimitRight,speedLimitTop+11)){setSpeedLimit(mouseX);return true;}
         if(button==0&&RpgUi.inside(mouseX,mouseY,alternateLeft,alternateTop,alternateRight,alternateBottom)){
             java.util.List<AlternateAttackDefinition> unlocked=AlternateAttackDefinition.ALL.stream().filter(a->ClientProgress.hasSkill(a.skillId())).toList();
             if(!unlocked.isEmpty()){int current=-1;for(int i=0;i<unlocked.size();i++)if(unlocked.get(i).id().equals(ClientProgress.selectedAlternateAttack()))current=i;ModNetwork.CHANNEL.sendToServer(new SelectAlternateAttackPacket(unlocked.get((current+1)%unlocked.size()).id()));}
@@ -203,4 +213,8 @@ public final class PlayerMenuScreen extends Screen {
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
+
+    @Override
+    public boolean mouseDragged(double mouseX,double mouseY,int button,double dragX,double dragY){if(button==0&&mouseY>=speedLimitTop-8&&mouseY<=speedLimitTop+14){setSpeedLimit(mouseX);return true;}return super.mouseDragged(mouseX,mouseY,button,dragX,dragY);}
+    private void setSpeedLimit(double mouseX){int percent=(int)Math.round((mouseX-speedLimitLeft)*100.0/Math.max(1,speedLimitRight-speedLimitLeft));percent=Math.max(10,Math.min(100,percent));ModNetwork.CHANNEL.sendToServer(new SetMovementSpeedLimitPacket(percent));}
 }

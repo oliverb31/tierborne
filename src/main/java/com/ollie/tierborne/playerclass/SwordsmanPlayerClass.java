@@ -23,7 +23,7 @@ public final class SwordsmanPlayerClass extends PlayerClass {
         skill(SWORD_DAMAGE_2,"Sword Damage II","Adds another 100% sword damage.",1,Items.DIAMOND_SWORD,2,0,List.of(SWORD_DAMAGE_1),List.of(),false,new SkillUpgrade(SkillBonusType.SWORD_DAMAGE,100),SkillEffect.NONE),
         speed(MOVE_SPEED_1,"Movement Speed I",50,-1,0,ROOT), speed(MOVE_SPEED_2,"Movement Speed II",100,-2,0,MOVE_SPEED_1),
         alt(DASH_STRIKE,"Dash Strike","Dash forward and strike using its configured damage modifier.",Items.GOLDEN_SWORD,3,1,SWORD_DAMAGE_2),
-        alt(MULTISLASH,"Multislash","Perform four alternating charged strikes. Requires two swords.",Items.IRON_SWORD,-3,1,MOVE_SPEED_2),
+        alt(MULTISLASH,"Multislash","Perform two fully charged strikes with one sword or four alternating strikes with two swords.",Items.IRON_SWORD,-3,1,MOVE_SPEED_2),
         alt(HEAVY_ATTACK,"Heavy Attack","A powerful configured strike with a shared attack recovery.",Items.NETHERITE_SWORD,1,1,SWORD_DAMAGE_2),
         alt(CLOAK,"Cloak","Become invisible and shed hostile attention for the configured duration.",Items.ENDER_EYE,-1,1,MOVE_SPEED_2),
         subclass(SWORDMASTER,"Swordmaster",Items.DIAMOND_SWORD,3,2,DASH_STRIKE), subclass(DUAL,"Dual Swordsman",Items.IRON_SWORD,-3,2,MULTISLASH),

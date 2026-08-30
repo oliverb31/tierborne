@@ -1,6 +1,8 @@
 package com.ollie.tierborne.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.math.Vector3f;
 import com.ollie.tierborne.Tierborne;
 import com.ollie.tierborne.client.screen.SkillTreeScreen;
 import com.ollie.tierborne.client.screen.PlayerMenuScreen;
@@ -12,6 +14,7 @@ import com.ollie.tierborne.combat.AbilityAction;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.InteractionHand;
@@ -25,6 +28,9 @@ import net.minecraftforge.client.event.ComputeFovModifierEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.event.RenderHandEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -34,6 +40,10 @@ import org.lwjgl.glfw.GLFW;
 @Mod.EventBusSubscriber(modid = Tierborne.MOD_ID, value = Dist.CLIENT)
 public final class ClientEvents {
     private static boolean utilityHeld;
+    private static boolean offhandUseHeld;
+    private static final int COOLDOWN_BAR_WIDTH=92;
+    private static final int COOLDOWN_ENTRY_HEIGHT=34;
+    private static final int COOLDOWN_ENTRY_GAP=5;
     private static final KeyMapping OPEN_SKILLS = new KeyMapping(
             "key.tierborne.open_skills",
             InputConstants.Type.KEYSYM,
@@ -76,23 +86,31 @@ public final class ClientEvents {
         if (event.phase != TickEvent.Phase.END) return;
         ClientProgress.tryOpenSelectionScreen();
         Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player == null || minecraft.screen != null) return;
+        if (minecraft.player == null || minecraft.screen != null) {offhandUseHeld=false;return;}
         while (ALTERNATE_ATTACK.consumeClick()) ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(AbilityAction.ALTERNATE_ATTACK));
         boolean down = SUBCLASS_UTILITY.isDown();
         if (down != utilityHeld) {
             utilityHeld = down;
             ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(down ? AbilityAction.UTILITY_START : AbilityAction.UTILITY_STOP));
         }
+        boolean dualWielding=ClientProgress.hasSkill(SwordsmanPlayerClass.DUAL)
+                &&minecraft.player.getMainHandItem().getItem() instanceof SwordItem
+                &&minecraft.player.getOffhandItem().getItem() instanceof SwordItem;
+        boolean useDown=minecraft.options.keyUse.isDown();
+        if(dualWielding&&useDown&&!offhandUseHeld)ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(AbilityAction.OFFHAND_ATTACK));
+        offhandUseHeld=useDown;
     }
 
     @SubscribeEvent
     public static void onInteractionKey(InputEvent.InteractionKeyMappingTriggered event) {
         Minecraft minecraft=Minecraft.getInstance();
+        if(event.isAttack()&&minecraft.player!=null&&minecraft.player.getMainHandItem().getItem() instanceof SwordItem
+                &&ClientAbilityState.blocksNormalAttack()){event.setSwingHand(false);event.setCanceled(true);return;}
         if(!event.isUseItem()||minecraft.player==null||!ClientProgress.hasSkill(SwordsmanPlayerClass.DUAL)
                 ||!(minecraft.player.getMainHandItem().getItem() instanceof SwordItem)
                 ||!(minecraft.player.getOffhandItem().getItem() instanceof SwordItem)) return;
         event.setCanceled(true);
-        if(event.getHand()==InteractionHand.MAIN_HAND) ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(AbilityAction.OFFHAND_ATTACK));
+        event.setSwingHand(false);
     }
 
     @SubscribeEvent
@@ -101,16 +119,75 @@ public final class ClientEvents {
         Minecraft minecraft=Minecraft.getInstance();
         if(minecraft.player==null||minecraft.options.hideGui)return;
         java.util.List<com.ollie.tierborne.combat.AbilityStatus> statuses=ClientAbilityState.statuses();
-        int width=92,x=event.getWindow().getGuiScaledWidth()-width-8;
-        int y=event.getWindow().getGuiScaledHeight()-58-statuses.size()*24;
+        int width=COOLDOWN_BAR_WIDTH,x=event.getWindow().getGuiScaledWidth()-width-8;
+        int y=event.getWindow().getGuiScaledHeight()-58-statuses.size()*(COOLDOWN_ENTRY_HEIGHT+COOLDOWN_ENTRY_GAP);
         for(com.ollie.tierborne.combat.AbilityStatus status:statuses){
             String title=status.active()?status.name()+" - ACTIVE":status.name();
-            minecraft.font.drawShadow(event.getPoseStack(),title,x,y,0xFFE9E2D0);
-            int barY=y+10;GuiComponent.fill(event.getPoseStack(),x,barY,x+width,barY+7,0xFF71572D);GuiComponent.fill(event.getPoseStack(),x+1,barY+1,x+width-1,barY+6,0xD0101218);
+            minecraft.font.drawShadow(event.getPoseStack(),title,x+(width-minecraft.font.width(title))/2.0F,y,0xFFE9E2D0);
+            int barY=y+13;GuiComponent.fill(event.getPoseStack(),x,barY,x+width,barY+7,0xFF71572D);GuiComponent.fill(event.getPoseStack(),x+1,barY+1,x+width-1,barY+6,0xD0101218);
             int fill=(int)Math.round((width-2)*Math.min(1.0,status.remainingTicks()/(double)Math.max(1,status.totalTicks())));
             GuiComponent.fill(event.getPoseStack(),x+1,barY+1,x+1+fill,barY+6,status.active()?0xFF4EA56B:0xFFD7AD55);
-            minecraft.font.drawShadow(event.getPoseStack(),String.format(java.util.Locale.ROOT,"%.1fs",status.remainingTicks()/20.0),x+width-28,y,0xFF9B968A);y+=24;
+            String timer=String.format(java.util.Locale.ROOT,"%.1fs",status.remainingTicks()/20.0);minecraft.font.drawShadow(event.getPoseStack(),timer,x+(width-minecraft.font.width(timer))/2.0F,barY+10,0xFF9B968A);y+=COOLDOWN_ENTRY_HEIGHT+COOLDOWN_ENTRY_GAP;
         }
+    }
+
+    @SubscribeEvent
+    public static void onRenderCrosshair(RenderGuiOverlayEvent.Pre event) {
+        if(event.getOverlay()!=VanillaGuiOverlay.CROSSHAIR.type()
+                ||(!ClientAbilityState.dualWielding()&&!ClientAbilityState.multislashActive()))return;
+        Minecraft minecraft=Minecraft.getInstance();
+        if(minecraft.player==null||minecraft.options.hideGui)return;
+        event.setCanceled(true);
+        int centerX=event.getWindow().getGuiScaledWidth()/2;
+        int centerY=event.getWindow().getGuiScaledHeight()/2;
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShaderTexture(0,GuiComponent.GUI_ICONS_LOCATION);
+        GuiComponent.blit(event.getPoseStack(),centerX-7,centerY-7,0,0,15,15,256,256);
+        if(ClientAbilityState.dualWielding()&&!ClientAbilityState.multislashActive()){
+            drawChargeBar(event,centerX-18,centerY-8,ClientAbilityState.offhandCharge(),0xFF74A7E8);
+            drawChargeBar(event,centerX+14,centerY-8,ClientAbilityState.mainCharge(),0xFFE8B85E);
+        }
+        RenderSystem.disableBlend();
+    }
+
+    private static void drawChargeBar(RenderGuiOverlayEvent event,int x,int y,float charge,int color){
+        int height=16;
+        GuiComponent.fill(event.getPoseStack(),x,y,x+4,y+height,0xB0000000);
+        GuiComponent.fill(event.getPoseStack(),x+1,y+1,x+3,y+height-1,0xFF343434);
+        int fill=Math.round((height-2)*Mth.clamp(charge,0.0F,1.0F));
+        GuiComponent.fill(event.getPoseStack(),x+1,y+height-1-fill,x+3,y+height-1,color);
+    }
+
+    @SubscribeEvent
+    public static void onRenderCloakedPlayer(RenderPlayerEvent.Pre event) {
+        if(ClientCloakState.isCloaked(event.getEntity().getId())){event.setCanceled(true);return;}
+        if(ClientBlockState.isBlocking(event.getEntity().getId())){
+            event.getRenderer().getModel().rightArmPose=HumanoidModel.ArmPose.BLOCK;
+            event.getRenderer().getModel().leftArmPose=HumanoidModel.ArmPose.BLOCK;
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRenderCloakedHand(RenderHandEvent event) {
+        Minecraft minecraft=Minecraft.getInstance();
+        if(minecraft.player!=null&&ClientCloakState.isCloaked(minecraft.player.getId())){event.setCanceled(true);return;}
+        if(minecraft.player!=null&&ClientBlockState.isBlocking(minecraft.player.getId())){
+            boolean right=event.getHand()==InteractionHand.MAIN_HAND
+                    ?minecraft.player.getMainArm()==net.minecraft.world.entity.HumanoidArm.RIGHT
+                    :minecraft.player.getMainArm()!=net.minecraft.world.entity.HumanoidArm.RIGHT;
+            event.getPoseStack().translate(right?-0.18:0.18,0.16,-0.2);
+            event.getPoseStack().mulPose(Vector3f.XP.rotationDegrees(-42.0F));
+            event.getPoseStack().mulPose(Vector3f.YP.rotationDegrees(right?-28.0F:28.0F));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
+        ClientCloakState.clear();
+        ClientBlockState.clear();
+        ClientAbilityState.clear();
+        offhandUseHeld=false;
     }
 
     @SubscribeEvent
@@ -132,12 +209,13 @@ public final class ClientEvents {
         if(ClientProgress.hasSkill(SwordsmanPlayerClass.SWORDMASTER))bonus+=RpgBalanceConfig.SWORDMASTER_SPEED.get();
         if(ClientProgress.hasSkill(SwordsmanPlayerClass.SM_SPEED))bonus+=RpgBalanceConfig.SWORDMASTER_UPGRADE_SPEED.get();
         if(ClientProgress.hasSkill(SwordsmanPlayerClass.ROGUE))bonus+=RpgBalanceConfig.ROGUE_SPEED.get();
-        if (bonus == 0) return;
+        double voluntaryLimit = ClientProgress.movementSpeedLimitPercent() / 100.0;
+        if (bonus == 0 && voluntaryLimit == 1.0) return;
         float walkingSpeed = event.getPlayer().getAbilities().getWalkingSpeed();
         if (walkingSpeed == 0.0F) return;
 
         double speedWithBonus = event.getPlayer().getAttributeValue(Attributes.MOVEMENT_SPEED);
-        double speedWithoutBonus = speedWithBonus / (1.0 + bonus / 100.0);
+        double speedWithoutBonus = speedWithBonus / ((1.0 + bonus / 100.0) * voluntaryLimit);
         double currentSpeedFactor = (speedWithBonus / walkingSpeed + 1.0) / 2.0;
         double compensatedSpeedFactor = (speedWithoutBonus / walkingSpeed + 1.0) / 2.0;
         if (currentSpeedFactor == 0.0) return;

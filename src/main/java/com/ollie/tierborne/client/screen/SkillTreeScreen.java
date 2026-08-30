@@ -234,22 +234,36 @@ public final class SkillTreeScreen extends Screen {
 
     private void renderInformationPanel(PoseStack poseStack, SkillTreeDefinition skillTree, Skill skill,
                                         int screenLeft, int screenRight, int screenBottom) {
-        int panelWidth = Math.min(300, screenRight - screenLeft - 24);
-        int panelLeft = screenRight - panelWidth - 8;
-        int panelTop = Math.max(68, screenBottom - 112);
-        GuiComponent.fill(poseStack, panelLeft, panelTop, screenRight - 8, screenBottom - 8, 0xF0222630);
-        RpgUi.border(poseStack, panelLeft, panelTop, screenRight - 8, screenBottom - 8, RpgUi.GOLD_DARK);
-        drawString(poseStack, font, Component.literal(skill.displayName()), panelLeft + 8, panelTop + 7, RpgUi.GOLD);
-        int detailY = RpgUi.drawWrapped(poseStack, font, skill.description(), panelLeft + 8, panelTop + 20,
-                panelWidth - 16, RpgUi.TEXT, 2);
-        for(String line:SkillDetailLines.forSkill(skill,skillTree,ClientProgress.unlockedSkills())){drawString(poseStack,font,Component.literal(line),panelLeft+8,detailY+1,RpgUi.GOLD);detailY+=11;}
+        int panelWidth = Math.min(330, screenRight - screenLeft - 34);
+        int panelRight = screenRight - 14;
+        int panelLeft = panelRight - panelWidth;
+        int textLeft = panelLeft + 10;
+        int textWidth = panelWidth - 24;
+        java.util.List<net.minecraft.util.FormattedCharSequence> descriptionLines =
+                font.split(Component.literal(skill.description()), textWidth);
+        java.util.List<String> numericalLines = SkillDetailLines.forSkill(
+                skill, skillTree, ClientProgress.unlockedSkills());
+        int numericalLineCount = numericalLines.stream()
+                .mapToInt(line -> font.split(Component.literal(line), textWidth).size()).sum();
+        int requiredHeight = 48 + descriptionLines.size() * (font.lineHeight + 2)
+                + numericalLineCount * (font.lineHeight + 2);
+        int panelTop = Math.max(68, screenBottom - Math.max(112, requiredHeight));
+        GuiComponent.fill(poseStack, panelLeft, panelTop, panelRight, screenBottom - 8, 0xF0222630);
+        RpgUi.border(poseStack, panelLeft, panelTop, panelRight, screenBottom - 8, RpgUi.GOLD_DARK);
+        drawString(poseStack, font, Component.literal(skill.displayName()), textLeft, panelTop + 7, RpgUi.GOLD);
+        int detailY = RpgUi.drawWrapped(poseStack, font, skill.description(), textLeft, panelTop + 20,
+                textWidth, RpgUi.TEXT);
+        for (String line : numericalLines) {
+            detailY = RpgUi.drawWrapped(poseStack, font, line, textLeft,
+                    detailY + 1, textWidth, RpgUi.GOLD);
+        }
         String status = switch (stateOf(skill)) {
             case UNLOCKED -> "Unlocked";
             case AVAILABLE -> "Click node to unlock - Cost: " + skill.cost() + " SP";
             case LOCKED -> missingRequirementText(skillTree, skill);
             case UNAVAILABLE -> "Permanently unavailable";
         };
-        drawString(poseStack, font, Component.literal(status), panelLeft + 8, screenBottom - 19,
+        drawString(poseStack, font, Component.literal(status), textLeft, screenBottom - 19,
                 stateOf(skill) == NodeState.LOCKED ? RpgUi.MUTED : RpgUi.UNLOCKED);
     }
 

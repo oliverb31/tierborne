@@ -1,0 +1,3 @@
+package com.ollie.tierborne.network;
+import com.ollie.tierborne.client.ClientCloakState;import net.minecraft.network.FriendlyByteBuf;import net.minecraftforge.network.NetworkEvent;import java.util.function.Supplier;
+public record SyncCloakStatePacket(int entityId,boolean active){public static void encode(SyncCloakStatePacket p,FriendlyByteBuf b){b.writeVarInt(p.entityId);b.writeBoolean(p.active);}public static SyncCloakStatePacket decode(FriendlyByteBuf b){return new SyncCloakStatePacket(b.readVarInt(),b.readBoolean());}public static void handle(SyncCloakStatePacket p,Supplier<NetworkEvent.Context>s){NetworkEvent.Context c=s.get();c.enqueueWork(()->ClientCloakState.receive(p.entityId,p.active));c.setPacketHandled(true);}}

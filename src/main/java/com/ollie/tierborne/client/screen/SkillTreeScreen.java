@@ -87,8 +87,9 @@ public final class SkillTreeScreen extends Screen {
 
         int viewportTop = top + 59;
         int viewportBottom = bottom - 8;
-        enableScissor(left + 3, viewportTop, right - 3, viewportBottom);
+        applyTreeScissor(left + 3, viewportTop, right - 3, viewportBottom);
 
+        Skill hoveredSkill = null;
         try {
         for (Skill child : skillTree.skills()) {
             NodePosition childPosition = nodePosition(skillTree, child);
@@ -103,7 +104,6 @@ public final class SkillTreeScreen extends Screen {
             }
         }
 
-        Skill hoveredSkill = null;
         if (pendingSkill == null && RpgUi.inside(mouseX, mouseY, left + 3, viewportTop, right - 3, viewportBottom)) {
             for (Skill skill : skillTree.skills()) {
                 NodePosition position = nodePosition(skillTree, skill);
@@ -127,7 +127,7 @@ public final class SkillTreeScreen extends Screen {
         if (pendingSkill != null) renderConfirmationModalForeground(poseStack, skillTree, mouseX, mouseY);
     }
 
-    private void enableScissor(int left, int top, int right, int bottom) {
+    private void applyTreeScissor(int left, int top, int right, int bottom) {
         double scale = minecraft.getWindow().getGuiScale();
         int x = (int)Math.floor(left * scale);
         int y = (int)Math.floor(minecraft.getWindow().getHeight() - bottom * scale);
@@ -329,6 +329,9 @@ public final class SkillTreeScreen extends Screen {
         if (RpgTabBar.mouseClicked(mouseX, mouseY, width, 15,
                 generalTree ? RpgTab.GENERAL_SKILLTREE : RpgTab.CLASS_SKILLTREE)) return true;
         if (button == 0) {
+            if (!RpgUi.inside(mouseX, mouseY, 13, 69, width - 13, height - 18)) {
+                return super.mouseClicked(mouseX, mouseY, button);
+            }
             SkillTreeDefinition skillTree = currentTree();
             if (skillTree != null) {
                 for (Skill skill : skillTree.skills()) {

@@ -25,6 +25,7 @@ import net.minecraftforge.client.event.ComputeFovModifierEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -96,6 +97,7 @@ public final class ClientEvents {
 
     @SubscribeEvent
     public static void onRenderHud(RenderGuiOverlayEvent.Post event) {
+        if(event.getOverlay()!=VanillaGuiOverlay.HOTBAR.type())return;
         Minecraft minecraft=Minecraft.getInstance();
         if(minecraft.player==null||minecraft.options.hideGui)return;
         java.util.List<com.ollie.tierborne.combat.AbilityStatus> statuses=ClientAbilityState.statuses();

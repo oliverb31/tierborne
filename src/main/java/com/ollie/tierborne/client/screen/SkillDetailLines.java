@@ -19,6 +19,22 @@ final class SkillDetailLines {
             case SwordsmanPlayerClass.DUAL->{lines.add("Dual Wield: Unlocked  Damage/Sword: "+n(RpgBalanceConfig.DUAL_DAMAGE.get())+"%");lines.add("Block: "+n(RpgBalanceConfig.BLOCK_PERCENT.get())+"%");}
             case SwordsmanPlayerClass.HEAVY->{lines.add("Sword Damage: +"+n(RpgBalanceConfig.HEAVY_DAMAGE.get())+"%  Attack Speed: "+n(RpgBalanceConfig.HEAVY_ATTACK_SPEED.get())+"%");lines.add("Sword Movement: "+n(RpgBalanceConfig.HEAVY_MOVE_PENALTY.get())+"%  Draw: "+n(RpgBalanceConfig.HEAVY_DRAW_DELAY_SECONDS.get())+"s");}
             case SwordsmanPlayerClass.ROGUE->{lines.add("Maximum Health: -"+n(RpgBalanceConfig.ROGUE_HEALTH_PENALTY.get())+"  Movement: +"+n(RpgBalanceConfig.ROGUE_SPEED.get())+"%");lines.add("Alternative target radius: "+n(RpgBalanceConfig.ROGUE_RETARGET_RADIUS.get())+" blocks");}
+            case SwordsmanPlayerClass.SM_DAMAGE->lines.add("Sword Damage Contribution: +"+n(RpgBalanceConfig.SWORDMASTER_UPGRADE_DAMAGE.get())+"%");
+            case SwordsmanPlayerClass.SM_SPEED->lines.add("Movement Speed Contribution: +"+n(RpgBalanceConfig.SWORDMASTER_UPGRADE_SPEED.get())+"%");
+            case SwordsmanPlayerClass.SM_DASH_STRIKE->lines.add("Dash Strike Damage: +"+n(RpgBalanceConfig.DASH_STRIKE_UPGRADE_DAMAGE.get())+"%");
+            case SwordsmanPlayerClass.SM_DASH->lines.add("Dash: "+n(RpgBalanceConfig.DASH_UPGRADE_VELOCITY.get())+" velocity, "+n(RpgBalanceConfig.DASH_UPGRADE_COOLDOWN_SECONDS.get())+"s cooldown");
+            case SwordsmanPlayerClass.DUAL_SPEED->lines.add("Dual Attack Speed: +"+n(RpgBalanceConfig.DUAL_SPEED_UPGRADE.get())+"%");
+            case SwordsmanPlayerClass.DUAL_DAMAGE->lines.add("Damage Per Sword: "+n(RpgBalanceConfig.DUAL_DAMAGE_UPGRADE.get())+"%");
+            case SwordsmanPlayerClass.PARRY->lines.add("Counterattacks: 2  Cooldown: "+n(RpgBalanceConfig.PARRY_COOLDOWN_SECONDS.get())+"s");
+            case SwordsmanPlayerClass.IMPROVED_BLOCK->lines.add("Block: "+n(RpgBalanceConfig.BLOCK_PERCENT.get())+"% -> "+n(RpgBalanceConfig.IMPROVED_BLOCK_PERCENT.get())+"%");
+            case SwordsmanPlayerClass.HEAVY_DAMAGE->lines.add("Sword Damage Contribution: +"+n(RpgBalanceConfig.HEAVY_UPGRADE_DAMAGE.get())+"%");
+            case SwordsmanPlayerClass.HEAVY_RANGE->lines.add("Melee Range: +"+n(RpgBalanceConfig.HEAVY_RANGE.get())+" blocks");
+            case SwordsmanPlayerClass.HEAVY_RECOVERY->lines.add("Normal Attack Lockout: Removed");
+            case SwordsmanPlayerClass.HEAVY_ATTACK_DAMAGE->lines.add("Heavy Attack Damage: +"+n(RpgBalanceConfig.HEAVY_ATTACK_UPGRADE_DAMAGE.get())+"%");
+            case SwordsmanPlayerClass.HEAVY_ATTACK_COOLDOWN->lines.add("Heavy Attack Cooldown: "+n(RpgBalanceConfig.HEAVY_ATTACK_UPGRADE_COOLDOWN_SECONDS.get())+"s");
+            case SwordsmanPlayerClass.BACKSTAB->lines.add("Backstab Damage: +"+n(RpgBalanceConfig.BACKSTAB_DAMAGE.get())+"%  Threshold: "+n(RpgBalanceConfig.BACKSTAB_DOT_THRESHOLD.get()));
+            case SwordsmanPlayerClass.FIRST_HIT->lines.add("First Hit Damage: +"+n(RpgBalanceConfig.FIRST_HIT_DAMAGE.get())+"%  Reset: "+n(RpgBalanceConfig.FIRST_HIT_RESET_SECONDS.get())+"s");
+            case SwordsmanPlayerClass.NON_AGGRO->lines.add("Non-Aggro Damage: +"+n(RpgBalanceConfig.NON_AGGRO_DAMAGE.get())+"%");
             case GeneralSkillTree.WOOD_DROPS->lines.add("Bonus Wood Chance: "+GeneralSkillBalance.EXTRA_DROP_CHANCE_PERCENT+"%  Additional Wood: 1");
             case GeneralSkillTree.ORE_DROPS->lines.add("Bonus Ore Chance: "+GeneralSkillBalance.EXTRA_DROP_CHANCE_PERCENT+"%  Additional Ore: 1");
             case GeneralSkillTree.MATERIAL_RECOVERY->lines.add("Recovery Chance: "+GeneralSkillBalance.MATERIAL_REFUND_CHANCE_PERCENT+"%  Materials Returned: 1");

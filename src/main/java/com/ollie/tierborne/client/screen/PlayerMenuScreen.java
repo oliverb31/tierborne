@@ -12,6 +12,9 @@ import com.ollie.tierborne.playerclass.SwordsmanPlayerClass;
 import com.ollie.tierborne.playerclass.AlternateAttackDefinition;
 import com.ollie.tierborne.network.ModNetwork;
 import com.ollie.tierborne.network.SelectAlternateAttackPacket;
+import com.ollie.tierborne.playerclass.SwordsmanStats;
+import com.ollie.tierborne.playerclass.SubclassMetadata;
+import com.ollie.tierborne.config.RpgBalanceConfig;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -97,15 +100,15 @@ public final class PlayerMenuScreen extends Screen {
         RpgUi.classIcon(minecraft, playerClass.iconStack(), iconCenterX, iconCenterY);
         drawString(poseStack, font, Component.literal(playerClass.displayName().toUpperCase()),
                 left + 45, top + 10, RpgUi.GOLD);
-        drawString(poseStack, font, Component.literal("Main playerClass"),
-                left + 45, top + 24, RpgUi.MUTED);
+        RpgUi.drawWrapped(poseStack,font,playerClass.description(),left+45,top+23,right-left-52,RpgUi.MUTED,2);
 
         int buffY = top + 45;
         for (SkillBonusType type : SkillBonusType.values()) {
             if (!playerClass.displayedBonusTypes().contains(type)) continue;
-            int bonus = playerClass.totalBonus(type, ClientProgress.unlockedSkills());
+            double bonus = playerClass.totalBonus(type, ClientProgress.unlockedSkills());
+            if(playerClass instanceof SwordsmanPlayerClass){if(type==SkillBonusType.SWORD_DAMAGE)bonus+=SwordsmanStats.subclassSwordDamage(ClientProgress.unlockedSkills());if(type==SkillBonusType.MOVEMENT_SPEED)bonus+=SwordsmanStats.subclassMovementSpeed(ClientProgress.unlockedSkills());}
             drawString(poseStack, font,
-                    Component.literal(type.displayName() + ": +" + bonus + "%"),
+                    Component.literal(type.displayName() + ": " + signed(bonus) + "%"),
                     left + 10, buffY, RpgUi.TEXT);
             buffY += 13;
         }
@@ -133,13 +136,15 @@ public final class PlayerMenuScreen extends Screen {
         GuiComponent.fill(poseStack,left,top,right,bottom,0xFF1C2028);RpgUi.border(poseStack,left,top,right,bottom,RpgUi.GOLD_DARK);
         drawCenteredString(poseStack,font,Component.literal("SUBCLASS 1"),(left+right)/2,top+8,RpgUi.MUTED);
         drawCenteredString(poseStack,font,Component.literal(subclass.displayName().toUpperCase()),(left+right)/2,top+22,RpgUi.GOLD);
-        String detail=switch(subclass.id()){
-            case SwordsmanPlayerClass.SWORDMASTER->"Sword damage and speed increased\nDash: Available";
-            case SwordsmanPlayerClass.DUAL->"Dual Wield: Active\nBlock: Available";
-            case SwordsmanPlayerClass.HEAVY->"Heavy damage; slower attacks";
-            case SwordsmanPlayerClass.ROGUE->"Lower health; faster movement";
-            default->"";};
-        RpgUi.drawWrapped(poseStack,font,detail,left+5,top+38,right-left-10,RpgUi.TEXT,3);
+        SubclassMetadata metadata=SubclassMetadata.get(subclass.id());int y=top+35;if(metadata!=null)y=RpgUi.drawWrapped(poseStack,font,metadata.description(),left+5,y,right-left-10,RpgUi.MUTED,2);
+        java.util.List<String> details=new java.util.ArrayList<>();
+        switch(subclass.id()){
+            case SwordsmanPlayerClass.SWORDMASTER->{details.add("Dash: Available");details.add("Cooldown: "+one(RpgBalanceConfig.DASH_COOLDOWN_SECONDS.get())+"s");}
+            case SwordsmanPlayerClass.DUAL->{details.add("Dual Wield: Active");details.add("Block: "+one(ClientProgress.hasSkill(SwordsmanPlayerClass.IMPROVED_BLOCK)?RpgBalanceConfig.IMPROVED_BLOCK_PERCENT.get():RpgBalanceConfig.BLOCK_PERCENT.get())+"%");details.add("Damage/Sword: "+signed(ClientProgress.hasSkill(SwordsmanPlayerClass.DUAL_DAMAGE)?RpgBalanceConfig.DUAL_DAMAGE_UPGRADE.get():RpgBalanceConfig.DUAL_DAMAGE.get())+"%");if(ClientProgress.hasSkill(SwordsmanPlayerClass.PARRY))details.add("Parry: Unlocked");}
+            case SwordsmanPlayerClass.HEAVY->{details.add("Attack Speed: "+signed(RpgBalanceConfig.HEAVY_ATTACK_SPEED.get())+"%");details.add("Draw Delay: "+one(RpgBalanceConfig.HEAVY_DRAW_DELAY_SECONDS.get())+"s");details.add("Sword Movement: "+signed(RpgBalanceConfig.HEAVY_MOVE_PENALTY.get())+"%");if(ClientProgress.hasSkill(SwordsmanPlayerClass.HEAVY_RANGE))details.add("Range: +"+one(RpgBalanceConfig.HEAVY_RANGE.get()));if(ClientProgress.hasSkill(SwordsmanPlayerClass.LEAP_STRIKE))details.add("Leap Strike: Unlocked");}
+            case SwordsmanPlayerClass.ROGUE->{details.add("Maximum Health: -"+one(RpgBalanceConfig.ROGUE_HEALTH_PENALTY.get()));details.add("Lower Mob Target Priority");if(ClientProgress.hasSkill(SwordsmanPlayerClass.BACKSTAB))details.add("Backstab: +"+one(RpgBalanceConfig.BACKSTAB_DAMAGE.get())+"%");if(ClientProgress.hasSkill(SwordsmanPlayerClass.FIRST_HIT))details.add("First Hit: +"+one(RpgBalanceConfig.FIRST_HIT_DAMAGE.get())+"%");if(ClientProgress.hasSkill(SwordsmanPlayerClass.NON_AGGRO))details.add("Non-Aggro: +"+one(RpgBalanceConfig.NON_AGGRO_DAMAGE.get())+"%");}
+        }
+        for(String detail:details){if(y>bottom-10)break;drawString(poseStack,font,Component.literal(detail),left+5,y,RpgUi.TEXT);y+=11;}
     }
 
     private void renderAlternateAttackPanel(PoseStack poseStack,int left,int top,int right,int bottom){
@@ -166,7 +171,7 @@ public final class PlayerMenuScreen extends Screen {
 
         drawCenteredString(poseStack, font, Component.literal(subclass.displayName().toUpperCase()),
                 (left + right) / 2, top + 23, RpgUi.GOLD);
-        int y = top + 38;
+        int y = top + 36;SubclassMetadata metadata=SubclassMetadata.get(subclass.id());if(metadata!=null)y=RpgUi.drawWrapped(poseStack,font,metadata.description(),left+5,y,right-left-10,RpgUi.MUTED,2);
         for (Skill skill : GeneralSkillTree.INSTANCE.skills()) {
             if (!skill.prerequisites().contains(subclass.id()) || !ClientProgress.hasSkill(skill.id())) continue;
             String text;
@@ -184,6 +189,9 @@ public final class PlayerMenuScreen extends Screen {
             y += 13;
         }
     }
+
+    private static String one(double value){return String.format(java.util.Locale.ROOT,"%.1f",value);}
+    private static String signed(double value){return (value>=0?"+":"")+one(value);}
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {

@@ -10,6 +10,7 @@ public final class PlayerClassRegistry {
     static {
         register(new SwordsmanPlayerClass());
         register(new ArcherPlayerClass());
+        register(new FighterPlayerClass());
     }
 
     private PlayerClassRegistry() {}

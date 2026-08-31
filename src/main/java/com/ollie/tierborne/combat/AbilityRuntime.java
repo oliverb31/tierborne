@@ -48,10 +48,12 @@ public final class AbilityRuntime {
         if(s.fullyChargedDrawing){int total=fullyChargedDrawTicks(progress(p));int elapsed=(int)Math.max(0,now-s.fullyChargedStarted);result.add(new AbilityStatus("Fully Charged",Math.min(total,elapsed),total,true,"CHARGING"));}
         if(s.backstepRecastUntil>now)result.add(new AbilityStatus("Backstep",(int)(s.backstepRecastUntil-now),RpgBalanceConfig.ticks(RpgBalanceConfig.BACKSTEP_RECAST_SECONDS),true,"RECAST"));
         if(s.rootsActive)result.add(new AbilityStatus("Nature's Roots",(int)Math.max(0,s.rootsUntil-now),RpgBalanceConfig.ticks(RpgBalanceConfig.ROOTS_CHANNEL_SECONDS),true,"CHANNELING"));
+        result.addAll(FighterCombat.statuses(p));
         result.sort(Comparator.comparing(AbilityStatus::name));return result;
     }
     public static void input(ServerPlayer p,AbilityAction action){
         PlayerProgress progress=progress(p); State s=state(p); long now=p.level.getGameTime();
+        if(CombatControl.offenseDisabled(p))return;
         if(isRooted(p)&&action!=AbilityAction.ALTERNATE_RELEASE)return;
         if(s.fullyChargedDrawing&&action!=AbilityAction.ALTERNATE_RELEASE)return;
         if(s.homingControlActive){if(action==AbilityAction.ALTERNATE_RELEASE)releaseHomingControl(p,s);else if(action==AbilityAction.HOMING_PUSH||action==AbilityAction.HOMING_PULL)adjustHoming(p,s,action==AbilityAction.HOMING_PUSH,now);else if(action==AbilityAction.HOMING_ADD_FOLLOWER)addHomingFollower(p,progress,s,now);return;}
@@ -63,6 +65,7 @@ public final class AbilityRuntime {
         if(action!=AbilityAction.ALTERNATE_ATTACK)return;
         AlternateAttackDefinition attack=AlternateAttackDefinition.find(progress.selectedAlternateAttack());
         if(attack==null||!progress.hasSkill(attack.skillId())||s.cooldowns.getOrDefault(attack.id(),0L)>now||s.multislashActiveUntil>now)return;
+        if(FighterCombat.input(p,attack.id()))return;
         switch(attack.id()){
             case "dash_strike"->dashStrike(p,progress,s,now);
             case "multislash"->multislash(p,progress,s,now);
@@ -101,18 +104,19 @@ public final class AbilityRuntime {
         if(s.fullyChargedDrawing&&p.isUsingItem()&&p.getUseItem()!=s.fullyChargedWeapon)consumeFullyCharged(p,s,now);
         else if(s.fullyChargedDrawing&&!p.isUsingItem()){if(s.fullyChargedCancelAt==0)s.fullyChargedCancelAt=now+2;else if(now>=s.fullyChargedCancelAt)consumeFullyCharged(p,s,now);}else if(s.fullyChargedDrawing)s.fullyChargedCancelAt=0;
         tickRooted(p.level,now);
+        FighterCombat.tick(p);
     }
     public static boolean normalAttackBlocked(ServerPlayer p){State s=state(p);long now=p.level.getGameTime();return isRooted(p)||s.fireballActive||s.homingControlActive||now<s.multislashActiveUntil||now<s.drawLockedUntil||(now<s.normalAttackLockedUntil&&!progress(p).hasSkill(SwordsmanPlayerClass.HEAVY_RECOVERY));}
     public static boolean beginNormalSwordAttack(ServerPlayer p){if(normalAttackBlocked(p))return false;state(p).mainLastAttack=p.level.getGameTime();return true;}
     public static void offensiveAction(ServerPlayer p){State s=state(p);if(s.cloakedUntil>0)endCloak(p,s,p.level.getGameTime());}
     public static boolean isCloaked(ServerPlayer p){return state(p).cloakedUntil>p.level.getGameTime();}
     public static boolean isBlocking(ServerPlayer p){return state(p).blocking;}
-    public static boolean isDualWielding(ServerPlayer p){return progress(p).hasSkill(SwordsmanPlayerClass.DUAL)&&sword(p.getMainHandItem())&&sword(p.getOffhandItem());}
+    public static boolean isDualWielding(ServerPlayer p){PlayerProgress x=progress(p);return x.hasSkill(SwordsmanPlayerClass.DUAL)&&sword(p.getMainHandItem())&&sword(p.getOffhandItem())||x.hasSkill(FighterPlayerClass.MONK)&&FighterStats.isFist(p);}
     public static boolean isMultislashActive(ServerPlayer p){return state(p).multislashActiveUntil>p.level.getGameTime();}
     public static void cancelFireball(ServerPlayer p){State s=state(p);s.fireballActive=false;s.fireballCharging=false;releaseHomingControl(p,s);}
-    public static float mainHandCharge(ServerPlayer p){State s=state(p);long now=p.level.getGameTime();return s.mainLastAttack==Long.MIN_VALUE?1.0F:(float)Math.min(1.0,(now-s.mainLastAttack)/(double)recharge(progress(p)));}
-    public static float offhandCharge(ServerPlayer p){State s=state(p);long now=p.level.getGameTime();return s.offLastAttack==Long.MIN_VALUE?1.0F:(float)Math.min(1.0,(now-s.offLastAttack)/(double)recharge(progress(p)));}
-    public static void resetTransient(ServerPlayer p){State s=STATES.get(p.getUUID());if(s!=null){releaseHomingControl(p,s);if(s.rootsTarget!=null)ROOTED.remove(s.rootsTarget);}ROOTED.remove(p.getUUID());STATES.remove(p.getUUID());if(p.getPersistentData().getBoolean(CLOAK_TAG)){p.removeEffect(MobEffects.INVISIBILITY);p.getPersistentData().remove(CLOAK_TAG);}com.ollie.tierborne.network.ModNetwork.syncCloak(p,false);com.ollie.tierborne.network.ModNetwork.syncBlock(p,false);com.ollie.tierborne.network.ModNetwork.syncAbilities(p);}
+    public static float mainHandCharge(ServerPlayer p){State s=state(p);long now=p.level.getGameTime();return s.mainLastAttack==Long.MIN_VALUE?1.0F:(float)Math.min(1.0,(now-s.mainLastAttack)/(double)recharge(p));}
+    public static float offhandCharge(ServerPlayer p){State s=state(p);long now=p.level.getGameTime();return s.offLastAttack==Long.MIN_VALUE?1.0F:(float)Math.min(1.0,(now-s.offLastAttack)/(double)recharge(p));}
+    public static void resetTransient(ServerPlayer p){State s=STATES.get(p.getUUID());if(s!=null){releaseHomingControl(p,s);if(s.rootsTarget!=null)ROOTED.remove(s.rootsTarget);}ROOTED.remove(p.getUUID());STATES.remove(p.getUUID());FighterCombat.reset(p);if(p.getPersistentData().getBoolean(CLOAK_TAG)){p.removeEffect(MobEffects.INVISIBILITY);p.getPersistentData().remove(CLOAK_TAG);}com.ollie.tierborne.network.ModNetwork.syncCloak(p,false);com.ollie.tierborne.network.ModNetwork.syncBlock(p,false);com.ollie.tierborne.network.ModNetwork.syncAbilities(p);}
     public static boolean heavyMovementPenaltyActive(ServerPlayer p){return p.level.getGameTime()<state(p).heavyMoveUntil;}
     public static void tryParry(ServerPlayer p,Entity attacker){PlayerProgress x=progress(p);State s=state(p);long now=p.level.getGameTime();if(!x.hasSkill(SwordsmanPlayerClass.PARRY)||now<s.parryReady||!(attacker instanceof LivingEntity target)||!sword(p.getMainHandItem())||!sword(p.getOffhandItem()))return;s.parryReady=now+RpgBalanceConfig.ticks(RpgBalanceConfig.PARRY_COOLDOWN_SECONDS);hurt(p,target,baseDamage(p));hurt(p,target,baseDamage(p));}
     public static double additionalSwordDamagePercent(ServerPlayer p,LivingEntity target){
@@ -137,7 +141,7 @@ public final class AbilityRuntime {
     private static void endCloak(ServerPlayer p,State s,long now){if(s.cloakedUntil<=0)return;s.cloakedUntil=0;p.removeEffect(MobEffects.INVISIBILITY);p.getPersistentData().remove(CLOAK_TAG);com.ollie.tierborne.network.ModNetwork.syncCloak(p,false);cooldown(s,"cloak",now,RpgBalanceConfig.ticks(RpgBalanceConfig.CLOAK_COOLDOWN_SECONDS));}
     private static void leap(ServerPlayer p,State s,long now){offensiveAction(p);p.setDeltaMovement(p.getDeltaMovement().x,RpgBalanceConfig.LEAP_LAUNCH.get(),p.getDeltaMovement().z);p.hurtMarked=true;s.leaping=true;s.leapStarted=now;cooldown(s,"leap_strike",now,RpgBalanceConfig.ticks(RpgBalanceConfig.LEAP_COOLDOWN_SECONDS));}
     private static void dash(ServerPlayer p,PlayerProgress x,State s,long now){if(now<s.utilityReady)return;boolean upgraded=x.hasSkill(SwordsmanPlayerClass.SM_DASH);Vec3 look=horizontal(p.getLookAngle());p.setDeltaMovement(look.scale(upgraded?RpgBalanceConfig.DASH_UPGRADE_VELOCITY.get():RpgBalanceConfig.DASH_VELOCITY.get()).add(0,0.08,0));p.hurtMarked=true;s.utilityDuration=RpgBalanceConfig.ticks(upgraded?RpgBalanceConfig.DASH_UPGRADE_COOLDOWN_SECONDS:RpgBalanceConfig.DASH_COOLDOWN_SECONDS);s.utilityReady=now+s.utilityDuration;}
-    private static void offhand(ServerPlayer p,PlayerProgress x,State s,long now){if(!x.hasSkill(SwordsmanPlayerClass.DUAL)||normalAttackBlocked(p)||!sword(p.getMainHandItem())||!sword(p.getOffhandItem()))return;offensiveAction(p);long recharge=recharge(x);double charge=s.offLastAttack==Long.MIN_VALUE?1.0:Math.min(1.0,(now-s.offLastAttack)/(double)recharge);double strength=0.2+charge*charge*0.8;Optional<LivingEntity> target=target(p,3.2);p.swing(net.minecraft.world.InteractionHand.OFF_HAND,true);if(target.isPresent()&&weaponHit(p,target.get(),p.getOffhandItem(),net.minecraft.world.InteractionHand.OFF_HAND,fullChargeDamage(p,p.getOffhandItem(),target.get())*strength,true))s.offLastAttack=now;}
+    private static void offhand(ServerPlayer p,PlayerProgress x,State s,long now){boolean dualSwords=x.hasSkill(SwordsmanPlayerClass.DUAL)&&sword(p.getMainHandItem())&&sword(p.getOffhandItem());boolean monkFists=x.hasSkill(FighterPlayerClass.MONK)&&FighterStats.isFist(p);if((!dualSwords&&!monkFists)||normalAttackBlocked(p))return;offensiveAction(p);long recharge=recharge(p);double charge=s.offLastAttack==Long.MIN_VALUE?1.0:Math.min(1.0,(now-s.offLastAttack)/(double)recharge);double strength=0.2+charge*charge*0.8;Optional<LivingEntity> target=target(p,3.2);p.swing(net.minecraft.world.InteractionHand.OFF_HAND,true);if(target.isPresent()&&weaponHit(p,target.get(),p.getOffhandItem(),net.minecraft.world.InteractionHand.OFF_HAND,fullChargeDamage(p,p.getOffhandItem(),target.get())*strength,true))s.offLastAttack=now;}
     private static void strike(ServerPlayer p,ItemStack sword,net.minecraft.world.InteractionHand hand,double multiplier,State state){if(!sword(sword))return;LivingEntity locked=null;if(state.multislashTarget!=null&&p.level instanceof net.minecraft.server.level.ServerLevel level&&level.getEntity(state.multislashTarget) instanceof LivingEntity living&&living.isAlive()&&living.distanceToSqr(p)<64.0)locked=living;Optional.ofNullable(locked).or(()->target(p,3.5)).ifPresent(t->weaponHit(p,t,sword,hand,fullChargeDamage(p,sword,t)*multiplier,true));}
     private static void setBlocking(ServerPlayer p,State s,boolean blocking){if(s.blocking==blocking)return;s.blocking=blocking;com.ollie.tierborne.network.ModNetwork.syncBlock(p,blocking);}
     private static void endBlock(ServerPlayer p,State s,long now){if(!s.blocking)return;setBlocking(p,s,false);cooldown(s,"block",now,RpgBalanceConfig.ticks(RpgBalanceConfig.BLOCK_COOLDOWN_SECONDS));}
@@ -152,7 +156,7 @@ public final class AbilityRuntime {
     private static double baseDamage(ServerPlayer p){return p.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);}
     private static double fullChargeDamage(ServerPlayer p,ItemStack weapon,LivingEntity target){double damage=baseDamage(p);if(weapon!=p.getMainHandItem()&&weapon.getItem() instanceof SwordItem off&&p.getMainHandItem().getItem() instanceof SwordItem main)damage+=off.getDamage()-main.getDamage();return damage+net.minecraft.world.item.enchantment.EnchantmentHelper.getDamageBonus(weapon,target.getMobType());}
     private static double reach(PlayerProgress x){return 3.5+(x.hasSkill(SwordsmanPlayerClass.HEAVY_RANGE)?RpgBalanceConfig.HEAVY_RANGE.get():0);}
-    private static long recharge(PlayerProgress x){double speed=x.hasSkill(SwordsmanPlayerClass.DUAL_SPEED)?RpgBalanceConfig.DUAL_SPEED_UPGRADE.get():RpgBalanceConfig.DUAL_ATTACK_SPEED.get();return Math.max(1,Math.round(12/(1+speed/100.0)));}
+    private static long recharge(ServerPlayer p){return Math.max(1,Math.round(20.0/Math.max(0.1,p.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_SPEED))));}
     private static boolean sword(ItemStack s){return s.getItem() instanceof SwordItem;}
     private static Vec3 horizontal(Vec3 v){Vec3 h=new Vec3(v.x,0,v.z);return h.lengthSqr()==0?Vec3.ZERO:h.normalize();}
     private static PlayerProgress progress(ServerPlayer p){return PlayerProgressSavedData.get(p.getServer()).get(p.getUUID());}

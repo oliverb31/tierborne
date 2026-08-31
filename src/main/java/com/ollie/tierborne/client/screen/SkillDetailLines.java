@@ -10,6 +10,26 @@ final class SkillDetailLines {
         List<String> lines=new ArrayList<>();
         if(skill.upgrade()!=null&&!(tree instanceof ArcherPlayerClass)){int current=tree.totalBonus(skill.upgrade().type(),unlocked);lines.add(skill.upgrade().type().displayName()+": "+signed(skill.upgrade().percentagePoints())+"%");lines.add("Current: "+signed(current)+"%  After: "+signed(current+skill.upgrade().percentagePoints())+"%");}
         switch(skill.id()){
+            case FighterPlayerClass.ROOT->lines.add("No inherent purchase effects.");
+            case FighterPlayerClass.PULL->{lines.add("Range: "+n(RpgBalanceConfig.PULL_RANGE.get())+" blocks  Maximum Active: "+n(RpgBalanceConfig.PULL_MAX_SECONDS.get())+"s");lines.add("Cooldown: "+n(RpgBalanceConfig.PULL_COOLDOWN_SECONDS.get())+"s  Hit: Full-power fist attack");}
+            case FighterPlayerClass.MONK->{lines.add("Movement Speed: +"+n(RpgBalanceConfig.MONK_MOVE.get())+"%");lines.add("Fist Damage: +"+n(RpgBalanceConfig.MONK_FIST.get())+"%");}
+            case FighterPlayerClass.PULL_RECOVERY->lines.add("Pull Cooldown: "+n(RpgBalanceConfig.PULL_COOLDOWN_SECONDS.get())+"s -> "+n(RpgBalanceConfig.PULL_UPGRADED_COOLDOWN_SECONDS.get())+"s");
+            case FighterPlayerClass.EXTENDED_PULL->lines.add("Pull Range: "+n(RpgBalanceConfig.PULL_RANGE.get())+" -> "+n(RpgBalanceConfig.PULL_UPGRADED_RANGE.get())+" blocks");
+            case FighterPlayerClass.MONK_FIST_UPGRADE->lines.add("Fist Damage: +"+n(RpgBalanceConfig.MONK_FIST_UPGRADE.get())+"%");
+            case FighterPlayerClass.CHAMPION->{lines.add("Combo: +"+n(RpgBalanceConfig.COMBO_COMPOUND_PERCENT.get())+"% compounding (rounded up)");lines.add("Initial Hit: +0%  Window: "+n(RpgBalanceConfig.COMBO_WINDOW_SECONDS.get())+"s  Same target required");}
+            case FighterPlayerClass.CHAIN->{lines.add("READY: "+n(RpgBalanceConfig.CHAIN_READY_SECONDS.get())+"s  Opening Bonus: +"+n(RpgBalanceConfig.CHAIN_OPENING_PERCENT.get())+"%");lines.add("Combo Window: "+n(RpgBalanceConfig.CHAIN_WINDOW_SECONDS.get())+"s  Compound: "+n(RpgBalanceConfig.COMBO_COMPOUND_PERCENT.get())+"%");lines.add("Cooldown after active: "+n(RpgBalanceConfig.CHAIN_COOLDOWN_SECONDS.get())+"s");}
+            case FighterPlayerClass.COMBO_WINDOW_I->lines.add("Combo Window: "+n(RpgBalanceConfig.COMBO_WINDOW_SECONDS.get())+"s -> "+n(RpgBalanceConfig.COMBO_WINDOW_I_SECONDS.get())+"s");
+            case FighterPlayerClass.COMBO_WINDOW_II->lines.add("Combo Window: "+n(RpgBalanceConfig.COMBO_WINDOW_I_SECONDS.get())+"s -> "+n(RpgBalanceConfig.COMBO_WINDOW_II_SECONDS.get())+"s");
+            case FighterPlayerClass.CHAIN_BONUS->lines.add("Chain Opening Bonus: +"+n(RpgBalanceConfig.CHAIN_OPENING_PERCENT.get())+"% -> +"+n(RpgBalanceConfig.CHAIN_UPGRADED_OPENING_PERCENT.get())+"%");
+            case FighterPlayerClass.CHAIN_WINDOW->lines.add("Chain Window: "+n(RpgBalanceConfig.CHAIN_WINDOW_SECONDS.get())+"s -> "+n(RpgBalanceConfig.CHAIN_UPGRADED_WINDOW_SECONDS.get())+"s");
+            case FighterPlayerClass.DUELIST->{lines.add("General Weapon/Fist Damage: +"+n(RpgBalanceConfig.DUELIST_DAMAGE.get())+"%");lines.add("Counter Chance: "+n(RpgBalanceConfig.DUELIST_COUNTER_CHANCE.get())+"%  Damage: Full-power current attack");}
+            case FighterPlayerClass.DISARM->{lines.add("Range: "+n(RpgBalanceConfig.DISARM_RANGE.get())+" blocks  Duration: "+n(RpgBalanceConfig.DISARM_DURATION_SECONDS.get())+"s");lines.add("Target current HP < "+n(RpgBalanceConfig.DISARM_HEALTH_RATIO.get()*100)+"% of your current HP");lines.add("Cooldown: "+n(RpgBalanceConfig.DISARM_COOLDOWN_SECONDS.get())+"s");}
+            case FighterPlayerClass.COUNTER_CHANCE->lines.add("Counter Chance: "+n(RpgBalanceConfig.DUELIST_COUNTER_CHANCE.get())+"% -> "+n(RpgBalanceConfig.DUELIST_UPGRADED_COUNTER_CHANCE.get())+"%");
+            case FighterPlayerClass.PERFECT_COUNTER->lines.add("Successful Counter: Negates triggering incoming hit");
+            case FighterPlayerClass.REFLECTIVE_COUNTER->lines.add("Counter Damage: Maximum of raw incoming damage or full current attack");
+            case FighterPlayerClass.DUELIST_DAMAGE_UPGRADE->lines.add("General Weapon/Fist Damage: +"+n(RpgBalanceConfig.DUELIST_DAMAGE_UPGRADE.get())+"%");
+            case FighterPlayerClass.DISARM_DURATION->lines.add("Disarm Duration: "+n(RpgBalanceConfig.DISARM_DURATION_SECONDS.get())+"s -> "+n(RpgBalanceConfig.DISARM_UPGRADED_DURATION_SECONDS.get())+"s");
+            case FighterPlayerClass.DISARM_COOLDOWN->lines.add("Disarm Cooldown: "+n(RpgBalanceConfig.DISARM_COOLDOWN_SECONDS.get())+"s -> "+n(RpgBalanceConfig.DISARM_UPGRADED_COOLDOWN_SECONDS.get())+"s");
             case ArcherPlayerClass.ROOT->{lines.add("Bow Damage: +"+n(RpgBalanceConfig.ARCHER_BOW_DAMAGE.get())+"%  Crossbow Damage: +"+n(RpgBalanceConfig.ARCHER_CROSSBOW_DAMAGE.get())+"%");lines.add("Ability: Dash");lines.add("Dash Distance: "+n(RpgBalanceConfig.ARCHER_DASH_DISTANCE.get())+" blocks  Cooldown: "+n(RpgBalanceConfig.ARCHER_DASH_COOLDOWN_SECONDS.get())+"s");}
             case ArcherPlayerClass.CROSSBOW_DAMAGE_1->lines.add("Crossbow Damage: +"+n(RpgBalanceConfig.CROSSBOW_DAMAGE_I.get())+"%");
             case ArcherPlayerClass.BOW_DAMAGE_1->lines.add("Bow Damage: +"+n(RpgBalanceConfig.BOW_DAMAGE_I.get())+"%");

@@ -30,6 +30,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import com.ollie.tierborne.playerclass.SwordsmanPlayerClass;
+import com.ollie.tierborne.playerclass.FighterPlayerClass;
 import com.ollie.tierborne.config.RpgBalanceConfig;
 import net.minecraft.tags.BlockTags;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -110,8 +111,9 @@ public final class ClientEvents {
         boolean dualWielding=ClientProgress.hasSkill(SwordsmanPlayerClass.DUAL)
                 &&minecraft.player.getMainHandItem().getItem() instanceof SwordItem
                 &&minecraft.player.getOffhandItem().getItem() instanceof SwordItem;
+        boolean monkFists=ClientProgress.hasSkill(FighterPlayerClass.MONK)&&minecraft.player.getMainHandItem().isEmpty()&&minecraft.player.getOffhandItem().isEmpty();
         boolean useDown=minecraft.options.keyUse.isDown();
-        if(dualWielding&&useDown&&!offhandUseHeld)ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(AbilityAction.OFFHAND_ATTACK));
+        if((dualWielding||monkFists)&&useDown&&!offhandUseHeld)ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(AbilityAction.OFFHAND_ATTACK));
         offhandUseHeld=useDown;
         if(ClientAbilityState.isHoming()){
             boolean followerDown=minecraft.options.keyPickItem.isDown();
@@ -130,9 +132,10 @@ public final class ClientEvents {
         }
         if(event.isAttack()&&minecraft.player!=null&&minecraft.player.getMainHandItem().getItem() instanceof SwordItem
                 &&ClientAbilityState.blocksNormalAttack()){event.setSwingHand(false);event.setCanceled(true);return;}
-        if(!event.isUseItem()||minecraft.player==null||!ClientProgress.hasSkill(SwordsmanPlayerClass.DUAL)
-                ||!(minecraft.player.getMainHandItem().getItem() instanceof SwordItem)
-                ||!(minecraft.player.getOffhandItem().getItem() instanceof SwordItem)) return;
+        if(!event.isUseItem()||minecraft.player==null)return;
+        boolean dualSwords=ClientProgress.hasSkill(SwordsmanPlayerClass.DUAL)&&minecraft.player.getMainHandItem().getItem() instanceof SwordItem&&minecraft.player.getOffhandItem().getItem() instanceof SwordItem;
+        boolean monkFists=ClientProgress.hasSkill(FighterPlayerClass.MONK)&&minecraft.player.getMainHandItem().isEmpty()&&minecraft.player.getOffhandItem().isEmpty();
+        if(!dualSwords&&!monkFists)return;
         event.setCanceled(true);
         event.setSwingHand(false);
     }
@@ -143,6 +146,7 @@ public final class ClientEvents {
         Minecraft minecraft=Minecraft.getInstance();
         if(minecraft.player==null||minecraft.options.hideGui)return;
         renderTargetHealth(event,minecraft);
+        if(ClientAbilityState.comboBonus()>0)minecraft.font.drawShadow(event.getPoseStack(),"COMBO +"+ClientAbilityState.comboBonus()+"%",8,event.getWindow().getGuiScaledHeight()-58,0xFFFFD46A);
         java.util.List<com.ollie.tierborne.combat.AbilityStatus> statuses=ClientAbilityState.statuses();
         int width=COOLDOWN_BAR_WIDTH,x=event.getWindow().getGuiScaledWidth()-width-8;
         int y=event.getWindow().getGuiScaledHeight()-58-statuses.size()*(COOLDOWN_ENTRY_HEIGHT+COOLDOWN_ENTRY_GAP);
@@ -210,7 +214,8 @@ public final class ClientEvents {
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderTexture(0,GuiComponent.GUI_ICONS_LOCATION);
         GuiComponent.blit(event.getPoseStack(),centerX-7,centerY-7,0,0,15,15,256,256);
-        if(ClientAbilityState.dualWielding()&&!ClientAbilityState.multislashActive()){
+        if(ClientAbilityState.dualWielding()&&!ClientAbilityState.multislashActive()
+                &&!ClientAbilityState.blocksNormalAttack()){
             drawChargeBar(event,centerX-18,centerY-8,ClientAbilityState.offhandCharge(),0xFF74A7E8);
             drawChargeBar(event,centerX+14,centerY-8,ClientAbilityState.mainCharge(),0xFFE8B85E);
         }
@@ -232,6 +237,7 @@ public final class ClientEvents {
             event.getRenderer().getModel().rightArmPose=event.getEntity().getItemBySlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND).getItem() instanceof SwordItem&&event.getEntity().getMainArm()==net.minecraft.world.entity.HumanoidArm.RIGHT||event.getEntity().getItemBySlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND).getItem() instanceof SwordItem&&event.getEntity().getMainArm()!=net.minecraft.world.entity.HumanoidArm.RIGHT?HumanoidModel.ArmPose.BLOCK:HumanoidModel.ArmPose.EMPTY;
             event.getRenderer().getModel().leftArmPose=event.getEntity().getItemBySlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND).getItem() instanceof SwordItem&&event.getEntity().getMainArm()==net.minecraft.world.entity.HumanoidArm.LEFT||event.getEntity().getItemBySlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND).getItem() instanceof SwordItem&&event.getEntity().getMainArm()!=net.minecraft.world.entity.HumanoidArm.LEFT?HumanoidModel.ArmPose.BLOCK:HumanoidModel.ArmPose.EMPTY;
         }
+        if(event.getEntity()==Minecraft.getInstance().player&&ClientProgress.hasSkill(FighterPlayerClass.MONK)&&event.getEntity().getMainHandItem().isEmpty()&&event.getEntity().getOffhandItem().isEmpty()){event.getRenderer().getModel().rightArmPose=HumanoidModel.ArmPose.BLOCK;event.getRenderer().getModel().leftArmPose=HumanoidModel.ArmPose.BLOCK;}
     }
 
     @SubscribeEvent
@@ -252,6 +258,9 @@ public final class ClientEvents {
                 event.getPoseStack().mulPose(Vector3f.XP.rotationDegrees(-42.0F));
                 event.getPoseStack().mulPose(Vector3f.YP.rotationDegrees(right?-28.0F:28.0F));
             }
+        }
+        if(minecraft.player!=null&&ClientProgress.hasSkill(FighterPlayerClass.MONK)&&minecraft.player.getMainHandItem().isEmpty()&&minecraft.player.getOffhandItem().isEmpty()&&event.getItemStack().isEmpty()){
+            boolean main=event.getHand()==InteractionHand.MAIN_HAND;event.getPoseStack().translate(main?0.12:-0.12,0.18,-0.22);event.getPoseStack().mulPose(Vector3f.XP.rotationDegrees(-38));event.getPoseStack().mulPose(Vector3f.YP.rotationDegrees(main?18:-18));event.getPoseStack().mulPose(Vector3f.ZP.rotationDegrees(main?-12:12));
         }
     }
 
@@ -283,6 +292,8 @@ public final class ClientEvents {
         if(ClientProgress.hasSkill(SwordsmanPlayerClass.SWORDMASTER))bonus+=RpgBalanceConfig.SWORDMASTER_SPEED.get();
         if(ClientProgress.hasSkill(SwordsmanPlayerClass.SM_SPEED))bonus+=RpgBalanceConfig.SWORDMASTER_UPGRADE_SPEED.get();
         if(ClientProgress.hasSkill(SwordsmanPlayerClass.ROGUE))bonus+=RpgBalanceConfig.ROGUE_SPEED.get();
+        if(ClientProgress.hasSkill(FighterPlayerClass.MONK_MOVE))bonus+=RpgBalanceConfig.FIGHTER_MONK_PATH_MOVE.get();
+        if(ClientProgress.hasSkill(FighterPlayerClass.MONK))bonus+=RpgBalanceConfig.MONK_MOVE.get();
         double voluntaryLimit = ClientProgress.movementSpeedLimitPercent() / 100.0;
         if (bonus == 0 && voluntaryLimit == 1.0) return;
         float walkingSpeed = event.getPlayer().getAbilities().getWalkingSpeed();

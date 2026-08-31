@@ -14,7 +14,10 @@ public record AlternateAttackDefinition(String id, String skillId, String displa
             new AlternateAttackDefinition("fully_charged", ArcherPlayerClass.FULLY_CHARGED, "Fully Charged", "Empower one deliberately slow bow shot."),
             new AlternateAttackDefinition("elemental_shot", ArcherPlayerClass.ELEMENTAL_SHOT, "Elemental Shot", "Instantly fire a burning, freezing arrow."),
             new AlternateAttackDefinition("backstep", ArcherPlayerClass.BACKSTEP, "Backstep", "Fire while dashing away."),
-            new AlternateAttackDefinition("natures_roots", ArcherPlayerClass.NATURES_ROOTS, "Nature's Roots", "Channel roots on the target under the crosshair."));
+            new AlternateAttackDefinition("natures_roots", ArcherPlayerClass.NATURES_ROOTS, "Nature's Roots", "Channel roots on the target under the crosshair."),
+            new AlternateAttackDefinition("pull", FighterPlayerClass.PULL, "Pull", "Pull a target into a full-power fist strike."),
+            new AlternateAttackDefinition("chain", FighterPlayerClass.CHAIN, "Chain", "Temporarily arm a stronger Combo."),
+            new AlternateAttackDefinition("disarm", FighterPlayerClass.DISARM, "Disarm", "Temporarily disable a target's offensive actions."));
 
     public static AlternateAttackDefinition find(String id) { return ALL.stream().filter(a -> a.id.equals(id)).findFirst().orElse(null); }
     public static AlternateAttackDefinition forSkill(String skillId) { return ALL.stream().filter(a -> a.skillId.equals(skillId)).findFirst().orElse(null); }

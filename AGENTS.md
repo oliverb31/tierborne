@@ -21,6 +21,8 @@ When uncertain whether an API exists in Forge 1.19.2, verify it against
 the 1.19.2 documentation or the dependencies/source available in this
 Gradle project rather than assuming a modern Forge API is available.
 
+Write all code with commonly accepted good coding practices. Including correct whitelines, variable/method naming, and indentation.
+
 ## Validation
 
 After making code changes, run:

@@ -3,6 +3,8 @@ package com.ollie.tierborne.playerclass;
 public enum SkillBonusType {
     SWORD_DAMAGE("Sword Damage Buff"),
     BOW_DAMAGE("Bow Damage Buff"),
+    CROSSBOW_DAMAGE("Crossbow Damage Buff"),
+    RANGED_DAMAGE("All Ranged Damage Buff"),
     MOVEMENT_SPEED("Movement Speed Buff"),
     WOODCUTTING_SPEED("Woodcutting Speed"),
     WOOD_DROP_CHANCE("Wood Drop Bonus"),

@@ -80,6 +80,24 @@ public final class PlayerProgress {
         return true;
     }
 
+    public int resetProgression() {
+        int refunded = 0;
+        for (String skillId : unlockedSkills) {
+            Skill skill = null;
+            for (PlayerClass playerClass : PlayerClassRegistry.all()) {
+                if (playerClass.findSkill(skillId) != null) { skill = playerClass.findSkill(skillId); break; }
+            }
+            if (skill == null) skill = GeneralSkillTree.INSTANCE.findSkill(skillId);
+            if (skill != null) refunded += skill.cost();
+        }
+        skillPoints += refunded;
+        unlockedSkills.clear();
+        playerClassId = "";
+        selectedAlternateAttack = "";
+        movementSpeedLimitPercent = 100;
+        return refunded;
+    }
+
     public CompoundTag save() {
         CompoundTag tag = new CompoundTag();
         tag.putString("PlayerClass", playerClassId);

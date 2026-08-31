@@ -9,6 +9,7 @@ import com.ollie.tierborne.playerclass.Skill;
 import com.ollie.tierborne.playerclass.SkillBonusType;
 import com.ollie.tierborne.playerclass.SkillEffect;
 import com.ollie.tierborne.playerclass.SwordsmanPlayerClass;
+import com.ollie.tierborne.playerclass.ArcherPlayerClass;
 import com.ollie.tierborne.playerclass.AlternateAttackDefinition;
 import com.ollie.tierborne.network.ModNetwork;
 import com.ollie.tierborne.network.SelectAlternateAttackPacket;
@@ -44,18 +45,15 @@ public final class PlayerMenuScreen extends Screen {
 
         int contentTop = outerTop + 43;
         int contentBottom = outerBottom - 10;
-        int modelWidth = Math.min(130, Math.max(100, (outerRight - outerLeft) / 3));
-        int modelLeft = outerLeft + 10;
-        int modelRight = modelLeft + modelWidth;
-        renderPlayerPanel(poseStack, modelLeft, contentTop, modelRight, contentBottom, mouseX, mouseY);
-
-        int detailsLeft = modelRight + 10;
-        int detailsRight = outerRight - 10;
-        int classBottom = Math.min(contentTop + 72, contentBottom - 105);
-        renderClassPanel(poseStack, detailsLeft, contentTop, detailsRight, classBottom);
-
-        int subclassTop = classBottom + 10;
+        int contentLeft=outerLeft+10,contentRight=outerRight-10;
+        int classBottom=Math.min(contentTop+92,contentBottom-115);
+        renderClassPanel(poseStack,contentLeft,contentTop,contentRight,classBottom);
+        int subclassTop=classBottom+8;
         int subclassBottom = contentBottom - 48;
+        int modelWidth=Math.min(118,Math.max(82,(contentRight-contentLeft)/4));
+        int modelLeft=contentLeft,modelRight=modelLeft+modelWidth;
+        renderPlayerPanel(poseStack,modelLeft,subclassTop,modelRight,contentBottom,mouseX,mouseY);
+        int detailsLeft=modelRight+8,detailsRight=contentRight;
         int subclassGap = 8;
         int subclassWidth = (detailsRight - detailsLeft - subclassGap) / 2;
         renderClassSubclassSlot(poseStack, detailsLeft, subclassTop,
@@ -75,17 +73,20 @@ public final class PlayerMenuScreen extends Screen {
 
         drawCenteredString(poseStack, font, minecraft.player.getDisplayName(),
                 (left + right) / 2, top + 10, RpgUi.TEXT);
-        GuiComponent.fill(poseStack, left + 8, top + 26, right - 8, bottom - 8, 0x80101318);
+        int speedPanelTop = bottom - 52;
+        GuiComponent.fill(poseStack, left + 8, top + 26, right - 8, speedPanelTop - 4, 0x80101318);
+        int modelAreaHeight = Math.max(50, speedPanelTop - top - 30);
         InventoryScreen.renderEntityInInventory(
                 (left + right) / 2,
-                bottom - 14,
-                Math.min(48, Math.max(30, (bottom - top) / 3)),
+                speedPanelTop - 7,
+                Math.min(48, Math.max(30, modelAreaHeight / 2)),
                 (left + right) / 2.0F - mouseX,
-                bottom / 2.0F - mouseY,
+                (top + modelAreaHeight / 2.0F) - mouseY,
                 minecraft.player);
-        speedLimitLeft=left+10;speedLimitRight=right-10;speedLimitTop=bottom-29;
-        GuiComponent.fill(poseStack,left+6,bottom-42,right-6,bottom-6,0xE0101319);
-        drawString(poseStack,font,Component.literal("Movement Speed Limit: "+ClientProgress.movementSpeedLimitPercent()+"%"),speedLimitLeft,bottom-39,RpgUi.TEXT);
+        speedLimitLeft=left+10;speedLimitRight=right-10;speedLimitTop=bottom-22;
+        GuiComponent.fill(poseStack,left+6,speedPanelTop,right-6,bottom-6,0xE0101319);
+        RpgUi.drawCenteredFitted(poseStack,font,Component.literal("Movement Speed Limit"),(left+right)/2,bottom-48,speedLimitRight-speedLimitLeft,RpgUi.TEXT);
+        RpgUi.drawCenteredFitted(poseStack,font,Component.literal(ClientProgress.movementSpeedLimitPercent()+"%"),(left+right)/2,bottom-37,speedLimitRight-speedLimitLeft,RpgUi.GOLD);
         GuiComponent.fill(poseStack,speedLimitLeft,speedLimitTop,speedLimitRight,speedLimitTop+7,RpgUi.LOCKED);
         int filled=(speedLimitRight-speedLimitLeft)*ClientProgress.movementSpeedLimitPercent()/100;
         GuiComponent.fill(poseStack,speedLimitLeft,speedLimitTop,speedLimitLeft+filled,speedLimitTop+7,RpgUi.GOLD);
@@ -107,21 +108,17 @@ public final class PlayerMenuScreen extends Screen {
         GuiComponent.fill(poseStack, left + 8, top + 8, left + 37, top + 38, 0xFF11141A);
         RpgUi.border(poseStack, left + 8, top + 8, left + 37, top + 38, RpgUi.GOLD_DARK);
         RpgUi.classIcon(minecraft, playerClass.iconStack(), iconCenterX, iconCenterY);
-        drawString(poseStack, font, Component.literal(playerClass.displayName().toUpperCase()),
-                left + 45, top + 10, RpgUi.GOLD);
+        RpgUi.drawFitted(poseStack, font, Component.literal(playerClass.displayName().toUpperCase()),
+                left + 45, top + 10, right-left-52, RpgUi.GOLD);
         RpgUi.drawWrapped(poseStack,font,playerClass.description(),left+45,top+23,right-left-52,RpgUi.MUTED,2);
 
-        int buffY = top + 45;
-        for (SkillBonusType type : SkillBonusType.values()) {
-            if (!playerClass.displayedBonusTypes().contains(type)) continue;
-            double bonus = playerClass.totalBonus(type, ClientProgress.unlockedSkills());
-            if(playerClass instanceof SwordsmanPlayerClass){if(type==SkillBonusType.SWORD_DAMAGE)bonus+=SwordsmanStats.subclassSwordDamage(ClientProgress.unlockedSkills());if(type==SkillBonusType.MOVEMENT_SPEED)bonus+=SwordsmanStats.subclassMovementSpeed(ClientProgress.unlockedSkills());}
-            drawString(poseStack, font,
-                    Component.literal(type.displayName() + ": " + signed(bonus) + "%"),
-                    left + 10, buffY, RpgUi.TEXT);
-            buffY += 13;
-        }
+        java.util.List<String> stats=new java.util.ArrayList<>();
+        if(playerClass instanceof ArcherPlayerClass){stats.add("Bow Damage: "+signed(archerBowDamage())+"%");stats.add("Crossbow Damage: "+signed(archerCrossbowDamage())+"%");double movement=playerClass.totalBonus(SkillBonusType.MOVEMENT_SPEED,ClientProgress.unlockedSkills())+(ClientProgress.hasSkill(ArcherPlayerClass.RANGER)?RpgBalanceConfig.RANGER_MOVEMENT.get():0);stats.add("Movement Speed: "+signed(movement)+"%");stats.add("Dash Distance: "+one(RpgBalanceConfig.ARCHER_DASH_DISTANCE.get()));stats.add("Dash Cooldown: "+one(RpgBalanceConfig.ARCHER_DASH_COOLDOWN_SECONDS.get())+"s");}
+        else for(SkillBonusType type:SkillBonusType.values()){if(!playerClass.displayedBonusTypes().contains(type))continue;double bonus=playerClass.totalBonus(type,ClientProgress.unlockedSkills());if(playerClass instanceof SwordsmanPlayerClass){if(type==SkillBonusType.SWORD_DAMAGE)bonus+=SwordsmanStats.subclassSwordDamage(ClientProgress.unlockedSkills());if(type==SkillBonusType.MOVEMENT_SPEED)bonus+=SwordsmanStats.subclassMovementSpeed(ClientProgress.unlockedSkills());}stats.add(type.displayName()+": "+signed(bonus)+"%");}
+        renderStatGrid(poseStack,stats,left+10,top+47,right-10,bottom-6);
     }
+
+    private void renderStatGrid(PoseStack poseStack,java.util.List<String> stats,int left,int top,int right,int bottom){int available=Math.max(1,right-left);int columns=Math.max(1,Math.min(3,available/125));int columnWidth=available/columns;int rows=(stats.size()+columns-1)/columns;for(int i=0;i<stats.size();i++){int column=i/Math.max(1,rows),row=i%Math.max(1,rows);int y=top+row*12;if(y+9>bottom)break;RpgUi.drawFitted(poseStack,font,Component.literal(stats.get(i)),left+column*columnWidth,y,columnWidth-8,RpgUi.TEXT);}}
 
     private void renderEmptySubclassSlot(PoseStack poseStack, int number,
                                          int left, int top, int right, int bottom) {
@@ -139,8 +136,7 @@ public final class PlayerMenuScreen extends Screen {
 
     private void renderClassSubclassSlot(PoseStack poseStack,int left,int top,int right,int bottom) {
         PlayerClass current=PlayerClassRegistry.get(ClientProgress.playerClassId());
-        if (!(current instanceof SwordsmanPlayerClass swordsman)) { renderEmptySubclassSlot(poseStack,1,left,top,right,bottom); return; }
-        Skill subclass=swordsman.selectedSubclass(ClientProgress.unlockedSkills());
+        Skill subclass=current instanceof SwordsmanPlayerClass swordsman?swordsman.selectedSubclass(ClientProgress.unlockedSkills()):current instanceof ArcherPlayerClass archer?archer.selectedSubclass(ClientProgress.unlockedSkills()):null;
         if(subclass==null){renderEmptySubclassSlot(poseStack,1,left,top,right,bottom);return;}
         GuiComponent.fill(poseStack,left,top,right,bottom,0xFF1C2028);RpgUi.border(poseStack,left,top,right,bottom,RpgUi.GOLD_DARK);
         drawCenteredString(poseStack,font,Component.literal("SUBCLASS 1"),(left+right)/2,top+8,RpgUi.MUTED);
@@ -149,9 +145,14 @@ public final class PlayerMenuScreen extends Screen {
         java.util.List<String> details=new java.util.ArrayList<>();
         switch(subclass.id()){
             case SwordsmanPlayerClass.SWORDMASTER->{details.add("Dash: Available");details.add("Cooldown: "+one(RpgBalanceConfig.DASH_COOLDOWN_SECONDS.get())+"s");}
-            case SwordsmanPlayerClass.DUAL->{details.add("Dual Wield: Active");details.add("Block: "+one(ClientProgress.hasSkill(SwordsmanPlayerClass.IMPROVED_BLOCK)?RpgBalanceConfig.IMPROVED_BLOCK_PERCENT.get():RpgBalanceConfig.BLOCK_PERCENT.get())+"%");details.add("Damage/Sword: "+signed(ClientProgress.hasSkill(SwordsmanPlayerClass.DUAL_DAMAGE)?RpgBalanceConfig.DUAL_DAMAGE_UPGRADE.get():RpgBalanceConfig.DUAL_DAMAGE.get())+"%");details.add("Sword Charge Speed: "+signed(ClientProgress.hasSkill(SwordsmanPlayerClass.DUAL_SPEED)?RpgBalanceConfig.DUAL_SPEED_UPGRADE.get():RpgBalanceConfig.DUAL_ATTACK_SPEED.get())+"%");if(ClientProgress.hasSkill(SwordsmanPlayerClass.PARRY))details.add("Parry: Unlocked");}
+            case SwordsmanPlayerClass.DUAL->{details.add("Dual Wield: Active");details.add("Block: "+one(RpgBalanceConfig.BLOCK_PERCENT.get())+"% / "+one(RpgBalanceConfig.BLOCK_COOLDOWN_SECONDS.get())+"s cooldown");details.add("Damage/Sword: "+signed(ClientProgress.hasSkill(SwordsmanPlayerClass.DUAL_DAMAGE)?RpgBalanceConfig.DUAL_DAMAGE_UPGRADE.get():RpgBalanceConfig.DUAL_DAMAGE.get())+"%");details.add("Sword Charge Speed: "+signed(ClientProgress.hasSkill(SwordsmanPlayerClass.DUAL_SPEED)?RpgBalanceConfig.DUAL_SPEED_UPGRADE.get():RpgBalanceConfig.DUAL_ATTACK_SPEED.get())+"%");if(ClientProgress.hasSkill(SwordsmanPlayerClass.IMPROVED_BLOCK))details.add("Steadfast Guard: Active");if(ClientProgress.hasSkill(SwordsmanPlayerClass.PARRY))details.add("Parry: Unlocked");}
             case SwordsmanPlayerClass.HEAVY->{details.add("Sword Charge Speed: "+signed(RpgBalanceConfig.HEAVY_ATTACK_SPEED.get())+"%");details.add("Draw Delay: "+one(RpgBalanceConfig.HEAVY_DRAW_DELAY_SECONDS.get())+"s");details.add("Sword Movement: "+signed(RpgBalanceConfig.HEAVY_MOVE_PENALTY.get())+"%");if(ClientProgress.hasSkill(SwordsmanPlayerClass.HEAVY_RANGE))details.add("Range: +"+one(RpgBalanceConfig.HEAVY_RANGE.get()));if(ClientProgress.hasSkill(SwordsmanPlayerClass.LEAP_STRIKE))details.add("Leap Strike: Unlocked");}
             case SwordsmanPlayerClass.ROGUE->{details.add("Maximum Health: -"+one(RpgBalanceConfig.ROGUE_HEALTH_PENALTY.get()));details.add("Lower Mob Target Priority");if(ClientProgress.hasSkill(SwordsmanPlayerClass.BACKSTAB))details.add("Backstab: +"+one(RpgBalanceConfig.BACKSTAB_DAMAGE.get())+"%");if(ClientProgress.hasSkill(SwordsmanPlayerClass.FIRST_HIT))details.add("First Hit: +"+one(RpgBalanceConfig.FIRST_HIT_DAMAGE.get())+"%");if(ClientProgress.hasSkill(SwordsmanPlayerClass.NON_AGGRO))details.add("Non-Aggro: +"+one(RpgBalanceConfig.NON_AGGRO_DAMAGE.get())+"%");}
+            case SwordsmanPlayerClass.MAGIC->{details.add("Intrinsic Fire: "+one(RpgBalanceConfig.MAGIC_SWORD_FIRE_SECONDS.get())+"s");if(ClientProgress.hasSkill(SwordsmanPlayerClass.ELEMENTAL_VULNERABILITY))details.add("Elemental Vulnerability: +"+one(RpgBalanceConfig.ELEMENTAL_VULNERABILITY_BONUS_PERCENT.get())+"%");if(ClientProgress.hasSkill(SwordsmanPlayerClass.FIREBALL_COOLDOWN))details.add("Fireball Cooldown: "+one(RpgBalanceConfig.FIREBALL_UPGRADED_COOLDOWN_SECONDS.get())+"s");if(ClientProgress.hasSkill(SwordsmanPlayerClass.FIREBALL_CHARGE))details.add("Fireball Charge: Unlocked");if(ClientProgress.hasSkill(SwordsmanPlayerClass.FIREBALL_SPEED_I))details.add("Fireball Speed: "+one(ClientProgress.hasSkill(SwordsmanPlayerClass.FIREBALL_SPEED_II)?RpgBalanceConfig.FIREBALL_SPEED_II.get():RpgBalanceConfig.FIREBALL_SPEED_I.get())+" blocks/s");if(ClientProgress.hasSkill(SwordsmanPlayerClass.FIREBALL_DAMAGE_I))details.add("Fireball Damage: "+one(ClientProgress.hasSkill(SwordsmanPlayerClass.FIREBALL_DAMAGE_II)?RpgBalanceConfig.FIREBALL_DAMAGE_II.get():RpgBalanceConfig.FIREBALL_DAMAGE_I.get())+"%");if(ClientProgress.hasSkill(SwordsmanPlayerClass.HOMING_FIREBALL))details.add("Homing Fireball: "+one(RpgBalanceConfig.HOMING_FIREBALL_MAX_CONTROL_SECONDS.get())+"s / "+(RpgBalanceConfig.HOMING_FIREBALL_BASE_MAX_COUNT.get()+(ClientProgress.hasSkill(SwordsmanPlayerClass.ADDITIONAL_FIREBALL)?RpgBalanceConfig.HOMING_FIREBALL_ADDITIONAL_COUNT.get():0))+" max");}
+            case ArcherPlayerClass.CROSSBOWMAN->{details.add("Charge Speed: "+signed((ClientProgress.hasSkill(ArcherPlayerClass.CROSSBOW_SPEED_1)?RpgBalanceConfig.CROSSBOW_CHARGE_SPEED_I.get():0)+(ClientProgress.hasSkill(ArcherPlayerClass.CROSSBOW_SPEED_2)?RpgBalanceConfig.CROSSBOW_CHARGE_SPEED_II.get():0))+"%");details.add("Multishot: "+one(RpgBalanceConfig.MULTISHOT_DELAY_SECONDS.get())+"s / "+one(RpgBalanceConfig.MULTISHOT_COOLDOWN_SECONDS.get())+"s cooldown");}
+            case ArcherPlayerClass.LONGBOWMAN->{details.add("Bow Draw Time: +"+one(-RpgBalanceConfig.LONGBOWMAN_CHARGE_SPEED.get())+"%");details.add("Movement While Drawing: "+signed(ClientProgress.hasSkill(ArcherPlayerClass.FULLY_CHARGED_MOBILITY)?RpgBalanceConfig.FULLY_CHARGED_IMPROVED_MOVEMENT_PENALTY.get():RpgBalanceConfig.LONGBOWMAN_DRAW_MOVEMENT.get())+"%");if(ClientProgress.hasSkill(ArcherPlayerClass.FULLY_CHARGED_MOBILITY))details.add("Draw Mobility Upgrade: Active");}
+            case ArcherPlayerClass.ELEMENTAL_ARCHER->{if(ClientProgress.hasSkill(ArcherPlayerClass.FIRE))details.add("Fire Arrows: "+one(ClientProgress.hasSkill(ArcherPlayerClass.FIRE_DURATION)?RpgBalanceConfig.FIRE_UPGRADED_SECONDS.get():RpgBalanceConfig.FIRE_PASSIVE_SECONDS.get())+"s");if(ClientProgress.hasSkill(ArcherPlayerClass.ICE))details.add("Ice Arrows: Slowness "+(ClientProgress.hasSkill(ArcherPlayerClass.ICE_POTENCY)?RpgBalanceConfig.ICE_UPGRADED_LEVEL.get():RpgBalanceConfig.ICE_PASSIVE_LEVEL.get()));}
+            case ArcherPlayerClass.RANGER->{details.add("Movement Speed: +"+one(RpgBalanceConfig.RANGER_MOVEMENT.get())+"%");details.add("Backstep: "+one(ClientProgress.hasSkill(ArcherPlayerClass.BACKSTEP_RANGE)?RpgBalanceConfig.BACKSTEP_UPGRADED_DISTANCE.get():RpgBalanceConfig.BACKSTEP_DISTANCE.get())+" blocks");if(ClientProgress.hasSkill(ArcherPlayerClass.NATURES_ROOTS))details.add("Nature's Roots: "+one(RpgBalanceConfig.ROOTS_CHANNEL_SECONDS.get())+"s / "+one(RpgBalanceConfig.ROOTS_COOLDOWN_SECONDS.get())+"s cooldown");}
         }
         for(String detail:details){if(y>bottom-10)break;drawString(poseStack,font,Component.literal(detail),left+5,y,RpgUi.TEXT);y+=11;}
     }
@@ -161,9 +162,9 @@ public final class PlayerMenuScreen extends Screen {
         java.util.List<AlternateAttackDefinition> unlocked=AlternateAttackDefinition.ALL.stream().filter(a->ClientProgress.hasSkill(a.skillId())).toList();
         if(unlocked.isEmpty()){drawCenteredString(poseStack,font,Component.literal("Unlock an alternate attack to get started!"),(left+right)/2,top+14,RpgUi.MUTED);return;}
         AlternateAttackDefinition active=AlternateAttackDefinition.find(ClientProgress.selectedAlternateAttack());
-        drawString(poseStack,font,Component.literal("Active Alternate Attack"),left+8,top+7,RpgUi.MUTED);
-        drawString(poseStack,font,Component.literal(active==null?"Click to select":active.displayName()),left+8,top+20,RpgUi.GOLD);
-        drawString(poseStack,font,Component.literal("Click to cycle unlocked attacks"),left+8,top+31,RpgUi.MUTED);
+        RpgUi.drawFitted(poseStack,font,Component.literal("Active Alternate Attack"),left+8,top+7,right-left-16,RpgUi.MUTED);
+        RpgUi.drawFitted(poseStack,font,Component.literal(active==null?"Click to select":active.displayName()),left+8,top+20,right-left-16,RpgUi.GOLD);
+        RpgUi.drawFitted(poseStack,font,Component.literal(active==null?"Click to cycle unlocked attacks":active.description()),left+8,top+31,right-left-16,RpgUi.MUTED);
     }
 
     private void renderGeneralSubclassSlot(PoseStack poseStack, int left, int top, int right, int bottom) {
@@ -201,6 +202,8 @@ public final class PlayerMenuScreen extends Screen {
 
     private static String one(double value){return String.format(java.util.Locale.ROOT,"%.1f",value);}
     private static String signed(double value){return (value>=0?"+":"")+one(value);}
+    private static double archerBowDamage(){double v=RpgBalanceConfig.ARCHER_BOW_DAMAGE.get();if(ClientProgress.hasSkill(ArcherPlayerClass.BOW_DAMAGE_1))v+=RpgBalanceConfig.BOW_DAMAGE_I.get();if(ClientProgress.hasSkill(ArcherPlayerClass.ELEMENTAL_DAMAGE_1))v+=RpgBalanceConfig.ELEMENTAL_RANGED_DAMAGE_I.get();if(ClientProgress.hasSkill(ArcherPlayerClass.ELEMENTAL_DAMAGE_2))v+=RpgBalanceConfig.ELEMENTAL_RANGED_DAMAGE_II.get();if(ClientProgress.hasSkill(ArcherPlayerClass.RANGER_DAMAGE))v+=RpgBalanceConfig.RANGER_RANGED_DAMAGE.get();if(ClientProgress.hasSkill(ArcherPlayerClass.LONGBOWMAN))v+=RpgBalanceConfig.LONGBOWMAN_DAMAGE.get();if(ClientProgress.hasSkill(ArcherPlayerClass.LONGBOW_DAMAGE))v+=RpgBalanceConfig.LONGBOW_DAMAGE_UPGRADE.get();return v;}
+    private static double archerCrossbowDamage(){double v=RpgBalanceConfig.ARCHER_CROSSBOW_DAMAGE.get();if(ClientProgress.hasSkill(ArcherPlayerClass.CROSSBOW_DAMAGE_1))v+=RpgBalanceConfig.CROSSBOW_DAMAGE_I.get();if(ClientProgress.hasSkill(ArcherPlayerClass.ELEMENTAL_DAMAGE_1))v+=RpgBalanceConfig.ELEMENTAL_RANGED_DAMAGE_I.get();if(ClientProgress.hasSkill(ArcherPlayerClass.ELEMENTAL_DAMAGE_2))v+=RpgBalanceConfig.ELEMENTAL_RANGED_DAMAGE_II.get();if(ClientProgress.hasSkill(ArcherPlayerClass.RANGER_DAMAGE))v+=RpgBalanceConfig.RANGER_RANGED_DAMAGE.get();if(ClientProgress.hasSkill(ArcherPlayerClass.CROSSBOWMAN))v+=RpgBalanceConfig.CROSSBOWMAN_DAMAGE.get();if(ClientProgress.hasSkill(ArcherPlayerClass.CROSSBOW_DAMAGE_2))v+=RpgBalanceConfig.CROSSBOW_DAMAGE_II.get();return v;}
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {

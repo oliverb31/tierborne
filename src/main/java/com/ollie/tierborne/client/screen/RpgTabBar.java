@@ -20,8 +20,8 @@ final class RpgTabBar {
             GuiComponent.fill(poseStack, x, top, x + tab.width, top + 20, background);
             RpgUi.border(poseStack, x, top, x + tab.width, top + 20,
                     tab == active ? RpgUi.GOLD : RpgUi.LOCKED);
-            GuiComponent.drawCenteredString(poseStack, font, Component.literal(tab.label),
-                    x + tab.width / 2, top + 6, tab == active ? RpgUi.GOLD : RpgUi.TEXT);
+            RpgUi.drawCenteredFitted(poseStack, font, Component.literal(tab.label),
+                    x + tab.width / 2, top + 6, tab.width - 8, tab == active ? RpgUi.GOLD : RpgUi.TEXT);
             x += tab.width + GAP;
         }
     }

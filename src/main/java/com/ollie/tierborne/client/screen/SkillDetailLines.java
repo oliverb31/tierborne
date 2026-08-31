@@ -8,15 +8,48 @@ final class SkillDetailLines {
     private SkillDetailLines() {}
     static List<String> forSkill(Skill skill, SkillTreeDefinition tree, Set<String> unlocked) {
         List<String> lines=new ArrayList<>();
-        if(skill.upgrade()!=null){int current=tree.totalBonus(skill.upgrade().type(),unlocked);lines.add(skill.upgrade().type().displayName()+": "+signed(skill.upgrade().percentagePoints())+"%");lines.add("Current: "+signed(current)+"%  After: "+signed(current+skill.upgrade().percentagePoints())+"%");}
+        if(skill.upgrade()!=null&&!(tree instanceof ArcherPlayerClass)){int current=tree.totalBonus(skill.upgrade().type(),unlocked);lines.add(skill.upgrade().type().displayName()+": "+signed(skill.upgrade().percentagePoints())+"%");lines.add("Current: "+signed(current)+"%  After: "+signed(current+skill.upgrade().percentagePoints())+"%");}
         switch(skill.id()){
+            case ArcherPlayerClass.ROOT->{lines.add("Bow Damage: +"+n(RpgBalanceConfig.ARCHER_BOW_DAMAGE.get())+"%  Crossbow Damage: +"+n(RpgBalanceConfig.ARCHER_CROSSBOW_DAMAGE.get())+"%");lines.add("Ability: Dash");lines.add("Dash Distance: "+n(RpgBalanceConfig.ARCHER_DASH_DISTANCE.get())+" blocks  Cooldown: "+n(RpgBalanceConfig.ARCHER_DASH_COOLDOWN_SECONDS.get())+"s");}
+            case ArcherPlayerClass.CROSSBOW_DAMAGE_1->lines.add("Crossbow Damage: +"+n(RpgBalanceConfig.CROSSBOW_DAMAGE_I.get())+"%");
+            case ArcherPlayerClass.BOW_DAMAGE_1->lines.add("Bow Damage: +"+n(RpgBalanceConfig.BOW_DAMAGE_I.get())+"%");
+            case ArcherPlayerClass.ELEMENTAL_DAMAGE_1->lines.add("Bow and Crossbow Damage: +"+n(RpgBalanceConfig.ELEMENTAL_RANGED_DAMAGE_I.get())+"%");
+            case ArcherPlayerClass.ELEMENTAL_DAMAGE_2->lines.add("Bow and Crossbow Damage: +"+n(RpgBalanceConfig.ELEMENTAL_RANGED_DAMAGE_II.get())+"%");
+            case ArcherPlayerClass.RANGER_DAMAGE->lines.add("Bow and Crossbow Damage: +"+n(RpgBalanceConfig.RANGER_RANGED_DAMAGE.get())+"%");
+            case ArcherPlayerClass.RANGER_MOVEMENT->lines.add("Movement Speed: +"+n(RpgBalanceConfig.RANGER_PRE_MOVEMENT.get())+"%");
+            case ArcherPlayerClass.CROSSBOW_SPEED_1->lines.add("Crossbow Charge Speed: +"+n(RpgBalanceConfig.CROSSBOW_CHARGE_SPEED_I.get())+"%");
+            case ArcherPlayerClass.MULTISHOT->{lines.add("Second Shot Delay: "+n(RpgBalanceConfig.MULTISHOT_DELAY_SECONDS.get())+"s");lines.add("Cooldown after active: "+n(RpgBalanceConfig.MULTISHOT_COOLDOWN_SECONDS.get())+"s");}
+            case ArcherPlayerClass.CROSSBOWMAN->lines.add("Crossbow Damage: +"+n(RpgBalanceConfig.CROSSBOWMAN_DAMAGE.get())+"%");
+            case ArcherPlayerClass.CROSSBOW_DAMAGE_2->lines.add("Crossbow Damage: +"+n(RpgBalanceConfig.CROSSBOW_DAMAGE_II.get())+"%");
+            case ArcherPlayerClass.CROSSBOW_SPEED_2->lines.add("Crossbow Charge Speed: +"+n(RpgBalanceConfig.CROSSBOW_CHARGE_SPEED_II.get())+"%");
+            case ArcherPlayerClass.BOW_HANDLING->lines.add("Bow Charge Speed: +"+n(RpgBalanceConfig.BOW_HANDLING_SPEED.get())+"%");
+            case ArcherPlayerClass.FULLY_CHARGED->{lines.add("Activation Window: "+n(RpgBalanceConfig.FULLY_CHARGED_READY_WINDOW_SECONDS.get())+"s");lines.add("Empowered Draw Time: "+n(RpgBalanceConfig.FULLY_CHARGED_DRAW_TIME_MULTIPLIER.get())+"x current normal draw");lines.add("Maximum Damage: "+n(RpgBalanceConfig.FULLY_CHARGED_MAX_MULTIPLIER.get())+"x equivalent normal arrow");lines.add("Movement: "+n(RpgBalanceConfig.FULLY_CHARGED_MOVEMENT_PENALTY.get())+"%  Cooldown: "+n(RpgBalanceConfig.FULLY_CHARGED_COOLDOWN_SECONDS.get())+"s");}
+            case ArcherPlayerClass.LONGBOWMAN->{lines.add("Bow Damage: +"+n(RpgBalanceConfig.LONGBOWMAN_DAMAGE.get())+"%");lines.add("Normal Bow Draw Time: +"+n(-RpgBalanceConfig.LONGBOWMAN_CHARGE_SPEED.get())+"%");lines.add("Movement While Drawing: "+n(RpgBalanceConfig.LONGBOWMAN_DRAW_MOVEMENT.get())+"%");}
+            case ArcherPlayerClass.LONGBOW_DAMAGE->lines.add("Bow Damage: +"+n(RpgBalanceConfig.LONGBOW_DAMAGE_UPGRADE.get())+"%");
+            case ArcherPlayerClass.FULLY_CHARGED_MOBILITY->lines.add("Fully Charged Movement: "+n(RpgBalanceConfig.FULLY_CHARGED_MOVEMENT_PENALTY.get())+"% -> "+n(RpgBalanceConfig.FULLY_CHARGED_IMPROVED_MOVEMENT_PENALTY.get())+"%");
+            case ArcherPlayerClass.ELEMENTAL_SHOT->{lines.add("Damage: 100% max-charge equivalent  Fire: "+n(RpgBalanceConfig.ELEMENTAL_SHOT_FIRE_SECONDS.get())+"s");lines.add("Ice: Slowness "+RpgBalanceConfig.ELEMENTAL_SHOT_SLOW_LEVEL.get()+" for "+n(RpgBalanceConfig.ELEMENTAL_SHOT_SLOW_SECONDS.get())+"s  Cooldown: "+n(RpgBalanceConfig.ELEMENTAL_SHOT_COOLDOWN_SECONDS.get())+"s");}
+            case ArcherPlayerClass.ELEMENTAL_ARCHER->lines.add("Unlocks one free, permanent Fire or Ice specialisation.");
+            case ArcherPlayerClass.FIRE->lines.add("Normal arrows ignite for "+n(RpgBalanceConfig.FIRE_PASSIVE_SECONDS.get())+"s");
+            case ArcherPlayerClass.FIRE_DURATION->lines.add("Burn Duration: "+n(RpgBalanceConfig.FIRE_PASSIVE_SECONDS.get())+"s -> "+n(RpgBalanceConfig.FIRE_UPGRADED_SECONDS.get())+"s");
+            case ArcherPlayerClass.FIRE_DAMAGE->lines.add("Fire Arrow Damage: +"+n(RpgBalanceConfig.FIRE_BONUS_DAMAGE.get())+"%");
+            case ArcherPlayerClass.ICE->lines.add("Normal arrows: Slowness "+RpgBalanceConfig.ICE_PASSIVE_LEVEL.get()+" for "+n(RpgBalanceConfig.ICE_PASSIVE_SECONDS.get())+"s");
+            case ArcherPlayerClass.ICE_POTENCY->lines.add("Slowness: "+RpgBalanceConfig.ICE_PASSIVE_LEVEL.get()+" -> "+RpgBalanceConfig.ICE_UPGRADED_LEVEL.get());
+            case ArcherPlayerClass.ICE_DURATION->lines.add("Ice Duration: "+n(RpgBalanceConfig.ICE_PASSIVE_SECONDS.get())+"s -> "+n(RpgBalanceConfig.ICE_UPGRADED_SECONDS.get())+"s");
+            case ArcherPlayerClass.RANGER->lines.add("Movement Speed: +"+n(RpgBalanceConfig.RANGER_MOVEMENT.get())+"%");
+            case ArcherPlayerClass.BACKSTEP->{lines.add("Distance: "+n(RpgBalanceConfig.BACKSTEP_DISTANCE.get())+" blocks");lines.add("Cooldown: "+n(RpgBalanceConfig.BACKSTEP_COOLDOWN_SECONDS.get())+"s");}
+            case ArcherPlayerClass.BACKSTEP_DOUBLE->lines.add("Recast Window: "+n(RpgBalanceConfig.BACKSTEP_RECAST_SECONDS.get())+"s");
+            case ArcherPlayerClass.BACKSTEP_DIRECTIONAL->lines.add("Dash Direction: Current movement input");
+            case ArcherPlayerClass.BACKSTEP_RANGE->lines.add("Backstep Distance: "+n(RpgBalanceConfig.BACKSTEP_DISTANCE.get())+" -> "+n(RpgBalanceConfig.BACKSTEP_UPGRADED_DISTANCE.get())+" blocks");
+            case ArcherPlayerClass.NATURES_ROOTS->{lines.add("Max Channel: "+n(RpgBalanceConfig.ROOTS_CHANNEL_SECONDS.get())+"s  Target Extra Root: "+n(RpgBalanceConfig.ROOTS_TAIL_SECONDS.get())+"s");lines.add("Range: "+n(RpgBalanceConfig.ROOTS_RANGE.get())+" blocks  Cooldown: "+n(RpgBalanceConfig.ROOTS_COOLDOWN_SECONDS.get())+"s");}
             case SwordsmanPlayerClass.DASH_STRIKE->{lines.add("Damage: +"+n(RpgBalanceConfig.DASH_STRIKE_DAMAGE.get())+"%");lines.add("Cooldown: "+n(RpgBalanceConfig.DASH_STRIKE_COOLDOWN_SECONDS.get())+"s  Distance: "+n(RpgBalanceConfig.DASH_STRIKE_DISTANCE.get())+" blocks");}
+            case SwordsmanPlayerClass.DASH_DISTANCE->lines.add("Dash Distance: "+n(RpgBalanceConfig.DASH_STRIKE_DISTANCE.get())+" -> "+n(RpgBalanceConfig.DASH_STRIKE_UPGRADED_DISTANCE.get())+" blocks");
+            case SwordsmanPlayerClass.DASH_COOLDOWN->lines.add("Dash Strike Cooldown: "+n(RpgBalanceConfig.DASH_STRIKE_COOLDOWN_SECONDS.get())+"s -> "+n(RpgBalanceConfig.DASH_STRIKE_UPGRADED_COOLDOWN_SECONDS.get())+"s");
             case SwordsmanPlayerClass.MULTISLASH->{lines.add("Attacks: 2 with one sword; 4 with two swords");lines.add("Duration: "+n(RpgBalanceConfig.MULTISLASH_DURATION_SECONDS.get())+"s  Cooldown: "+n(RpgBalanceConfig.MULTISLASH_COOLDOWN_SECONDS.get())+"s");}
             case SwordsmanPlayerClass.HEAVY_ATTACK->{lines.add("Damage: +"+n(RpgBalanceConfig.HEAVY_ATTACK_DAMAGE.get())+"%");lines.add("Cooldown / attack lockout: "+n(RpgBalanceConfig.HEAVY_ATTACK_COOLDOWN_SECONDS.get())+"s");}
             case SwordsmanPlayerClass.CLOAK->{lines.add("Duration: "+n(RpgBalanceConfig.CLOAK_DURATION_SECONDS.get())+"s  Cooldown: "+n(RpgBalanceConfig.CLOAK_COOLDOWN_SECONDS.get())+"s");lines.add("Breaks on attack; drops mob aggro");}
             case SwordsmanPlayerClass.LEAP_STRIKE->{lines.add("Cooldown: "+n(RpgBalanceConfig.LEAP_COOLDOWN_SECONDS.get())+"s  Radius: "+n(RpgBalanceConfig.LEAP_RADIUS.get()));lines.add("Launch: "+n(RpgBalanceConfig.LEAP_LAUNCH.get())+"  Knockback: "+n(RpgBalanceConfig.LEAP_KNOCKBACK.get()));}
             case SwordsmanPlayerClass.SWORDMASTER->{lines.add("Sword Damage: +"+n(RpgBalanceConfig.SWORDMASTER_DAMAGE.get())+"%  Movement: +"+n(RpgBalanceConfig.SWORDMASTER_SPEED.get())+"%");lines.add("Dash cooldown: "+n(RpgBalanceConfig.DASH_COOLDOWN_SECONDS.get())+"s  Velocity: "+n(RpgBalanceConfig.DASH_VELOCITY.get()));}
-            case SwordsmanPlayerClass.DUAL->{lines.add("Dual Wield: Unlocked  Damage/Sword: "+n(RpgBalanceConfig.DUAL_DAMAGE.get())+"%");lines.add("Block: "+n(RpgBalanceConfig.BLOCK_PERCENT.get())+"%");}
+            case SwordsmanPlayerClass.DUAL->{lines.add("Dual Wield: Unlocked  Damage/Sword: "+n(RpgBalanceConfig.DUAL_DAMAGE.get())+"%");lines.add("Block: "+n(RpgBalanceConfig.BLOCK_PERCENT.get())+"%  Cooldown: "+n(RpgBalanceConfig.BLOCK_COOLDOWN_SECONDS.get())+"s");}
             case SwordsmanPlayerClass.HEAVY->{lines.add("Sword Damage: +"+n(RpgBalanceConfig.HEAVY_DAMAGE.get())+"%  Sword Charge Speed: "+n(RpgBalanceConfig.HEAVY_ATTACK_SPEED.get())+"%");lines.add("Sword Movement: "+n(RpgBalanceConfig.HEAVY_MOVE_PENALTY.get())+"%  Draw: "+n(RpgBalanceConfig.HEAVY_DRAW_DELAY_SECONDS.get())+"s");}
             case SwordsmanPlayerClass.ROGUE->{lines.add("Maximum Health: -"+n(RpgBalanceConfig.ROGUE_HEALTH_PENALTY.get())+"  Movement: +"+n(RpgBalanceConfig.ROGUE_SPEED.get())+"%");lines.add("Alternative target radius: "+n(RpgBalanceConfig.ROGUE_RETARGET_RADIUS.get())+" blocks");}
             case SwordsmanPlayerClass.SM_DAMAGE->lines.add("Sword Damage Contribution: +"+n(RpgBalanceConfig.SWORDMASTER_UPGRADE_DAMAGE.get())+"%");
@@ -26,7 +59,18 @@ final class SkillDetailLines {
             case SwordsmanPlayerClass.DUAL_SPEED->lines.add("Sword Charge Speed: +"+n(RpgBalanceConfig.DUAL_SPEED_UPGRADE.get())+"%");
             case SwordsmanPlayerClass.DUAL_DAMAGE->lines.add("Damage Per Sword: "+n(RpgBalanceConfig.DUAL_DAMAGE_UPGRADE.get())+"%");
             case SwordsmanPlayerClass.PARRY->lines.add("Counterattacks: 2  Cooldown: "+n(RpgBalanceConfig.PARRY_COOLDOWN_SECONDS.get())+"s");
-            case SwordsmanPlayerClass.IMPROVED_BLOCK->lines.add("Block: "+n(RpgBalanceConfig.BLOCK_PERCENT.get())+"% -> "+n(RpgBalanceConfig.IMPROVED_BLOCK_PERCENT.get())+"%");
+            case SwordsmanPlayerClass.IMPROVED_BLOCK->lines.add("Knockback while blocking: Prevented");
+            case SwordsmanPlayerClass.FIREBALL->{lines.add("Cast: "+n(RpgBalanceConfig.FIREBALL_CAST_SECONDS.get())+"s  Cooldown: "+n(RpgBalanceConfig.FIREBALL_COOLDOWN_SECONDS.get())+"s");lines.add("Sword Damage: "+n(RpgBalanceConfig.FIREBALL_DAMAGE_PERCENT.get())+"%  Ignition: "+n(RpgBalanceConfig.FIREBALL_IGNITION_SECONDS.get())+"s");}
+            case SwordsmanPlayerClass.MAGIC->lines.add("Intrinsic Sword Fire: "+n(RpgBalanceConfig.MAGIC_SWORD_FIRE_SECONDS.get())+"s");
+            case SwordsmanPlayerClass.ELEMENTAL_VULNERABILITY->lines.add("Elemental Damage: +"+n(RpgBalanceConfig.ELEMENTAL_VULNERABILITY_BONUS_PERCENT.get())+"% for "+n(RpgBalanceConfig.ELEMENTAL_VULNERABILITY_SECONDS.get())+"s");
+            case SwordsmanPlayerClass.FIREBALL_COOLDOWN->lines.add("Fireball Cooldown: "+n(RpgBalanceConfig.FIREBALL_COOLDOWN_SECONDS.get())+"s -> "+n(RpgBalanceConfig.FIREBALL_UPGRADED_COOLDOWN_SECONDS.get())+"s");
+            case SwordsmanPlayerClass.FIREBALL_CHARGE->lines.add("Charge: "+n(RpgBalanceConfig.FIREBALL_MAX_CHARGE_SECONDS.get())+"s  Damage: "+n(RpgBalanceConfig.FIREBALL_MIN_DAMAGE_PERCENT.get())+"-"+n(RpgBalanceConfig.FIREBALL_MAX_DAMAGE_PERCENT.get())+"%");
+            case SwordsmanPlayerClass.HOMING_FIREBALL->{lines.add("Control: "+n(RpgBalanceConfig.HOMING_FIREBALL_MAX_CONTROL_SECONDS.get())+"s  Speed: "+n(RpgBalanceConfig.HOMING_FIREBALL_SPEED_MULTIPLIER.get()*100)+"% normal");lines.add("Left-click Push: "+n(RpgBalanceConfig.HOMING_FIREBALL_PUSH_STRENGTH.get())+"  Right-click Pull: "+n(RpgBalanceConfig.HOMING_FIREBALL_PULL_STRENGTH.get()));}
+            case SwordsmanPlayerClass.FIREBALL_SPEED_I->lines.add("Fireball Speed: "+n(RpgBalanceConfig.FIREBALL_BASE_SPEED.get())+" -> "+n(RpgBalanceConfig.FIREBALL_SPEED_I.get())+" blocks/s");
+            case SwordsmanPlayerClass.FIREBALL_SPEED_II->lines.add("Fireball Speed: "+n(RpgBalanceConfig.FIREBALL_SPEED_I.get())+" -> "+n(RpgBalanceConfig.FIREBALL_SPEED_II.get())+" blocks/s");
+            case SwordsmanPlayerClass.FIREBALL_DAMAGE_I->lines.add("Fireball Damage: "+n(RpgBalanceConfig.FIREBALL_DAMAGE_PERCENT.get())+"% -> "+n(RpgBalanceConfig.FIREBALL_DAMAGE_I.get())+"% base");
+            case SwordsmanPlayerClass.FIREBALL_DAMAGE_II->lines.add("Fireball Damage: "+n(RpgBalanceConfig.FIREBALL_DAMAGE_I.get())+"% -> "+n(RpgBalanceConfig.FIREBALL_DAMAGE_II.get())+"% base");
+            case SwordsmanPlayerClass.ADDITIONAL_FIREBALL->lines.add("Maximum Fireballs: "+RpgBalanceConfig.HOMING_FIREBALL_BASE_MAX_COUNT.get()+" -> "+(RpgBalanceConfig.HOMING_FIREBALL_BASE_MAX_COUNT.get()+RpgBalanceConfig.HOMING_FIREBALL_ADDITIONAL_COUNT.get()));
             case SwordsmanPlayerClass.HEAVY_DAMAGE->lines.add("Sword Damage Contribution: +"+n(RpgBalanceConfig.HEAVY_UPGRADE_DAMAGE.get())+"%");
             case SwordsmanPlayerClass.HEAVY_RANGE->lines.add("Melee Range: +"+n(RpgBalanceConfig.HEAVY_RANGE.get())+" blocks");
             case SwordsmanPlayerClass.HEAVY_RECOVERY->lines.add("Normal Attack Lockout: Removed");

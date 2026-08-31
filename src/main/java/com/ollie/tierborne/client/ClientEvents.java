@@ -6,6 +6,7 @@ import com.mojang.math.Vector3f;
 import com.ollie.tierborne.Tierborne;
 import com.ollie.tierborne.client.screen.SkillTreeScreen;
 import com.ollie.tierborne.client.screen.PlayerMenuScreen;
+import com.ollie.tierborne.client.screen.RpgUi;
 import com.ollie.tierborne.playerclass.SkillBonusType;
 import com.ollie.tierborne.playerclass.GeneralSkillRules;
 import com.ollie.tierborne.network.ModNetwork;
@@ -15,10 +16,19 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import com.ollie.tierborne.playerclass.SwordsmanPlayerClass;
 import com.ollie.tierborne.config.RpgBalanceConfig;
 import net.minecraft.tags.BlockTags;
@@ -40,7 +50,9 @@ import org.lwjgl.glfw.GLFW;
 @Mod.EventBusSubscriber(modid = Tierborne.MOD_ID, value = Dist.CLIENT)
 public final class ClientEvents {
     private static boolean utilityHeld;
+    private static boolean alternateHeld;
     private static boolean offhandUseHeld;
+    private static boolean homingFollowerHeld;
     private static final int COOLDOWN_BAR_WIDTH=92;
     private static final int COOLDOWN_ENTRY_HEIGHT=34;
     private static final int COOLDOWN_ENTRY_GAP=5;
@@ -86,8 +98,10 @@ public final class ClientEvents {
         if (event.phase != TickEvent.Phase.END) return;
         ClientProgress.tryOpenSelectionScreen();
         Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player == null || minecraft.screen != null) {offhandUseHeld=false;return;}
-        while (ALTERNATE_ATTACK.consumeClick()) ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(AbilityAction.ALTERNATE_ATTACK));
+        if (minecraft.player == null) {offhandUseHeld=false;alternateHeld=false;homingFollowerHeld=false;return;}
+        if(minecraft.screen!=null){if(alternateHeld){alternateHeld=false;ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(AbilityAction.ALTERNATE_RELEASE));}offhandUseHeld=false;homingFollowerHeld=false;return;}
+        boolean alternateDown=ALTERNATE_ATTACK.isDown();
+        if(alternateDown!=alternateHeld){alternateHeld=alternateDown;ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(alternateDown?AbilityAction.ALTERNATE_ATTACK:AbilityAction.ALTERNATE_RELEASE));}
         boolean down = SUBCLASS_UTILITY.isDown();
         if (down != utilityHeld) {
             utilityHeld = down;
@@ -99,11 +113,21 @@ public final class ClientEvents {
         boolean useDown=minecraft.options.keyUse.isDown();
         if(dualWielding&&useDown&&!offhandUseHeld)ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(AbilityAction.OFFHAND_ATTACK));
         offhandUseHeld=useDown;
+        if(ClientAbilityState.isHoming()){
+            boolean followerDown=minecraft.options.keyPickItem.isDown();
+            if(followerDown&&!homingFollowerHeld)ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(AbilityAction.HOMING_ADD_FOLLOWER));
+            homingFollowerHeld=followerDown;
+        }else homingFollowerHeld=false;
     }
 
     @SubscribeEvent
     public static void onInteractionKey(InputEvent.InteractionKeyMappingTriggered event) {
         Minecraft minecraft=Minecraft.getInstance();
+        if(minecraft.player!=null&&ClientAbilityState.isHoming()&&(event.isAttack()||event.isUseItem())){
+            AbilityAction action=event.isAttack()?AbilityAction.HOMING_PUSH:AbilityAction.HOMING_PULL;
+            ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(action));
+            event.setSwingHand(false);event.setCanceled(true);return;
+        }
         if(event.isAttack()&&minecraft.player!=null&&minecraft.player.getMainHandItem().getItem() instanceof SwordItem
                 &&ClientAbilityState.blocksNormalAttack()){event.setSwingHand(false);event.setCanceled(true);return;}
         if(!event.isUseItem()||minecraft.player==null||!ClientProgress.hasSkill(SwordsmanPlayerClass.DUAL)
@@ -118,17 +142,59 @@ public final class ClientEvents {
         if(event.getOverlay()!=VanillaGuiOverlay.HOTBAR.type())return;
         Minecraft minecraft=Minecraft.getInstance();
         if(minecraft.player==null||minecraft.options.hideGui)return;
+        renderTargetHealth(event,minecraft);
         java.util.List<com.ollie.tierborne.combat.AbilityStatus> statuses=ClientAbilityState.statuses();
         int width=COOLDOWN_BAR_WIDTH,x=event.getWindow().getGuiScaledWidth()-width-8;
         int y=event.getWindow().getGuiScaledHeight()-58-statuses.size()*(COOLDOWN_ENTRY_HEIGHT+COOLDOWN_ENTRY_GAP);
         for(com.ollie.tierborne.combat.AbilityStatus status:statuses){
-            String title=status.active()?status.name()+" - ACTIVE":status.name();
+            String title=status.name()+" - "+status.stateLabel();
             minecraft.font.drawShadow(event.getPoseStack(),title,x+(width-minecraft.font.width(title))/2.0F,y,0xFFE9E2D0);
             int barY=y+13;GuiComponent.fill(event.getPoseStack(),x,barY,x+width,barY+7,0xFF71572D);GuiComponent.fill(event.getPoseStack(),x+1,barY+1,x+width-1,barY+6,0xD0101218);
             int fill=(int)Math.round((width-2)*Math.min(1.0,status.remainingTicks()/(double)Math.max(1,status.totalTicks())));
             GuiComponent.fill(event.getPoseStack(),x+1,barY+1,x+1+fill,barY+6,status.active()?0xFF4EA56B:0xFFD7AD55);
-            String timer=String.format(java.util.Locale.ROOT,"%.1fs",status.remainingTicks()/20.0);minecraft.font.drawShadow(event.getPoseStack(),timer,x+(width-minecraft.font.width(timer))/2.0F,barY+10,0xFF9B968A);y+=COOLDOWN_ENTRY_HEIGHT+COOLDOWN_ENTRY_GAP;
+            String timer=status.stateLabel().equals("CHARGING")?Math.round(100.0*status.remainingTicks()/Math.max(1,status.totalTicks()))+"%":String.format(java.util.Locale.ROOT,"%.1fs",status.remainingTicks()/20.0);minecraft.font.drawShadow(event.getPoseStack(),timer,x+(width-minecraft.font.width(timer))/2.0F,barY+10,0xFF9B968A);y+=COOLDOWN_ENTRY_HEIGHT+COOLDOWN_ENTRY_GAP;
         }
+    }
+
+    private static void renderTargetHealth(RenderGuiOverlayEvent.Post event,Minecraft minecraft){
+        if(minecraft.screen!=null)return;
+        LivingEntity target=crosshairTarget(minecraft,8.0);
+        if(target==null||!target.isAlive())return;
+        int centerX=event.getWindow().getGuiScaledWidth()/2;
+        int width=Math.min(190,Math.max(120,event.getWindow().getGuiScaledWidth()-32));
+        int left=centerX-width/2;
+        int top=40;
+        int right=left+width;
+        RpgUi.panel(event.getPoseStack(),left-5,top-5,right+5,top+35);
+        GuiComponent.fill(event.getPoseStack(),left,top+12,right,top+22,RpgUi.GOLD_DARK);
+        GuiComponent.fill(event.getPoseStack(),left+1,top+13,right-1,top+21,0xFF35191C);
+        float ratio=Mth.clamp(target.getHealth()/Math.max(0.001F,target.getMaxHealth()),0.0F,1.0F);
+        int fillRight=left+1+Math.round((width-2)*ratio);
+        GuiComponent.fill(event.getPoseStack(),left+1,top+13,fillRight,top+21,0xFF9E343C);
+        if(ratio>0.55F)GuiComponent.fill(event.getPoseStack(),left+1,top+13,fillRight,top+14,0xFFD15A57);
+        GuiComponent.drawCenteredString(event.getPoseStack(),minecraft.font,target.getDisplayName(),centerX,top,RpgUi.TEXT);
+        String health=formatHealth(target.getHealth())+" / "+formatHealth(target.getMaxHealth());
+        GuiComponent.drawCenteredString(event.getPoseStack(),minecraft.font,Component.literal(health),centerX,top+25,RpgUi.GOLD);
+    }
+
+    private static LivingEntity crosshairTarget(Minecraft minecraft,double range){
+        Entity camera=minecraft.getCameraEntity();
+        if(camera==null||minecraft.level==null)return null;
+        Vec3 start=camera.getEyePosition(1.0F);
+        Vec3 end=start.add(camera.getViewVector(1.0F).scale(range));
+        HitResult blockHit=minecraft.level.clip(new ClipContext(start,end,ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,camera));
+        if(blockHit.getType()!=HitResult.Type.MISS)end=blockHit.getLocation();
+        Vec3 ray=end.subtract(start);
+        AABB search=camera.getBoundingBox().expandTowards(ray).inflate(1.0);
+        EntityHitResult hit=ProjectileUtil.getEntityHitResult(camera,start,end,search,
+                entity->entity instanceof LivingEntity living&&living.isAlive()&&!entity.isSpectator()&&entity.isPickable(),ray.lengthSqr());
+        return hit!=null&&hit.getEntity() instanceof LivingEntity living?living:null;
+    }
+
+    private static String formatHealth(float value){
+        float rounded=Math.round(value);
+        if(Math.abs(value-rounded)<0.05F)return Integer.toString((int)rounded);
+        return String.format(java.util.Locale.ROOT,"%.1f",value);
     }
 
     @SubscribeEvent
@@ -163,8 +229,8 @@ public final class ClientEvents {
     public static void onRenderCloakedPlayer(RenderPlayerEvent.Pre event) {
         if(ClientCloakState.isCloaked(event.getEntity().getId())){event.setCanceled(true);return;}
         if(ClientBlockState.isBlocking(event.getEntity().getId())){
-            event.getRenderer().getModel().rightArmPose=HumanoidModel.ArmPose.BLOCK;
-            event.getRenderer().getModel().leftArmPose=HumanoidModel.ArmPose.BLOCK;
+            event.getRenderer().getModel().rightArmPose=event.getEntity().getItemBySlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND).getItem() instanceof SwordItem&&event.getEntity().getMainArm()==net.minecraft.world.entity.HumanoidArm.RIGHT||event.getEntity().getItemBySlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND).getItem() instanceof SwordItem&&event.getEntity().getMainArm()!=net.minecraft.world.entity.HumanoidArm.RIGHT?HumanoidModel.ArmPose.BLOCK:HumanoidModel.ArmPose.EMPTY;
+            event.getRenderer().getModel().leftArmPose=event.getEntity().getItemBySlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND).getItem() instanceof SwordItem&&event.getEntity().getMainArm()==net.minecraft.world.entity.HumanoidArm.LEFT||event.getEntity().getItemBySlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND).getItem() instanceof SwordItem&&event.getEntity().getMainArm()!=net.minecraft.world.entity.HumanoidArm.LEFT?HumanoidModel.ArmPose.BLOCK:HumanoidModel.ArmPose.EMPTY;
         }
     }
 
@@ -172,13 +238,20 @@ public final class ClientEvents {
     public static void onRenderCloakedHand(RenderHandEvent event) {
         Minecraft minecraft=Minecraft.getInstance();
         if(minecraft.player!=null&&ClientCloakState.isCloaked(minecraft.player.getId())){event.setCanceled(true);return;}
-        if(minecraft.player!=null&&ClientBlockState.isBlocking(minecraft.player.getId())){
+        if(minecraft.player!=null&&ClientBlockState.isBlocking(minecraft.player.getId())&&event.getItemStack().getItem() instanceof SwordItem){
             boolean right=event.getHand()==InteractionHand.MAIN_HAND
                     ?minecraft.player.getMainArm()==net.minecraft.world.entity.HumanoidArm.RIGHT
                     :minecraft.player.getMainArm()!=net.minecraft.world.entity.HumanoidArm.RIGHT;
-            event.getPoseStack().translate(right?-0.18:0.18,0.16,-0.2);
-            event.getPoseStack().mulPose(Vector3f.XP.rotationDegrees(-42.0F));
-            event.getPoseStack().mulPose(Vector3f.YP.rotationDegrees(right?-28.0F:28.0F));
+            if(event.getHand()==InteractionHand.MAIN_HAND){
+                event.getPoseStack().translate(right?0.10:-0.10,0.08,-0.08);
+                event.getPoseStack().mulPose(Vector3f.XP.rotationDegrees(-24.0F));
+                event.getPoseStack().mulPose(Vector3f.YP.rotationDegrees(right?14.0F:-14.0F));
+                event.getPoseStack().mulPose(Vector3f.ZP.rotationDegrees(right?-18.0F:18.0F));
+            }else{
+                event.getPoseStack().translate(right?-0.18:0.18,0.16,-0.2);
+                event.getPoseStack().mulPose(Vector3f.XP.rotationDegrees(-42.0F));
+                event.getPoseStack().mulPose(Vector3f.YP.rotationDegrees(right?-28.0F:28.0F));
+            }
         }
     }
 
@@ -188,6 +261,7 @@ public final class ClientEvents {
         ClientBlockState.clear();
         ClientAbilityState.clear();
         offhandUseHeld=false;
+        alternateHeld=false;
     }
 
     @SubscribeEvent

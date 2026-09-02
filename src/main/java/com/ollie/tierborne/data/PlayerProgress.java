@@ -22,11 +22,14 @@ public final class PlayerProgress {
     private final Set<String> unlockedSkills = new HashSet<>();
     private String selectedAlternateAttack = "";
     private int movementSpeedLimitPercent = 100;
+    private boolean receivedStartingArmor;
 
     public String playerClassId() { return playerClassId; }
     public int skillPoints() { return skillPoints; }
     public String selectedAlternateAttack() { return selectedAlternateAttack; }
     public int movementSpeedLimitPercent() { return movementSpeedLimitPercent; }
+    public boolean receivedStartingArmor() { return receivedStartingArmor; }
+    public void markReceivedStartingArmor() { receivedStartingArmor = true; }
     public boolean setMovementSpeedLimitPercent(int value) { int clamped=Math.max(10,Math.min(100,value));if(clamped==movementSpeedLimitPercent)return false;movementSpeedLimitPercent=clamped;return true; }
 
     public Set<String> unlockedSkills() {
@@ -104,6 +107,7 @@ public final class PlayerProgress {
         tag.putInt("SkillPoints", skillPoints);
         tag.putString("SelectedAlternateAttack", selectedAlternateAttack);
         tag.putInt("MovementSpeedLimitPercent", movementSpeedLimitPercent);
+        tag.putBoolean("ReceivedStartingArmor", receivedStartingArmor);
         ListTag skills = new ListTag();
         unlockedSkills.forEach(id -> skills.add(StringTag.valueOf(id)));
         tag.put("UnlockedSkills", skills);
@@ -115,6 +119,7 @@ public final class PlayerProgress {
         progress.playerClassId = tag.getString("PlayerClass");
         progress.skillPoints = tag.getInt("SkillPoints");
         progress.selectedAlternateAttack = tag.getString("SelectedAlternateAttack");
+        progress.receivedStartingArmor = tag.getBoolean("ReceivedStartingArmor");
         if(tag.contains("MovementSpeedLimitPercent"))progress.movementSpeedLimitPercent=Math.max(10,Math.min(100,tag.getInt("MovementSpeedLimitPercent")));
         ListTag skills = tag.getList("UnlockedSkills", Tag.TAG_STRING);
         for (int i = 0; i < skills.size(); i++) progress.unlockedSkills.add(skills.getString(i));

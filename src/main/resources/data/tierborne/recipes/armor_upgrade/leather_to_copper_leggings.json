@@ -1,0 +1,7 @@
+{
+  "type": "tierborne:armor_upgrade",
+  "template": { "item": "tierborne:copper_upgrade_template" },
+  "base": { "item": "minecraft:leather_leggings" },
+  "material": { "item": "minecraft:copper_ingot" },
+  "result": { "item": "tierborne:copper_leggings" }
+}

@@ -1,0 +1,7 @@
+{
+  "type": "tierborne:armor_upgrade",
+  "template": { "item": "tierborne:orichalcum_upgrade_template" },
+  "base": { "item": "tierborne:steel_chestplate" },
+  "material": { "item": "tierborne:orichalcum_ingot" },
+  "result": { "item": "tierborne:orichalcum_chestplate" }
+}

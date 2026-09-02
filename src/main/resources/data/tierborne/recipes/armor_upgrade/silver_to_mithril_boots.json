@@ -1,0 +1,7 @@
+{
+  "type": "tierborne:armor_upgrade",
+  "template": { "item": "tierborne:mithril_upgrade_template" },
+  "base": { "item": "tierborne:silver_boots" },
+  "material": { "item": "tierborne:mithril_ingot" },
+  "result": { "item": "tierborne:mithril_boots" }
+}

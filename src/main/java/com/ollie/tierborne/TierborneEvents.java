@@ -18,8 +18,13 @@ import com.ollie.tierborne.config.RpgBalanceConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.Container;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -31,12 +36,14 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TieredItem;
 import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.Tags;
@@ -58,6 +65,8 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.network.NetworkHooks;
+import com.ollie.tierborne.world.inventory.ArmorUpgradeMenu;
 
 import java.util.UUID;
 import java.util.ArrayList;
@@ -105,8 +114,45 @@ public final class TierborneEvents {
 
     @SubscribeEvent
     public void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        if(event.getEntity() instanceof ServerPlayer player)AbilityRuntime.resetTransient(player);
+        if(event.getEntity() instanceof ServerPlayer player){AbilityRuntime.resetTransient(player);giveStartingArmor(player);}
         sync(event.getEntity());
+    }
+
+    @SubscribeEvent
+    public void onSmithingTableUsed(PlayerInteractEvent.RightClickBlock event) {
+        if (event.getHand() != InteractionHand.MAIN_HAND
+                || !event.getLevel().getBlockState(event.getPos()).is(Blocks.SMITHING_TABLE)) return;
+
+        event.setCanceled(true);
+        event.setCancellationResult(InteractionResult.sidedSuccess(event.getLevel().isClientSide));
+        if (event.getEntity() instanceof ServerPlayer player) {
+            NetworkHooks.openScreen(player, new SimpleMenuProvider(
+                    (containerId, inventory, ignored) -> new ArmorUpgradeMenu(containerId, inventory,
+                            net.minecraft.world.inventory.ContainerLevelAccess.create(event.getLevel(), event.getPos())),
+                    Component.translatable("container.tierborne.armor_upgrade")), event.getPos());
+        }
+    }
+
+    private static void giveStartingArmor(ServerPlayer player) {
+        PlayerProgressSavedData data = PlayerProgressSavedData.get(player.getServer());
+        PlayerProgress progress = data.get(player.getUUID());
+        if (progress.receivedStartingArmor()) return;
+
+        giveStartingPiece(player, EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
+        giveStartingPiece(player, EquipmentSlot.CHEST, new ItemStack(Items.LEATHER_CHESTPLATE));
+        giveStartingPiece(player, EquipmentSlot.LEGS, new ItemStack(Items.LEATHER_LEGGINGS));
+        giveStartingPiece(player, EquipmentSlot.FEET, new ItemStack(Items.LEATHER_BOOTS));
+        progress.markReceivedStartingArmor();
+        data.changed();
+        player.sendSystemMessage(Component.translatable("message.tierborne.starting_armor_received"));
+    }
+
+    private static void giveStartingPiece(ServerPlayer player, EquipmentSlot slot, ItemStack stack) {
+        if (player.getItemBySlot(slot).isEmpty()) {
+            player.setItemSlot(slot, stack);
+        } else if (!player.getInventory().add(stack)) {
+            player.drop(stack, false);
+        }
     }
 
     @SubscribeEvent

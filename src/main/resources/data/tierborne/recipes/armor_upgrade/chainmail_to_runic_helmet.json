@@ -1,0 +1,7 @@
+{
+  "type": "tierborne:armor_upgrade",
+  "template": { "item": "tierborne:runic_upgrade_template" },
+  "base": { "item": "minecraft:chainmail_helmet" },
+  "material": { "item": "tierborne:runic_ingot" },
+  "result": { "item": "tierborne:runic_helmet" }
+}

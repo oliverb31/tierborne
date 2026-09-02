@@ -285,7 +285,7 @@ public final class ClientEvents {
         event.getPoseStack().mulPose(Vector3f.XP.rotationDegrees(-8.0F + punch * 16.0F));
         event.getPoseStack().mulPose(Vector3f.YP.rotationDegrees((right ? 8.0F : -8.0F)
                 + stride * movement * (right ? 2.0F : -2.0F)));
-        event.getPoseStack().mulPose(Vector3f.ZP.rotationDegrees((right ? -6.0F : 6.0F)
+        event.getPoseStack().mulPose(Vector3f.ZP.rotationDegrees((right ? 4.0F : -4.0F)
                 + breathing * (right ? 1.2F : -1.2F)));
         minecraft.gameRenderer.itemInHandRenderer.renderPlayerArm(event.getPoseStack(),
                 event.getMultiBufferSource(), event.getPackedLight(), 0.0F, swing, arm);

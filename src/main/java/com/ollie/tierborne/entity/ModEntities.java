@@ -13,5 +13,9 @@ public final class ModEntities {
             () -> EntityType.Builder.<FireballProjectile>of(FireballProjectile::new, MobCategory.MISC)
                     .sized(0.35F, 0.35F).clientTrackingRange(10).updateInterval(1)
                     .build(Tierborne.MOD_ID + ":fireball"));
+    public static final RegistryObject<EntityType<FlameSlashProjectile>> FLAME_SLASH = ENTITIES.register("flame_slash",
+            () -> EntityType.Builder.<FlameSlashProjectile>of(FlameSlashProjectile::new, MobCategory.MISC)
+                    .sized(2.0F, 2.0F).clientTrackingRange(12).updateInterval(1)
+                    .build(Tierborne.MOD_ID + ":flame_slash"));
     private ModEntities() {}
 }

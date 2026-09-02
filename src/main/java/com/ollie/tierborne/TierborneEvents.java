@@ -46,6 +46,7 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
@@ -128,7 +129,17 @@ public final class TierborneEvents {
     }
 
     @SubscribeEvent
+    public void onLivingChangeTarget(LivingChangeTargetEvent event) {
+        if(event.getEntity() instanceof net.minecraft.world.entity.Mob
+                &&event.getNewTarget() instanceof ServerPlayer player
+                &&AbilityRuntime.isCloaked(player))event.setNewTarget(null);
+    }
+
+    @SubscribeEvent
     public void onLivingAttack(LivingAttackEvent event) {
+        if(event.getEntity() instanceof ServerPlayer player
+                &&event.getSource().getEntity() instanceof net.minecraft.world.entity.Mob
+                &&AbilityRuntime.isCloaked(player)){event.setCanceled(true);return;}
         if(event.getSource().getEntity()!=null&&(AbilityRuntime.isRooted(event.getSource().getEntity())||FighterCombat.offenseDisabled(event.getSource().getEntity()))){event.setCanceled(true);return;}
         if(event.getEntity() instanceof ServerPlayer defender&&event.getSource().getEntity() instanceof LivingEntity attacker&&!(attacker instanceof ServerPlayer serverAttacker&&AbilityRuntime.internalDamage(serverAttacker))&&FighterCombat.tryCounter(defender,attacker,event.getAmount())){event.setCanceled(true);return;}
         if(!(event.getSource().getEntity() instanceof ServerPlayer player)
@@ -194,7 +205,7 @@ public final class TierborneEvents {
         if(!(event.getSource().getEntity() instanceof ServerPlayer player))return;
         LivingEntity target=event.getEntity();
         Entity direct=event.getSource().getDirectEntity();
-        boolean intentional=direct==player||direct instanceof AbstractArrow||direct instanceof com.ollie.tierborne.entity.FireballProjectile;
+        boolean intentional=direct==player||direct instanceof AbstractArrow||direct instanceof com.ollie.tierborne.entity.FireballProjectile||direct instanceof com.ollie.tierborne.entity.FlameSlashProjectile;
         if(!intentional)return;
         event.setAmount(FighterCombat.modifyIntentionalHit(player,target,event.getAmount()));
     }

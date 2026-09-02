@@ -5,11 +5,12 @@ import java.util.List;
 public record AlternateAttackDefinition(String id, String skillId, String displayName, String description) {
     public static final List<AlternateAttackDefinition> ALL = List.of(
             new AlternateAttackDefinition("dash_strike", SwordsmanPlayerClass.DASH_STRIKE, "Dash Strike", "Dash forward and strike for increased damage."),
-            new AlternateAttackDefinition("multislash", SwordsmanPlayerClass.MULTISLASH, "Multislash", "Perform two fully charged strikes with one sword or four with two swords."),
+            new AlternateAttackDefinition("multislash", SwordsmanPlayerClass.MULTISLASH, "Multislash", "Deal one combined hit equal to two full-power strikes from each equipped sword."),
             new AlternateAttackDefinition("heavy_attack", SwordsmanPlayerClass.HEAVY_ATTACK, "Heavy Attack", "Deliver a powerful sword strike."),
             new AlternateAttackDefinition("cloak", SwordsmanPlayerClass.CLOAK, "Cloak", "Become invisible and shed hostile attention."),
             new AlternateAttackDefinition("leap_strike", SwordsmanPlayerClass.LEAP_STRIKE, "Leap Strike", "Leap upward and strike nearby enemies on landing."),
             new AlternateAttackDefinition("fireball", SwordsmanPlayerClass.FIREBALL, "Fireball", "Cast a server-authoritative fire projectile."),
+            new AlternateAttackDefinition("flame_slash", SwordsmanPlayerClass.FLAME_SLASH, "Flame Slash", "Launch a travelling crescent of elemental flame."),
             new AlternateAttackDefinition("multishot_bow", ArcherPlayerClass.MULTISHOT, "Multishot", "Fire two full-power crossbow arrows."),
             new AlternateAttackDefinition("fully_charged", ArcherPlayerClass.FULLY_CHARGED, "Fully Charged", "Empower one deliberately slow bow shot."),
             new AlternateAttackDefinition("elemental_shot", ArcherPlayerClass.ELEMENTAL_SHOT, "Elemental Shot", "Instantly fire a burning, freezing arrow."),

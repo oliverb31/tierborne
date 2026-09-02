@@ -1,6 +1,5 @@
 package com.ollie.tierborne.entity;
 
-import com.ollie.tierborne.combat.AbilityRuntime;
 import com.ollie.tierborne.combat.Element;
 import com.ollie.tierborne.combat.ElementalCombat;
 import com.ollie.tierborne.config.RpgBalanceConfig;
@@ -31,22 +30,15 @@ public final class FireballProjectile extends Projectile implements ItemSupplier
     private float enchantmentScale;
     private float charge = 1.0F;
     private float travelSpeed = 1.15F;
-    private int homingLifetimeTicks;
-    private boolean homingMember;
-    private boolean homingSessionMember;
 
     public FireballProjectile(EntityType<? extends FireballProjectile> type, Level level) { super(type, level); }
 
     public FireballProjectile(ServerPlayer owner, float damage, float enchantmentScale,
-                              boolean homingMember, float charge, float travelSpeed) {
+                              float charge, float travelSpeed) {
         this(ModEntities.FIREBALL.get(), owner.level);
         setOwner(owner);
         this.damage = damage;
         this.enchantmentScale = enchantmentScale;
-        this.homingMember = homingMember;
-        this.homingSessionMember = homingMember;
-        this.homingLifetimeTicks = homingMember
-                ? RpgBalanceConfig.ticks(RpgBalanceConfig.HOMING_FIREBALL_MAX_CONTROL_SECONDS) : 0;
         this.charge = charge;
         this.travelSpeed = travelSpeed;
         Vec3 look = owner.getLookAngle();
@@ -58,14 +50,7 @@ public final class FireballProjectile extends Projectile implements ItemSupplier
     @Override
     public void tick() {
         super.tick();
-        if (homingSessionMember && tickCount >= homingLifetimeTicks) {
-            endControlState();
-            discard();
-            return;
-        }
-        if (tickCount > 300) { endControlState(); discard(); return; }
-        if (homingMember && getOwner() instanceof ServerPlayer owner
-                && !AbilityRuntime.steerHoming(owner, this)) homingMember = false;
+        if (tickCount > 300) { discard(); return; }
         HitResult hit = ProjectileUtil.getHitResult(this, this::canHitEntity);
         if (hit.getType() != HitResult.Type.MISS) onHit(hit);
         if (isRemoved()) return;
@@ -90,10 +75,6 @@ public final class FireballProjectile extends Projectile implements ItemSupplier
             server.sendParticles(ParticleTypes.SMOKE, getX(), getY(), getZ(), trailCount,
                     radius * 0.65D, radius * 0.65D, radius * 0.65D, 0.005D);
         }
-        if (homingMember && tickCount % 3 == 0) {
-            server.sendParticles(ParticleTypes.LAVA, getX(), getY(), getZ(), 1,
-                    radius * 0.25D, radius * 0.25D, radius * 0.25D, 0.0D);
-        }
     }
 
     @Override
@@ -115,6 +96,7 @@ public final class FireballProjectile extends Projectile implements ItemSupplier
 
     @Override
     protected boolean canHitEntity(Entity entity) {
+        if (entity == getOwner()) return false;
         if (entity instanceof FireballProjectile other && other.getOwner() == getOwner()) return false;
         return super.canHitEntity(entity);
     }
@@ -127,35 +109,15 @@ public final class FireballProjectile extends Projectile implements ItemSupplier
             server.sendParticles(ParticleTypes.LARGE_SMOKE, getX(), getY(), getZ(), 8, 0.25D, 0.25D, 0.25D, 0.02D);
             server.playSound(null, blockPosition(), SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0F, 0.8F);
         }
-        endControlState();
         discard();
     }
-
-    public void releaseControl() { homingMember = false; }
-    public void expireControlled() { endControlState(); discard(); }
-    public float damageValue() { return damage; }
-    public float enchantmentScale() { return enchantmentScale; }
-    public float charge() { return charge; }
-    public float travelSpeed() { return travelSpeed; }
     @Override public ItemStack getItem() { return new ItemStack(Items.FIRE_CHARGE); }
-
-    private void endControlState() {
-        if (homingSessionMember && getOwner() instanceof ServerPlayer owner) AbilityRuntime.homingProjectileRemoved(owner, getUUID());
-        homingMember = false;
-        homingSessionMember = false;
-    }
-
-    @Override
-    public void remove(Entity.RemovalReason reason) {
-        endControlState();
-        super.remove(reason);
-    }
 
     private static int lerpCount(int minimum, int maximum, double amount) { return (int) Math.round(lerp(minimum, maximum, amount)); }
     private static double lerp(double minimum, double maximum, double amount) { return minimum + (maximum - minimum) * amount; }
 
     @Override protected void defineSynchedData() {}
-    @Override protected void readAdditionalSaveData(CompoundTag tag) { damage=tag.getFloat("Damage");enchantmentScale=tag.getFloat("EnchantmentScale");charge=tag.getFloat("Charge");travelSpeed=tag.getFloat("TravelSpeed");homingMember=tag.getBoolean("HomingMember");homingSessionMember=tag.getBoolean("HomingSessionMember");homingLifetimeTicks=tag.getInt("HomingLifetimeTicks"); }
-    @Override protected void addAdditionalSaveData(CompoundTag tag) { tag.putFloat("Damage",damage);tag.putFloat("EnchantmentScale",enchantmentScale);tag.putFloat("Charge",charge);tag.putFloat("TravelSpeed",travelSpeed);tag.putBoolean("HomingMember",homingMember);tag.putBoolean("HomingSessionMember",homingSessionMember);tag.putInt("HomingLifetimeTicks",homingLifetimeTicks); }
+    @Override protected void readAdditionalSaveData(CompoundTag tag) { damage=tag.getFloat("Damage");enchantmentScale=tag.getFloat("EnchantmentScale");charge=tag.getFloat("Charge");travelSpeed=tag.getFloat("TravelSpeed"); }
+    @Override protected void addAdditionalSaveData(CompoundTag tag) { tag.putFloat("Damage",damage);tag.putFloat("EnchantmentScale",enchantmentScale);tag.putFloat("Charge",charge);tag.putFloat("TravelSpeed",travelSpeed); }
     @Override public Packet<?> getAddEntityPacket() { return NetworkHooks.getEntitySpawningPacket(this); }
 }

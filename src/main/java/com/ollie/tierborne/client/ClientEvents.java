@@ -21,6 +21,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.SwordItem;
@@ -53,7 +54,6 @@ public final class ClientEvents {
     private static boolean utilityHeld;
     private static boolean alternateHeld;
     private static boolean offhandUseHeld;
-    private static boolean homingFollowerHeld;
     private static final int COOLDOWN_BAR_WIDTH=92;
     private static final int COOLDOWN_ENTRY_HEIGHT=34;
     private static final int COOLDOWN_ENTRY_GAP=5;
@@ -99,8 +99,8 @@ public final class ClientEvents {
         if (event.phase != TickEvent.Phase.END) return;
         ClientProgress.tryOpenSelectionScreen();
         Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player == null) {offhandUseHeld=false;alternateHeld=false;homingFollowerHeld=false;return;}
-        if(minecraft.screen!=null){if(alternateHeld){alternateHeld=false;ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(AbilityAction.ALTERNATE_RELEASE));}offhandUseHeld=false;homingFollowerHeld=false;return;}
+        if (minecraft.player == null) {offhandUseHeld=false;alternateHeld=false;return;}
+        if(minecraft.screen!=null){if(alternateHeld){alternateHeld=false;ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(AbilityAction.ALTERNATE_RELEASE));}offhandUseHeld=false;return;}
         boolean alternateDown=ALTERNATE_ATTACK.isDown();
         if(alternateDown!=alternateHeld){alternateHeld=alternateDown;ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(alternateDown?AbilityAction.ALTERNATE_ATTACK:AbilityAction.ALTERNATE_RELEASE));}
         boolean down = SUBCLASS_UTILITY.isDown();
@@ -113,29 +113,21 @@ public final class ClientEvents {
                 &&minecraft.player.getOffhandItem().getItem() instanceof SwordItem;
         boolean monkFists=ClientProgress.hasSkill(FighterPlayerClass.MONK)&&minecraft.player.getMainHandItem().isEmpty()&&minecraft.player.getOffhandItem().isEmpty();
         boolean useDown=minecraft.options.keyUse.isDown();
-        if((dualWielding||monkFists)&&useDown&&!offhandUseHeld)ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(AbilityAction.OFFHAND_ATTACK));
+        if((dualWielding||monkFists)&&useDown&&!offhandUseHeld)ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(AbilityAction.MAIN_HAND_ATTACK));
         offhandUseHeld=useDown;
-        if(ClientAbilityState.isHoming()){
-            boolean followerDown=minecraft.options.keyPickItem.isDown();
-            if(followerDown&&!homingFollowerHeld)ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(AbilityAction.HOMING_ADD_FOLLOWER));
-            homingFollowerHeld=followerDown;
-        }else homingFollowerHeld=false;
     }
 
     @SubscribeEvent
     public static void onInteractionKey(InputEvent.InteractionKeyMappingTriggered event) {
         Minecraft minecraft=Minecraft.getInstance();
-        if(minecraft.player!=null&&ClientAbilityState.isHoming()&&(event.isAttack()||event.isUseItem())){
-            AbilityAction action=event.isAttack()?AbilityAction.HOMING_PUSH:AbilityAction.HOMING_PULL;
-            ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(action));
-            event.setSwingHand(false);event.setCanceled(true);return;
-        }
         if(event.isAttack()&&minecraft.player!=null&&minecraft.player.getMainHandItem().getItem() instanceof SwordItem
                 &&ClientAbilityState.blocksNormalAttack()){event.setSwingHand(false);event.setCanceled(true);return;}
-        if(!event.isUseItem()||minecraft.player==null)return;
+        if(minecraft.player==null)return;
         boolean dualSwords=ClientProgress.hasSkill(SwordsmanPlayerClass.DUAL)&&minecraft.player.getMainHandItem().getItem() instanceof SwordItem&&minecraft.player.getOffhandItem().getItem() instanceof SwordItem;
         boolean monkFists=ClientProgress.hasSkill(FighterPlayerClass.MONK)&&minecraft.player.getMainHandItem().isEmpty()&&minecraft.player.getOffhandItem().isEmpty();
         if(!dualSwords&&!monkFists)return;
+        if(event.isAttack())ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(AbilityAction.OFFHAND_ATTACK));
+        else if(!event.isUseItem())return;
         event.setCanceled(true);
         event.setSwingHand(false);
     }
@@ -260,8 +252,44 @@ public final class ClientEvents {
             }
         }
         if(minecraft.player!=null&&ClientProgress.hasSkill(FighterPlayerClass.MONK)&&minecraft.player.getMainHandItem().isEmpty()&&minecraft.player.getOffhandItem().isEmpty()&&event.getItemStack().isEmpty()){
-            boolean main=event.getHand()==InteractionHand.MAIN_HAND;event.getPoseStack().translate(main?0.12:-0.12,0.18,-0.22);event.getPoseStack().mulPose(Vector3f.XP.rotationDegrees(-38));event.getPoseStack().mulPose(Vector3f.YP.rotationDegrees(main?18:-18));event.getPoseStack().mulPose(Vector3f.ZP.rotationDegrees(main?-12:12));
+            event.setCanceled(true);
+            if(event.getHand()==InteractionHand.MAIN_HAND){
+                HumanoidArm mainArm=minecraft.player.getMainArm();
+                HumanoidArm offArm=mainArm.getOpposite();
+                InteractionHand swinging=minecraft.player.swingingArm;
+                float attack=minecraft.player.getAttackAnim(event.getPartialTick());
+                renderMonkArm(event,minecraft,mainArm,swinging==InteractionHand.MAIN_HAND?attack:0.0F);
+                renderMonkArm(event,minecraft,offArm,swinging==InteractionHand.OFF_HAND?attack:0.0F);
+            }
         }
+    }
+
+    private static void renderMonkArm(RenderHandEvent event, Minecraft minecraft, HumanoidArm arm, float swing) {
+        boolean right = arm == HumanoidArm.RIGHT;
+        float age = minecraft.player.tickCount + event.getPartialTick();
+        float breathing = Mth.sin(age * 0.09F);
+        float movement = Mth.clamp((float) minecraft.player.getDeltaMovement().horizontalDistance() * 8.0F,
+                0.0F, 1.0F);
+        float stride = Mth.sin(age * 0.65F);
+        float step = Mth.abs(Mth.cos(age * 0.65F));
+        float punch = Mth.sin(Mth.sqrt(swing) * (float) Math.PI);
+
+        double lateralBob = stride * movement * 0.012F * (right ? 1.0F : -1.0F);
+        double verticalBob = step * movement * 0.025F + breathing * 0.012F;
+        double depthBob = breathing * 0.008F - punch * 0.18F;
+
+        event.getPoseStack().pushPose();
+        event.getPoseStack().translate((right ? -0.12 : 0.12) + lateralBob,
+                0.35 + verticalBob - punch * 0.035F,
+                0.08 + depthBob);
+        event.getPoseStack().mulPose(Vector3f.XP.rotationDegrees(-8.0F + punch * 16.0F));
+        event.getPoseStack().mulPose(Vector3f.YP.rotationDegrees((right ? 8.0F : -8.0F)
+                + stride * movement * (right ? 2.0F : -2.0F)));
+        event.getPoseStack().mulPose(Vector3f.ZP.rotationDegrees((right ? -6.0F : 6.0F)
+                + breathing * (right ? 1.2F : -1.2F)));
+        minecraft.gameRenderer.itemInHandRenderer.renderPlayerArm(event.getPoseStack(),
+                event.getMultiBufferSource(), event.getPackedLight(), 0.0F, swing, arm);
+        event.getPoseStack().popPose();
     }
 
     @SubscribeEvent

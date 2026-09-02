@@ -23,6 +23,8 @@ Gradle project rather than assuming a modern Forge API is available.
 
 Write all code with commonly accepted good coding practices. Including correct whitelines, variable/method naming, and indentation.
 
+All failed moves or successful moves that are effects and not clear from the player's perspective should have corresponding error and success messages.
+
 ## Validation
 
 After making code changes, run:

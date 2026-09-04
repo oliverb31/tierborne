@@ -4,6 +4,8 @@ import net.minecraftforge.common.ForgeConfigSpec;
 
 public final class RpgBalanceConfig {
     public static final ForgeConfigSpec SPEC;
+    public static final ForgeConfigSpec.DoubleValue DUNGEON_HEALTH_PER_EXTRA_PLAYER;
+    public static final ForgeConfigSpec.DoubleValue DUNGEON_DAMAGE_PER_EXTRA_PLAYER;
 
     public static final ForgeConfigSpec.DoubleValue SWORDMASTER_DAMAGE;
     public static final ForgeConfigSpec.DoubleValue SWORDMASTER_SPEED;
@@ -103,12 +105,33 @@ public final class RpgBalanceConfig {
     public static final ForgeConfigSpec.DoubleValue RANGER_RANGED_DAMAGE, RANGER_PRE_MOVEMENT, RANGER_MOVEMENT, BACKSTEP_DISTANCE, BACKSTEP_UPGRADED_DISTANCE, BACKSTEP_COOLDOWN_SECONDS, BACKSTEP_RECAST_SECONDS, ROOTS_RANGE, ROOTS_CHANNEL_SECONDS, ROOTS_TAIL_SECONDS, ROOTS_COOLDOWN_SECONDS;
     public static final ForgeConfigSpec.DoubleValue FIGHTER_MONK_PATH_MOVE,FIGHTER_MONK_PATH_FIST,FIGHTER_CHAMPION_PATH_DAMAGE,FIGHTER_CHAMPION_PATH_CHARGE,FIGHTER_DUELIST_PATH_DAMAGE,FIGHTER_DUELIST_PATH_CHARGE;
     public static final ForgeConfigSpec.DoubleValue MONK_MOVE,MONK_FIST,PULL_RANGE,PULL_COOLDOWN_SECONDS,PULL_STRENGTH,PULL_MAX_SECONDS,PULL_UPGRADED_RANGE,PULL_UPGRADED_COOLDOWN_SECONDS,MONK_FIST_UPGRADE;
+    public static final ForgeConfigSpec.DoubleValue UPPERCUT_DAMAGE_PERCENT,UPPERCUT_RANGE,
+            UPPERCUT_HORIZONTAL_KNOCKBACK,UPPERCUT_VERTICAL_KNOCKBACK,UPPERCUT_WINDUP_SECONDS,
+            UPPERCUT_ANIMATION_SECONDS,UPPERCUT_COOLDOWN_SECONDS;
     public static final ForgeConfigSpec.DoubleValue COMBO_COMPOUND_PERCENT,COMBO_WINDOW_SECONDS,COMBO_WINDOW_I_SECONDS,COMBO_WINDOW_II_SECONDS,CHAIN_READY_SECONDS,CHAIN_OPENING_PERCENT,CHAIN_UPGRADED_OPENING_PERCENT,CHAIN_WINDOW_SECONDS,CHAIN_UPGRADED_WINDOW_SECONDS,CHAIN_COOLDOWN_SECONDS;
     public static final ForgeConfigSpec.DoubleValue DUELIST_DAMAGE,DUELIST_DAMAGE_UPGRADE,DUELIST_COUNTER_CHANCE,DUELIST_UPGRADED_COUNTER_CHANCE,DISARM_RANGE,DISARM_DURATION_SECONDS,DISARM_UPGRADED_DURATION_SECONDS,DISARM_HEALTH_RATIO,DISARM_COOLDOWN_SECONDS,DISARM_UPGRADED_COOLDOWN_SECONDS;
+    public static final ForgeConfigSpec.DoubleValue BARBARIAN_AXE_DAMAGE, BARBARIAN_AXE_CHARGE_SPEED;
+    public static final ForgeConfigSpec.DoubleValue BERSERKER_MAX_HEALTH, BERSERK_AXE_DAMAGE,
+            BERSERK_MOVEMENT_SPEED, BERSERK_TOGGLE_COOLDOWN_SECONDS, BERSERK_MAX_DURATION_SECONDS,
+            BERSERK_UPGRADED_DURATION_SECONDS, BERSERK_LIFESTEAL_PERCENT,
+            BERSERK_UPGRADED_LIFESTEAL_PERCENT, BERSERK_BLEED_PERCENT,
+            BERSERK_REDUCED_BLEED_PERCENT, BERSERK_BLEED_THRESHOLD,
+            BERSERK_BLEED_HIGH_DRAIN_PERCENT, BERSERK_BLEED_LOW_DRAIN,
+            BERSERK_BLEED_INTERVAL_SECONDS, BERSERK_COMBAT_LOCK_SECONDS,
+            BERSERK_UPGRADED_AXE_DAMAGE, BERSERK_UPGRADED_MOVEMENT_SPEED;
+    public static final ForgeConfigSpec.DoubleValue EXECUTIONER_AXE_DAMAGE,
+            EXECUTIONER_LOW_HEALTH_DAMAGE, EXECUTIONER_UPGRADED_LOW_HEALTH_DAMAGE,
+            EXECUTIONER_ATTACK_SPEED, EXECUTE_CHARGE_SECONDS, EXECUTE_UPGRADED_CHARGE_SECONDS,
+            EXECUTE_MOVEMENT_PENALTY, EXECUTE_UPGRADED_MOVEMENT_PENALTY,
+            EXECUTE_MAX_MULTIPLIER, EXECUTE_UPGRADED_MAX_MULTIPLIER,
+            EXECUTE_KILL_THRESHOLD_PERCENT, EXECUTE_RANGE, EXECUTE_COOLDOWN_SECONDS;
 
     static {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
-        b.push("swordmaster");
+        b.push("dungeons");
+        DUNGEON_HEALTH_PER_EXTRA_PLAYER = percent(b, "healthPerExtraPlayerPercent", 65.0);
+        DUNGEON_DAMAGE_PER_EXTRA_PLAYER = percent(b, "damagePerExtraPlayerPercent", 35.0);
+        b.pop().push("swordmaster");
         SWORDMASTER_DAMAGE = percent(b, "subclassSwordDamagePercent", 20.0);
         SWORDMASTER_SPEED = percent(b, "subclassMovementSpeedPercent", 10.0);
         DASH_VELOCITY = value(b, "dashVelocity", 1.35, 0.0, 5.0);
@@ -214,10 +237,52 @@ public final class RpgBalanceConfig {
         FIGHTER_MONK_PATH_MOVE=percent(b,"monkPathMovementPercent",10);FIGHTER_MONK_PATH_FIST=percent(b,"monkPathFistDamagePercent",50);FIGHTER_CHAMPION_PATH_DAMAGE=percent(b,"championPathGeneralDamagePercent",5);FIGHTER_CHAMPION_PATH_CHARGE=percent(b,"championPathMeleeChargeSpeedPercent",10);FIGHTER_DUELIST_PATH_DAMAGE=percent(b,"duelistPathGeneralDamagePercent",5);FIGHTER_DUELIST_PATH_CHARGE=percent(b,"duelistPathMeleeChargeSpeedPercent",10);
         b.pop().push("monk");
         MONK_MOVE=percent(b,"movementSpeedPercent",20);MONK_FIST=percent(b,"fistDamagePercent",550);PULL_RANGE=value(b,"pullRangeBlocks",6,1,32);PULL_COOLDOWN_SECONDS=seconds(b,"pullCooldownSeconds",5);PULL_STRENGTH=value(b,"pullStrength",1.15,0.1,5);PULL_MAX_SECONDS=seconds(b,"pullMaximumDurationSeconds",1.5);PULL_UPGRADED_RANGE=value(b,"upgradedPullRangeBlocks",9,1,48);PULL_UPGRADED_COOLDOWN_SECONDS=seconds(b,"upgradedPullCooldownSeconds",3.5);MONK_FIST_UPGRADE=percent(b,"fistDamageUpgradePercent",150);
+        UPPERCUT_DAMAGE_PERCENT=percent(b,"uppercutExtraDamagePercent",50);
+        UPPERCUT_RANGE=value(b,"uppercutRangeBlocks",3.25,1,8);
+        UPPERCUT_HORIZONTAL_KNOCKBACK=value(b,"uppercutHorizontalKnockback",0.65,0,5);
+        UPPERCUT_VERTICAL_KNOCKBACK=value(b,"uppercutVerticalKnockback",0.9,0,5);
+        UPPERCUT_WINDUP_SECONDS=seconds(b,"uppercutWindupSeconds",0.2);
+        UPPERCUT_ANIMATION_SECONDS=seconds(b,"uppercutAnimationSeconds",0.6);
+        UPPERCUT_COOLDOWN_SECONDS=seconds(b,"uppercutCooldownSeconds",6);
         b.pop().push("champion");
         COMBO_COMPOUND_PERCENT=percent(b,"comboCompoundPercent",10);COMBO_WINDOW_SECONDS=seconds(b,"comboWindowSeconds",1);COMBO_WINDOW_I_SECONDS=seconds(b,"comboWindowISeconds",1.1);COMBO_WINDOW_II_SECONDS=seconds(b,"comboWindowIISeconds",1.2);CHAIN_READY_SECONDS=seconds(b,"chainReadySeconds",5);CHAIN_OPENING_PERCENT=percent(b,"chainOpeningBonusPercent",50);CHAIN_UPGRADED_OPENING_PERCENT=percent(b,"upgradedChainOpeningBonusPercent",60);CHAIN_WINDOW_SECONDS=seconds(b,"chainWindowSeconds",1);CHAIN_UPGRADED_WINDOW_SECONDS=seconds(b,"upgradedChainWindowSeconds",1.4);CHAIN_COOLDOWN_SECONDS=seconds(b,"chainCooldownSeconds",10);
         b.pop().push("duelist");
         DUELIST_DAMAGE=percent(b,"generalDamagePercent",10);DUELIST_DAMAGE_UPGRADE=percent(b,"generalDamageUpgradePercent",10);DUELIST_COUNTER_CHANCE=percent(b,"counterChancePercent",10);DUELIST_UPGRADED_COUNTER_CHANCE=percent(b,"upgradedCounterChancePercent",15);DISARM_RANGE=value(b,"disarmRangeBlocks",6,1,32);DISARM_DURATION_SECONDS=seconds(b,"disarmDurationSeconds",2);DISARM_UPGRADED_DURATION_SECONDS=seconds(b,"upgradedDisarmDurationSeconds",2.5);DISARM_HEALTH_RATIO=value(b,"disarmCurrentHealthRatio",1.5,0.1,20);DISARM_COOLDOWN_SECONDS=seconds(b,"disarmCooldownSeconds",10);DISARM_UPGRADED_COOLDOWN_SECONDS=seconds(b,"upgradedDisarmCooldownSeconds",7);
+        b.pop().push("barbarian");
+        BARBARIAN_AXE_DAMAGE=percent(b,"rootAxeDamagePercent",25);
+        BARBARIAN_AXE_CHARGE_SPEED=percent(b,"rootAxeChargeSpeedPercent",20);
+        b.pop().push("berserker");
+        BERSERKER_MAX_HEALTH=value(b,"maximumHealthBonus",8,0,100);
+        BERSERK_AXE_DAMAGE=percent(b,"berserkAxeDamagePercent",35);
+        BERSERK_MOVEMENT_SPEED=percent(b,"berserkMovementSpeedPercent",20);
+        BERSERK_TOGGLE_COOLDOWN_SECONDS=seconds(b,"toggleCooldownSeconds",5);
+        BERSERK_MAX_DURATION_SECONDS=seconds(b,"maximumDurationSeconds",20);
+        BERSERK_UPGRADED_DURATION_SECONDS=seconds(b,"upgradedMaximumDurationSeconds",30);
+        BERSERK_LIFESTEAL_PERCENT=percent(b,"lifestealPercent",10);
+        BERSERK_UPGRADED_LIFESTEAL_PERCENT=percent(b,"upgradedLifestealPercent",15);
+        BERSERK_BLEED_PERCENT=percent(b,"damageAddedToBleedPercent",50);
+        BERSERK_REDUCED_BLEED_PERCENT=percent(b,"reducedDamageAddedToBleedPercent",35);
+        BERSERK_BLEED_THRESHOLD=value(b,"highBleedThreshold",10,0,1000);
+        BERSERK_BLEED_HIGH_DRAIN_PERCENT=percent(b,"highBleedDrainPercent",10);
+        BERSERK_BLEED_LOW_DRAIN=value(b,"lowBleedDrainHealth",1,0,100);
+        BERSERK_BLEED_INTERVAL_SECONDS=seconds(b,"bleedIntervalSeconds",0.25);
+        BERSERK_COMBAT_LOCK_SECONDS=seconds(b,"combatLockSeconds",10);
+        BERSERK_UPGRADED_AXE_DAMAGE=percent(b,"upgradedBerserkAxeDamagePercent",50);
+        BERSERK_UPGRADED_MOVEMENT_SPEED=percent(b,"upgradedBerserkMovementSpeedPercent",30);
+        b.pop().push("executioner");
+        EXECUTIONER_AXE_DAMAGE=percent(b,"subclassAxeDamagePercent",35);
+        EXECUTIONER_LOW_HEALTH_DAMAGE=percent(b,"lowerHealthTargetDamagePercent",20);
+        EXECUTIONER_UPGRADED_LOW_HEALTH_DAMAGE=percent(b,"upgradedLowerHealthTargetDamagePercent",30);
+        EXECUTIONER_ATTACK_SPEED=percent(b,"axeAttackSpeedPercent",-10);
+        EXECUTE_CHARGE_SECONDS=seconds(b,"executeChargeSeconds",3);
+        EXECUTE_UPGRADED_CHARGE_SECONDS=seconds(b,"upgradedExecuteChargeSeconds",2);
+        EXECUTE_MOVEMENT_PENALTY=percent(b,"executeMovementPercent",-50);
+        EXECUTE_UPGRADED_MOVEMENT_PENALTY=percent(b,"upgradedExecuteMovementPercent",-30);
+        EXECUTE_MAX_MULTIPLIER=value(b,"executeMaximumDamageMultiplier",6,1,100);
+        EXECUTE_UPGRADED_MAX_MULTIPLIER=value(b,"upgradedExecuteMaximumDamageMultiplier",8,1,100);
+        EXECUTE_KILL_THRESHOLD_PERCENT=percent(b,"executeInstantKillHealthPercent",10);
+        EXECUTE_RANGE=value(b,"executeRangeBlocks",4,1,16);
+        EXECUTE_COOLDOWN_SECONDS=seconds(b,"executeCooldownSeconds",12);
         b.pop();SPEC = b.build();
     }
 

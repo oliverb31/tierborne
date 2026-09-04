@@ -19,6 +19,10 @@ public final class ClientModEvents {
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.FIREBALL.get(), FireballRenderer::new);
         event.registerEntityRenderer(ModEntities.FLAME_SLASH.get(), FlameSlashRenderer::new);
+        event.registerEntityRenderer(ModEntities.DUNE_REVENANT.get(), DuneRevenantRenderer::new);
+        event.registerEntityRenderer(ModEntities.FROSTBOUND_ARCHER.get(), FrostboundArcherRenderer::new);
+        event.registerEntityRenderer(ModEntities.RUNEBOUND_COLOSSUS.get(), RuneboundColossusRenderer::new);
+        event.registerEntityRenderer(ModEntities.ABYSSAL_WATCHER.get(), AbyssalWatcherRenderer::new);
     }
 
     @SubscribeEvent

@@ -26,6 +26,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
+import com.ollie.tierborne.registry.ModAttributes;
 
 public final class FlameSlashProjectile extends Projectile implements ItemSupplier {
     private float damage;
@@ -105,6 +106,7 @@ public final class FlameSlashProjectile extends Projectile implements ItemSuppli
             float enchantmentDamage = net.minecraft.world.item.enchantment.EnchantmentHelper
                     .getDamageBonus(owner.getMainHandItem(), target.getMobType()) * enchantmentScale;
             float amount = ElementalCombat.modifyDamage(target, Element.FIRE, damage + enchantmentDamage);
+            amount *= (float) owner.getAttributeValue(ModAttributes.MAGIC_DAMAGE.get());
             if (target.hurt(DamageSource.indirectMagic(this, owner), amount)) {
                 target.setSecondsOnFire((int)Math.round(RpgBalanceConfig.FIREBALL_IGNITION_SECONDS.get()));
             }

@@ -25,6 +25,8 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
@@ -32,6 +34,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import com.ollie.tierborne.playerclass.SwordsmanPlayerClass;
 import com.ollie.tierborne.playerclass.FighterPlayerClass;
+import com.ollie.tierborne.playerclass.BarbarianPlayerClass;
 import com.ollie.tierborne.config.RpgBalanceConfig;
 import net.minecraft.tags.BlockTags;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -57,6 +60,31 @@ public final class ClientEvents {
     private static final int COOLDOWN_BAR_WIDTH=92;
     private static final int COOLDOWN_ENTRY_HEIGHT=34;
     private static final int COOLDOWN_ENTRY_GAP=5;
+    private static final HumanoidModel.ArmPose DUAL_SWORD_BLOCK_POSE = HumanoidModel.ArmPose.create(
+            "TIERBORNE_DUAL_SWORD_BLOCK", false, (model, entity, arm) -> {
+                boolean right = arm == HumanoidArm.RIGHT;
+                var modelArm = right ? model.rightArm : model.leftArm;
+                modelArm.xRot = -1.08F;
+                modelArm.yRot = right ? -0.22F : 0.22F;
+                modelArm.zRot = right ? 0.58F : -0.58F;
+            });
+    private static final HumanoidModel.ArmPose UPPERCUT_POSE = HumanoidModel.ArmPose.create(
+            "TIERBORNE_MONK_UPPERCUT", false, (model, entity, arm) -> {
+                float progress = ClientUppercutState.progress(entity.getId(), Minecraft.getInstance().getFrameTime());
+                float strike = uppercutStrike(progress);
+                boolean right = arm == HumanoidArm.RIGHT;
+                boolean strikingArm = arm == entity.getMainArm();
+                var modelArm = right ? model.rightArm : model.leftArm;
+                if (strikingArm) {
+                    modelArm.xRot = Mth.lerp(strike, 0.55F, -2.35F);
+                    modelArm.yRot = Mth.lerp(strike, right ? -0.32F : 0.32F, right ? 0.10F : -0.10F);
+                    modelArm.zRot = Mth.lerp(strike, right ? 0.28F : -0.28F, right ? -0.18F : 0.18F);
+                } else {
+                    modelArm.xRot = -1.05F;
+                    modelArm.yRot = right ? -0.40F : 0.40F;
+                    modelArm.zRot = right ? 0.18F : -0.18F;
+                }
+            });
     private static final KeyMapping OPEN_SKILLS = new KeyMapping(
             "key.tierborne.open_skills",
             InputConstants.Type.KEYSYM,
@@ -97,6 +125,7 @@ public final class ClientEvents {
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
+        ClientUppercutState.tick();
         ClientProgress.tryOpenSelectionScreen();
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.player == null) {offhandUseHeld=false;alternateHeld=false;return;}
@@ -120,9 +149,17 @@ public final class ClientEvents {
     @SubscribeEvent
     public static void onInteractionKey(InputEvent.InteractionKeyMappingTriggered event) {
         Minecraft minecraft=Minecraft.getInstance();
-        if(event.isAttack()&&minecraft.player!=null&&minecraft.player.getMainHandItem().getItem() instanceof SwordItem
-                &&ClientAbilityState.blocksNormalAttack()){event.setSwingHand(false);event.setCanceled(true);return;}
         if(minecraft.player==null)return;
+        boolean monkHands=ClientProgress.hasSkill(FighterPlayerClass.MONK)
+                &&minecraft.player.getMainHandItem().isEmpty()&&minecraft.player.getOffhandItem().isEmpty();
+        if(event.isAttack()&&(minecraft.player.getMainHandItem().getItem() instanceof SwordItem
+                ||minecraft.player.getMainHandItem().getItem() instanceof AxeItem||monkHands)
+                &&ClientAbilityState.blocksNormalAttack()){event.setSwingHand(false);event.setCanceled(true);return;}
+        if(event.isUseItem()&&ClientProgress.hasSkill(BarbarianPlayerClass.BERSERKER)
+                &&(minecraft.player.getMainHandItem().getItem() instanceof ShieldItem
+                ||minecraft.player.getOffhandItem().getItem() instanceof ShieldItem)){
+            event.setCanceled(true);event.setSwingHand(false);return;
+        }
         boolean dualSwords=ClientProgress.hasSkill(SwordsmanPlayerClass.DUAL)&&minecraft.player.getMainHandItem().getItem() instanceof SwordItem&&minecraft.player.getOffhandItem().getItem() instanceof SwordItem;
         boolean monkFists=ClientProgress.hasSkill(FighterPlayerClass.MONK)&&minecraft.player.getMainHandItem().isEmpty()&&minecraft.player.getOffhandItem().isEmpty();
         if(!dualSwords&&!monkFists)return;
@@ -226,10 +263,13 @@ public final class ClientEvents {
     public static void onRenderCloakedPlayer(RenderPlayerEvent.Pre event) {
         if(ClientCloakState.isCloaked(event.getEntity().getId())){event.setCanceled(true);return;}
         if(ClientBlockState.isBlocking(event.getEntity().getId())){
-            event.getRenderer().getModel().rightArmPose=event.getEntity().getItemBySlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND).getItem() instanceof SwordItem&&event.getEntity().getMainArm()==net.minecraft.world.entity.HumanoidArm.RIGHT||event.getEntity().getItemBySlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND).getItem() instanceof SwordItem&&event.getEntity().getMainArm()!=net.minecraft.world.entity.HumanoidArm.RIGHT?HumanoidModel.ArmPose.BLOCK:HumanoidModel.ArmPose.EMPTY;
-            event.getRenderer().getModel().leftArmPose=event.getEntity().getItemBySlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND).getItem() instanceof SwordItem&&event.getEntity().getMainArm()==net.minecraft.world.entity.HumanoidArm.LEFT||event.getEntity().getItemBySlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND).getItem() instanceof SwordItem&&event.getEntity().getMainArm()!=net.minecraft.world.entity.HumanoidArm.LEFT?HumanoidModel.ArmPose.BLOCK:HumanoidModel.ArmPose.EMPTY;
+            event.getRenderer().getModel().rightArmPose=event.getEntity().getItemBySlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND).getItem() instanceof SwordItem&&event.getEntity().getMainArm()==net.minecraft.world.entity.HumanoidArm.RIGHT||event.getEntity().getItemBySlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND).getItem() instanceof SwordItem&&event.getEntity().getMainArm()!=net.minecraft.world.entity.HumanoidArm.RIGHT?DUAL_SWORD_BLOCK_POSE:HumanoidModel.ArmPose.EMPTY;
+            event.getRenderer().getModel().leftArmPose=event.getEntity().getItemBySlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND).getItem() instanceof SwordItem&&event.getEntity().getMainArm()==net.minecraft.world.entity.HumanoidArm.LEFT||event.getEntity().getItemBySlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND).getItem() instanceof SwordItem&&event.getEntity().getMainArm()!=net.minecraft.world.entity.HumanoidArm.LEFT?DUAL_SWORD_BLOCK_POSE:HumanoidModel.ArmPose.EMPTY;
         }
-        if(event.getEntity()==Minecraft.getInstance().player&&ClientProgress.hasSkill(FighterPlayerClass.MONK)&&event.getEntity().getMainHandItem().isEmpty()&&event.getEntity().getOffhandItem().isEmpty()){event.getRenderer().getModel().rightArmPose=HumanoidModel.ArmPose.BLOCK;event.getRenderer().getModel().leftArmPose=HumanoidModel.ArmPose.BLOCK;}
+        if(ClientUppercutState.isActive(event.getEntity().getId())){
+            event.getRenderer().getModel().rightArmPose=UPPERCUT_POSE;
+            event.getRenderer().getModel().leftArmPose=UPPERCUT_POSE;
+        }else if(event.getEntity()==Minecraft.getInstance().player&&ClientProgress.hasSkill(FighterPlayerClass.MONK)&&event.getEntity().getMainHandItem().isEmpty()&&event.getEntity().getOffhandItem().isEmpty()){event.getRenderer().getModel().rightArmPose=HumanoidModel.ArmPose.BLOCK;event.getRenderer().getModel().leftArmPose=HumanoidModel.ArmPose.BLOCK;}
     }
 
     @SubscribeEvent
@@ -240,28 +280,82 @@ public final class ClientEvents {
             boolean right=event.getHand()==InteractionHand.MAIN_HAND
                     ?minecraft.player.getMainArm()==net.minecraft.world.entity.HumanoidArm.RIGHT
                     :minecraft.player.getMainArm()!=net.minecraft.world.entity.HumanoidArm.RIGHT;
-            if(event.getHand()==InteractionHand.MAIN_HAND){
-                event.getPoseStack().translate(right?0.10:-0.10,0.08,-0.08);
-                event.getPoseStack().mulPose(Vector3f.XP.rotationDegrees(-24.0F));
-                event.getPoseStack().mulPose(Vector3f.YP.rotationDegrees(right?14.0F:-14.0F));
-                event.getPoseStack().mulPose(Vector3f.ZP.rotationDegrees(right?-18.0F:18.0F));
-            }else{
-                event.getPoseStack().translate(right?-0.18:0.18,0.16,-0.2);
-                event.getPoseStack().mulPose(Vector3f.XP.rotationDegrees(-42.0F));
-                event.getPoseStack().mulPose(Vector3f.YP.rotationDegrees(right?-28.0F:28.0F));
-            }
+            event.setCanceled(true);
+            renderDualSwordBlockHand(event,minecraft,right);
         }
         if(minecraft.player!=null&&ClientProgress.hasSkill(FighterPlayerClass.MONK)&&minecraft.player.getMainHandItem().isEmpty()&&minecraft.player.getOffhandItem().isEmpty()&&event.getItemStack().isEmpty()){
             event.setCanceled(true);
             if(event.getHand()==InteractionHand.MAIN_HAND){
                 HumanoidArm mainArm=minecraft.player.getMainArm();
                 HumanoidArm offArm=mainArm.getOpposite();
-                InteractionHand swinging=minecraft.player.swingingArm;
-                float attack=minecraft.player.getAttackAnim(event.getPartialTick());
-                renderMonkArm(event,minecraft,mainArm,swinging==InteractionHand.MAIN_HAND?attack:0.0F);
-                renderMonkArm(event,minecraft,offArm,swinging==InteractionHand.OFF_HAND?attack:0.0F);
+                if(ClientUppercutState.isActive(minecraft.player.getId())){
+                    float progress=ClientUppercutState.progress(minecraft.player.getId(),event.getPartialTick());
+                    renderMonkUppercutArm(event,minecraft,mainArm,progress,true);
+                    renderMonkUppercutArm(event,minecraft,offArm,progress,false);
+                }else{
+                    InteractionHand swinging=minecraft.player.swingingArm;
+                    float attack=minecraft.player.getAttackAnim(event.getPartialTick());
+                    renderMonkArm(event,minecraft,mainArm,swinging==InteractionHand.MAIN_HAND?attack:0.0F);
+                    renderMonkArm(event,minecraft,offArm,swinging==InteractionHand.OFF_HAND?attack:0.0F);
+                }
             }
         }
+    }
+
+    private static void renderMonkUppercutArm(RenderHandEvent event,Minecraft minecraft,
+                                               HumanoidArm arm,float progress,boolean strikingArm){
+        boolean right=arm==HumanoidArm.RIGHT;
+        float side=right?1.0F:-1.0F;
+        float strike=uppercutStrike(progress);
+        event.getPoseStack().pushPose();
+        if(strikingArm){
+            event.getPoseStack().translate(-0.14F*side+0.18F*side*strike,
+                    0.34F-0.58F*strike,0.02F-0.44F*strike);
+            event.getPoseStack().mulPose(Vector3f.XP.rotationDegrees(Mth.lerp(strike,24.0F,-72.0F)));
+            event.getPoseStack().mulPose(Vector3f.YP.rotationDegrees(Mth.lerp(strike,-12.0F*side,8.0F*side)));
+            event.getPoseStack().mulPose(Vector3f.ZP.rotationDegrees(Mth.lerp(strike,18.0F*side,-14.0F*side)));
+        }else{
+            event.getPoseStack().translate(0.13F*side,0.13F,-0.13F);
+            event.getPoseStack().mulPose(Vector3f.XP.rotationDegrees(-15.0F));
+            event.getPoseStack().mulPose(Vector3f.YP.rotationDegrees(10.0F*side));
+            event.getPoseStack().mulPose(Vector3f.ZP.rotationDegrees(16.0F*side));
+        }
+        minecraft.gameRenderer.itemInHandRenderer.renderPlayerArm(event.getPoseStack(),
+                event.getMultiBufferSource(),event.getPackedLight(),0.0F,0.0F,arm);
+        event.getPoseStack().popPose();
+    }
+
+    private static float uppercutStrike(float progress){
+        float windup=Mth.clamp(progress/0.28F,0.0F,1.0F);
+        float rise=Mth.clamp((progress-0.22F)/0.38F,0.0F,1.0F);
+        float recovery=Mth.clamp((progress-0.72F)/0.28F,0.0F,1.0F);
+        float easedRise=rise*rise*(3.0F-2.0F*rise);
+        float easedRecovery=recovery*recovery*(3.0F-2.0F*recovery);
+        return Mth.clamp(easedRise*(1.0F-easedRecovery)+windup*0.04F,0.0F,1.0F);
+    }
+
+    private static void renderDualSwordBlockHand(RenderHandEvent event, Minecraft minecraft, boolean right) {
+        float side = right ? 1.0F : -1.0F;
+        HumanoidArm arm = right ? HumanoidArm.RIGHT : HumanoidArm.LEFT;
+        event.getPoseStack().pushPose();
+        event.getPoseStack().translate(-0.35F * side, -0.10F, -0.50F);
+        event.getPoseStack().mulPose(Vector3f.YP.rotationDegrees(-35.0F * side));
+        event.getPoseStack().mulPose(Vector3f.ZP.rotationDegrees(42.0F * side));
+
+        event.getPoseStack().pushPose();
+        event.getPoseStack().scale(0.52F, 0.90F, 0.52F);
+        minecraft.gameRenderer.itemInHandRenderer.renderPlayerArm(event.getPoseStack(),
+                event.getMultiBufferSource(), event.getPackedLight(), 0.0F, 0.0F, arm);
+        event.getPoseStack().popPose();
+
+        event.getPoseStack().pushPose();
+        event.getPoseStack().translate(0.291F * side, -0.271F, -0.374F);
+        minecraft.gameRenderer.itemInHandRenderer.renderItem(minecraft.player, event.getItemStack(),
+                right ? net.minecraft.client.renderer.block.model.ItemTransforms.TransformType.FIRST_PERSON_RIGHT_HAND
+                        : net.minecraft.client.renderer.block.model.ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND,
+                !right, event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight());
+        event.getPoseStack().popPose();
+        event.getPoseStack().popPose();
     }
 
     private static void renderMonkArm(RenderHandEvent event, Minecraft minecraft, HumanoidArm arm, float swing) {
@@ -296,6 +390,7 @@ public final class ClientEvents {
     public static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
         ClientCloakState.clear();
         ClientBlockState.clear();
+        ClientUppercutState.clear();
         ClientAbilityState.clear();
         offhandUseHeld=false;
         alternateHeld=false;

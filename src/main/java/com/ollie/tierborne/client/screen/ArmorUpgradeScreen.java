@@ -6,6 +6,9 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 public final class ArmorUpgradeScreen extends AbstractContainerScreen<ArmorUpgradeMenu> {
     public ArmorUpgradeScreen(ArmorUpgradeMenu menu, Inventory inventory, Component title) {
@@ -13,6 +16,11 @@ public final class ArmorUpgradeScreen extends AbstractContainerScreen<ArmorUpgra
         imageWidth = 176;
         imageHeight = 166;
         inventoryLabelY = 72;
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
     }
 
     @Override
@@ -45,6 +53,20 @@ public final class ArmorUpgradeScreen extends AbstractContainerScreen<ArmorUpgra
         font.draw(poseStack, "+", leftPos + 49, topPos + 39, 0x404040);
         font.draw(poseStack, "+", leftPos + 85, topPos + 39, 0x404040);
         font.draw(poseStack, "→", leftPos + 121, topPos + 39, 0x404040);
+
+        renderGhostItem(poseStack, 0, new ItemStack(Items.PAPER), 26, 35);
+        renderGhostItem(poseStack, 1, new ItemStack(Items.IRON_CHESTPLATE), 62, 35);
+        renderGhostItem(poseStack, 2, new ItemStack(Items.IRON_INGOT), 98, 35);
+    }
+
+    private void renderGhostItem(PoseStack poseStack, int slotIndex, ItemStack icon, int x, int y) {
+        if (menu.getSlot(slotIndex).hasItem()) return;
+        RenderSystem.enableBlend();
+        RenderSystem.setShaderColor(0.35F, 0.35F, 0.35F, 0.45F);
+        itemRenderer.renderAndDecorateFakeItem(icon, leftPos + x, topPos + y);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        GuiComponent.fill(poseStack, leftPos + x, topPos + y, leftPos + x + 16, topPos + y + 16,
+                0x99505050);
     }
 
     private void drawSlot(PoseStack poseStack, int x, int y) {

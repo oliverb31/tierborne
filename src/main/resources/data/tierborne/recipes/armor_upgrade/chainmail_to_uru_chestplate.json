@@ -1,7 +1,7 @@
 {
   "type": "tierborne:armor_upgrade",
   "template": { "item": "tierborne:uru_upgrade_template" },
-  "base": { "item": "tierborne:runic_leggings" },
+  "base": { "item": "minecraft:chainmail_chestplate" },
   "material": { "item": "tierborne:uru_ingot" },
-  "result": { "item": "tierborne:uru_leggings" }
+  "result": { "item": "tierborne:uru_chestplate" }
 }

@@ -10,8 +10,20 @@ final class SkillDetailLines {
         List<String> lines=new ArrayList<>();
         if(skill.upgrade()!=null&&!(tree instanceof ArcherPlayerClass)){int current=tree.totalBonus(skill.upgrade().type(),unlocked);lines.add(skill.upgrade().type().displayName()+": "+signed(skill.upgrade().percentagePoints())+"%");lines.add("Current: "+signed(current)+"%  After: "+signed(current+skill.upgrade().percentagePoints())+"%");}
         switch(skill.id()){
+            case BarbarianPlayerClass.ROOT->{lines.add("Axe Damage: +"+n(RpgBalanceConfig.BARBARIAN_AXE_DAMAGE.get())+"%");lines.add("Axe Charge Speed: +"+n(RpgBalanceConfig.BARBARIAN_AXE_CHARGE_SPEED.get())+"%");}
+            case BarbarianPlayerClass.BERSERKER->{lines.add("Maximum Health: +"+n(RpgBalanceConfig.BERSERKER_MAX_HEALTH.get())+"  Shields: Disabled");lines.add("Berserk: +"+n(RpgBalanceConfig.BERSERK_AXE_DAMAGE.get())+"% axe, +"+n(RpgBalanceConfig.BERSERK_MOVEMENT_SPEED.get())+"% speed, "+n(RpgBalanceConfig.BERSERK_LIFESTEAL_PERCENT.get())+"% lifesteal");lines.add("Duration: "+n(RpgBalanceConfig.BERSERK_MAX_DURATION_SECONDS.get())+"s  Toggle cooldown: "+n(RpgBalanceConfig.BERSERK_TOGGLE_COOLDOWN_SECONDS.get())+"s");lines.add("Bleed: "+n(RpgBalanceConfig.BERSERK_BLEED_PERCENT.get())+"% of damage taken; attacking clears it");}
+            case BarbarianPlayerClass.LESS_BLEED->lines.add("Damage added to Bleed: "+n(RpgBalanceConfig.BERSERK_BLEED_PERCENT.get())+"% -> "+n(RpgBalanceConfig.BERSERK_REDUCED_BLEED_PERCENT.get())+"%");
+            case BarbarianPlayerClass.LONGER_BERSERK->lines.add("Maximum Berserk duration: "+n(RpgBalanceConfig.BERSERK_MAX_DURATION_SECONDS.get())+"s -> "+n(RpgBalanceConfig.BERSERK_UPGRADED_DURATION_SECONDS.get())+"s");
+            case BarbarianPlayerClass.BLOOD_FEAST->lines.add("Berserk lifesteal: "+n(RpgBalanceConfig.BERSERK_LIFESTEAL_PERCENT.get())+"% -> "+n(RpgBalanceConfig.BERSERK_UPGRADED_LIFESTEAL_PERCENT.get())+"%");
+            case BarbarianPlayerClass.GREATER_FRENZY->{lines.add("Berserk Axe Damage: +"+n(RpgBalanceConfig.BERSERK_AXE_DAMAGE.get())+"% -> +"+n(RpgBalanceConfig.BERSERK_UPGRADED_AXE_DAMAGE.get())+"%");lines.add("Berserk Movement: +"+n(RpgBalanceConfig.BERSERK_MOVEMENT_SPEED.get())+"% -> +"+n(RpgBalanceConfig.BERSERK_UPGRADED_MOVEMENT_SPEED.get())+"%");}
+            case BarbarianPlayerClass.EXECUTIONER->{lines.add("Axe Damage: +"+n(RpgBalanceConfig.EXECUTIONER_AXE_DAMAGE.get())+"%  Axe Charge Speed: "+n(RpgBalanceConfig.EXECUTIONER_ATTACK_SPEED.get())+"%");lines.add("Damage vs lower-health targets: +"+n(RpgBalanceConfig.EXECUTIONER_LOW_HEALTH_DAMAGE.get())+"%");lines.add("Execute charge: "+n(RpgBalanceConfig.EXECUTE_CHARGE_SECONDS.get())+"s  Movement: "+n(RpgBalanceConfig.EXECUTE_MOVEMENT_PENALTY.get())+"%");lines.add("Instant kill below "+n(RpgBalanceConfig.EXECUTE_KILL_THRESHOLD_PERCENT.get())+"% health; "+n(RpgBalanceConfig.EXECUTE_COOLDOWN_SECONDS.get())+"s cooldown");}
+            case BarbarianPlayerClass.EXECUTE_DAMAGE->lines.add("Maximum Execute multiplier: "+n(RpgBalanceConfig.EXECUTE_MAX_MULTIPLIER.get())+"x -> "+n(RpgBalanceConfig.EXECUTE_UPGRADED_MAX_MULTIPLIER.get())+"x");
+            case BarbarianPlayerClass.EXECUTE_CHARGE->lines.add("Execute charge: "+n(RpgBalanceConfig.EXECUTE_CHARGE_SECONDS.get())+"s -> "+n(RpgBalanceConfig.EXECUTE_UPGRADED_CHARGE_SECONDS.get())+"s");
+            case BarbarianPlayerClass.EXECUTE_MOBILITY->lines.add("Execute movement: "+n(RpgBalanceConfig.EXECUTE_MOVEMENT_PENALTY.get())+"% -> "+n(RpgBalanceConfig.EXECUTE_UPGRADED_MOVEMENT_PENALTY.get())+"%");
+            case BarbarianPlayerClass.LOW_HEALTH_DAMAGE->lines.add("Low-health target damage: +"+n(RpgBalanceConfig.EXECUTIONER_LOW_HEALTH_DAMAGE.get())+"% -> +"+n(RpgBalanceConfig.EXECUTIONER_UPGRADED_LOW_HEALTH_DAMAGE.get())+"%");
             case FighterPlayerClass.ROOT->lines.add("No inherent purchase effects.");
             case FighterPlayerClass.PULL->{lines.add("Range: "+n(RpgBalanceConfig.PULL_RANGE.get())+" blocks  Maximum Active: "+n(RpgBalanceConfig.PULL_MAX_SECONDS.get())+"s");lines.add("Cooldown: "+n(RpgBalanceConfig.PULL_COOLDOWN_SECONDS.get())+"s  Hit: Full-power fist attack");}
+            case FighterPlayerClass.UPPERCUT->{lines.add("Damage: Full-power fist +"+n(RpgBalanceConfig.UPPERCUT_DAMAGE_PERCENT.get())+"%  Range: "+n(RpgBalanceConfig.UPPERCUT_RANGE.get())+" blocks");lines.add("Launch: "+n(RpgBalanceConfig.UPPERCUT_VERTICAL_KNOCKBACK.get())+" upward / "+n(RpgBalanceConfig.UPPERCUT_HORIZONTAL_KNOCKBACK.get())+" forward");lines.add("Cooldown: "+n(RpgBalanceConfig.UPPERCUT_COOLDOWN_SECONDS.get())+"s  Both hands must be empty");}
             case FighterPlayerClass.MONK->{lines.add("Movement Speed: +"+n(RpgBalanceConfig.MONK_MOVE.get())+"%  Fist Damage: +"+n(RpgBalanceConfig.MONK_FIST.get())+"%");lines.add("Left Click: Offhand Fist  Right Click: Primary Fist");}
             case FighterPlayerClass.PULL_RECOVERY->lines.add("Pull Cooldown: "+n(RpgBalanceConfig.PULL_COOLDOWN_SECONDS.get())+"s -> "+n(RpgBalanceConfig.PULL_UPGRADED_COOLDOWN_SECONDS.get())+"s");
             case FighterPlayerClass.EXTENDED_PULL->lines.add("Pull Range: "+n(RpgBalanceConfig.PULL_RANGE.get())+" -> "+n(RpgBalanceConfig.PULL_UPGRADED_RANGE.get())+" blocks");
@@ -99,10 +111,10 @@ final class SkillDetailLines {
             case SwordsmanPlayerClass.BACKSTAB->lines.add("Backstab Damage: +"+n(RpgBalanceConfig.BACKSTAB_DAMAGE.get())+"%  Threshold: "+n(RpgBalanceConfig.BACKSTAB_DOT_THRESHOLD.get()));
             case SwordsmanPlayerClass.FIRST_HIT->lines.add("First Hit Damage: +"+n(RpgBalanceConfig.FIRST_HIT_DAMAGE.get())+"%  Reset: "+n(RpgBalanceConfig.FIRST_HIT_RESET_SECONDS.get())+"s");
             case SwordsmanPlayerClass.NON_AGGRO->lines.add("Non-Aggro Damage: +"+n(RpgBalanceConfig.NON_AGGRO_DAMAGE.get())+"%");
-            case GeneralSkillTree.WOOD_DROPS->lines.add("Bonus Wood Chance: "+GeneralSkillBalance.EXTRA_DROP_CHANCE_PERCENT+"%  Additional Wood: 1");
-            case GeneralSkillTree.ORE_DROPS->lines.add("Bonus Ore Chance: "+GeneralSkillBalance.EXTRA_DROP_CHANCE_PERCENT+"%  Additional Ore: 1");
-            case GeneralSkillTree.MATERIAL_RECOVERY->lines.add("Recovery Chance: "+GeneralSkillBalance.MATERIAL_REFUND_CHANCE_PERCENT+"%  Materials Returned: 1");
-            case GeneralSkillTree.ENCHANTED_CRAFTING->{lines.add("Enchantment Chance: "+GeneralSkillBalance.ENCHANTED_CRAFTING_CHANCE_PERCENT+"%");lines.add("Enchanting Power: "+GeneralSkillBalance.ENCHANTMENT_MIN_LEVEL+"-"+GeneralSkillBalance.ENCHANTMENT_MAX_LEVEL);}
+            case GeneralSkillTree.WOOD_DROPS->lines.add("Additional Wood: 1");
+            case GeneralSkillTree.ORE_DROPS->lines.add("Additional Ore Drop: 1");
+            case GeneralSkillTree.MATERIAL_RECOVERY->lines.add("Materials Returned: 1");
+            case GeneralSkillTree.ENCHANTED_CRAFTING->lines.add("Enchanting Power: "+GeneralSkillBalance.ENCHANTMENT_MIN_LEVEL+"-"+GeneralSkillBalance.ENCHANTMENT_MAX_LEVEL);
         }
         return lines;
     }

@@ -2,7 +2,6 @@ package com.ollie.tierborne.item;
 
 import com.ollie.tierborne.Tierborne;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -10,6 +9,8 @@ import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.common.ForgeSpawnEggItem;
+import com.ollie.tierborne.entity.ModEntities;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +38,15 @@ public final class ModItems {
     public static final RegistryObject<Item> ORICHALCUM_INGOT = registerBasicItem("orichalcum_ingot");
     public static final RegistryObject<Item> ADAMANTITE_INGOT = registerBasicItem("adamantite_ingot");
 
+    public static final RegistryObject<Item> DUNE_REVENANT_SPAWN_EGG = registerSpawnEgg(
+            "dune_revenant_spawn_egg", () -> ModEntities.DUNE_REVENANT.get(), 0x75634A, 0x8CC6A3);
+    public static final RegistryObject<Item> FROSTBOUND_ARCHER_SPAWN_EGG = registerSpawnEgg(
+            "frostbound_archer_spawn_egg", () -> ModEntities.FROSTBOUND_ARCHER.get(), 0xA6BEC8, 0x354A56);
+    public static final RegistryObject<Item> RUNEBOUND_COLOSSUS_SPAWN_EGG = registerSpawnEgg(
+            "runebound_colossus_spawn_egg", () -> ModEntities.RUNEBOUND_COLOSSUS.get(), 0x292B2F, 0xB33C2E);
+    public static final RegistryObject<Item> ABYSSAL_WATCHER_SPAWN_EGG = registerSpawnEgg(
+            "abyssal_watcher_spawn_egg", () -> ModEntities.ABYSSAL_WATCHER.get(), 0x87957F, 0x266B70);
+
     public static final RegistryObject<Item> COPPER_UPGRADE_TEMPLATE = registerBasicItem("copper_upgrade_template");
     public static final RegistryObject<Item> CHAINMAIL_UPGRADE_TEMPLATE = registerBasicItem("chainmail_upgrade_template");
     public static final RegistryObject<Item> SILVER_UPGRADE_TEMPLATE = registerBasicItem("silver_upgrade_template");
@@ -52,12 +62,12 @@ public final class ModItems {
         registerArmorSet("copper", ModArmorMaterial.COPPER);
 
         registerArmorSet("silver", ModArmorMaterial.SILVER);
-        registerArmorSet("runic", ModArmorMaterial.RUNIC);
+        registerArmorSet("uru", ModArmorMaterial.URU);
         registerArmorSet("steel", ModArmorMaterial.STEEL);
         registerArmorSet("tungsten", ModArmorMaterial.TUNGSTEN);
 
         registerArmorSet("mithril", ModArmorMaterial.MITHRIL);
-        registerArmorSet("uru", ModArmorMaterial.URU);
+        registerArmorSet("runic", ModArmorMaterial.RUNIC);
         registerArmorSet("orichalcum", ModArmorMaterial.ORICHALCUM);
         registerArmorSet("adamantite", ModArmorMaterial.ADAMANTITE);
     }
@@ -76,11 +86,18 @@ public final class ModItems {
     }
 
     private static void registerArmorPiece(String name, ModArmorMaterial material, EquipmentSlot slot) {
-        ARMOR_ITEMS.add(ITEMS.register(name, () -> new ArmorItem(material, slot,
+        ARMOR_ITEMS.add(ITEMS.register(name, () -> new TierborneArmorItem(material, slot,
                 new Item.Properties().tab(TIERBORNE_TAB))));
     }
 
     private static RegistryObject<Item> registerBasicItem(String name) {
         return ITEMS.register(name, () -> new Item(new Item.Properties().tab(TIERBORNE_TAB)));
+    }
+
+    private static RegistryObject<Item> registerSpawnEgg(String name,
+            java.util.function.Supplier<? extends net.minecraft.world.entity.EntityType<? extends net.minecraft.world.entity.Mob>> entityType,
+            int primaryColor, int secondaryColor) {
+        return ITEMS.register(name, () -> new ForgeSpawnEggItem(entityType, primaryColor, secondaryColor,
+                new Item.Properties().tab(TIERBORNE_TAB)));
     }
 }

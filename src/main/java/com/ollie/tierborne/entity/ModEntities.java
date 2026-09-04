@@ -3,6 +3,12 @@ package com.ollie.tierborne.entity;
 import com.ollie.tierborne.Tierborne;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.Guardian;
+import net.minecraft.world.entity.monster.AbstractSkeleton;
+import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -17,5 +23,49 @@ public final class ModEntities {
             () -> EntityType.Builder.<FlameSlashProjectile>of(FlameSlashProjectile::new, MobCategory.MISC)
                     .sized(2.0F, 2.0F).clientTrackingRange(12).updateInterval(1)
                     .build(Tierborne.MOD_ID + ":flame_slash"));
+
+    public static final RegistryObject<EntityType<DuneRevenant>> DUNE_REVENANT = ENTITIES.register("dune_revenant",
+            () -> EntityType.Builder.of(DuneRevenant::new, MobCategory.MONSTER)
+                    .sized(0.6F, 1.95F).clientTrackingRange(10)
+                    .build(Tierborne.MOD_ID + ":dune_revenant"));
+    public static final RegistryObject<EntityType<FrostboundArcher>> FROSTBOUND_ARCHER = ENTITIES.register("frostbound_archer",
+            () -> EntityType.Builder.of(FrostboundArcher::new, MobCategory.MONSTER)
+                    .sized(0.6F, 1.99F).clientTrackingRange(10)
+                    .build(Tierborne.MOD_ID + ":frostbound_archer"));
+    public static final RegistryObject<EntityType<RuneboundColossus>> RUNEBOUND_COLOSSUS = ENTITIES.register("runebound_colossus",
+            () -> EntityType.Builder.of(RuneboundColossus::new, MobCategory.MONSTER)
+                    .sized(1.4F, 2.7F).clientTrackingRange(12)
+                    .build(Tierborne.MOD_ID + ":runebound_colossus"));
+    public static final RegistryObject<EntityType<AbyssalWatcher>> ABYSSAL_WATCHER = ENTITIES.register("abyssal_watcher",
+            () -> EntityType.Builder.of(AbyssalWatcher::new, MobCategory.MONSTER)
+                    .sized(2.0F, 2.0F).clientTrackingRange(12)
+                    .build(Tierborne.MOD_ID + ":abyssal_watcher"));
+
+    public static void createAttributes(EntityAttributeCreationEvent event) {
+        event.put(DUNE_REVENANT.get(), Zombie.createAttributes()
+                .add(Attributes.MAX_HEALTH, 32.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.25D)
+                .add(Attributes.ATTACK_DAMAGE, 7.0D)
+                .add(Attributes.FOLLOW_RANGE, 32.0D)
+                .build());
+        event.put(FROSTBOUND_ARCHER.get(), AbstractSkeleton.createAttributes()
+                .add(Attributes.MAX_HEALTH, 30.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.26D)
+                .add(Attributes.FOLLOW_RANGE, 32.0D)
+                .build());
+        event.put(RUNEBOUND_COLOSSUS.get(), IronGolem.createAttributes()
+                .add(Attributes.MAX_HEALTH, 240.0D)
+                .add(Attributes.ATTACK_DAMAGE, 22.0D)
+                .add(Attributes.ARMOR, 8.0D)
+                .add(Attributes.FOLLOW_RANGE, 40.0D)
+                .build());
+        event.put(ABYSSAL_WATCHER.get(), Guardian.createAttributes()
+                .add(Attributes.MAX_HEALTH, 180.0D)
+                .add(Attributes.ATTACK_DAMAGE, 11.0D)
+                .add(Attributes.ARMOR, 6.0D)
+                .add(Attributes.FOLLOW_RANGE, 40.0D)
+                .build());
+    }
+
     private ModEntities() {}
 }

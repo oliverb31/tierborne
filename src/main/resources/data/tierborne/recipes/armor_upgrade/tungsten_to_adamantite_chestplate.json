@@ -1,0 +1,7 @@
+{
+  "type": "tierborne:armor_upgrade",
+  "template": { "item": "tierborne:adamantite_upgrade_template" },
+  "base": { "item": "tierborne:tungsten_chestplate" },
+  "material": { "item": "tierborne:adamantite_ingot" },
+  "result": { "item": "tierborne:adamantite_chestplate" }
+}

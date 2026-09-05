@@ -1,0 +1,7 @@
+{
+  "type": "tierborne:armor_upgrade",
+  "template": { "item": "tierborne:silver_upgrade_template" },
+  "base": { "item": "minecraft:chainmail_leggings" },
+  "material": { "item": "tierborne:silver_ingot" },
+  "result": { "item": "tierborne:silver_leggings" }
+}

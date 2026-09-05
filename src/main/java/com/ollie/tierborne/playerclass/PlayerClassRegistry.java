@@ -11,6 +11,7 @@ public final class PlayerClassRegistry {
         register(new SwordsmanPlayerClass());
         register(new ArcherPlayerClass());
         register(new FighterPlayerClass());
+        register(new BarbarianPlayerClass());
     }
 
     private PlayerClassRegistry() {}

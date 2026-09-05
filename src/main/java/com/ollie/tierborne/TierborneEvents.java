@@ -3,6 +3,7 @@ package com.ollie.tierborne;
 import com.ollie.tierborne.data.PlayerProgress;
 import com.ollie.tierborne.data.PlayerProgressSavedData;
 import com.ollie.tierborne.network.ModNetwork;
+import com.ollie.tierborne.item.RemovedVanillaArmor;
 import com.ollie.tierborne.playerclass.SkillBonusType;
 import com.ollie.tierborne.playerclass.GeneralSkillBalance;
 import com.ollie.tierborne.playerclass.GeneralSkillRules;
@@ -12,15 +13,26 @@ import com.ollie.tierborne.playerclass.ArcherPlayerClass;
 import com.ollie.tierborne.playerclass.ArcherStats;
 import com.ollie.tierborne.playerclass.FighterPlayerClass;
 import com.ollie.tierborne.playerclass.FighterStats;
+import com.ollie.tierborne.playerclass.BarbarianPlayerClass;
+import com.ollie.tierborne.playerclass.BarbarianStats;
 import com.ollie.tierborne.combat.FighterCombat;
+import com.ollie.tierborne.combat.BarbarianCombat;
 import com.ollie.tierborne.combat.AbilityRuntime;
 import com.ollie.tierborne.config.RpgBalanceConfig;
+import com.ollie.tierborne.progression.ProgressionRuntime;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.Container;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -28,15 +40,19 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TieredItem;
 import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.Tags;
@@ -44,19 +60,28 @@ import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.ShieldBlockEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerXpEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.ArrowLooseEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.AnvilUpdateEvent;
+import net.minecraftforge.event.village.VillagerTradesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.network.NetworkHooks;
+import com.ollie.tierborne.world.inventory.ArmorUpgradeMenu;
+import com.ollie.tierborne.registry.ModAttributes;
 
 import java.util.UUID;
 import java.util.ArrayList;
@@ -74,6 +99,9 @@ public final class TierborneEvents {
     private static final UUID MOVEMENT_SPEED_LIMIT_ID = UUID.fromString("82d6df8a-a98c-4c02-8582-85707844e6b4");
     private static final UUID ARCHER_MOVEMENT_ID = UUID.fromString("091c2d97-9428-4449-8948-385b80b6bc3c");
     private static final UUID FIGHTER_ATTACK_SPEED_ID = UUID.fromString("bff841f1-c9c5-4e2c-a666-652a09d6cad8");
+    private static final UUID BARBARIAN_MAX_HEALTH_ID = UUID.fromString("70e391ef-f76c-48d6-8c80-fbd180079454");
+    private static final UUID BARBARIAN_ATTACK_SPEED_ID = UUID.fromString("18d50fa9-483f-4caf-bade-79082b1575d9");
+    private static final UUID BARBARIAN_MOVEMENT_ID = UUID.fromString("16f38554-2c4a-4100-aecf-af73c9da9831");
     private static final java.util.Set<UUID> SHIELD_BLOCKING_DAMAGE = new java.util.HashSet<>();
 
     @SubscribeEvent
@@ -92,11 +120,43 @@ public final class TierborneEvents {
                     "RPG progression reset. All spent skill points have been refunded."));
             return 1;
         }));
+        event.getDispatcher().register(net.minecraft.commands.Commands.literal("rpgprogress")
+                .executes(context -> {
+                    ServerPlayer player = context.getSource().getPlayerOrException();
+                    PlayerProgress progress = PlayerProgressSavedData.get(player.getServer()).get(player.getUUID());
+                    player.sendSystemMessage(Component.literal("Tierborne level " + progress.level()
+                            + " — " + progress.progressionExperience() + "/"
+                            + progress.experienceToNextLevel() + " XP — "
+                            + progress.skillPoints() + " skill points"));
+                    return progress.level();
+                }));
+        event.getDispatcher().register(net.minecraft.commands.Commands.literal("rpgxp")
+                .requires(source -> source.hasPermission(2))
+                .then(net.minecraft.commands.Commands.argument("amount",
+                                com.mojang.brigadier.arguments.IntegerArgumentType.integer(1))
+                        .executes(context -> {
+                            ServerPlayer player = context.getSource().getPlayerOrException();
+                            int amount = com.mojang.brigadier.arguments.IntegerArgumentType
+                                    .getInteger(context, "amount");
+                            PlayerProgressSavedData data = PlayerProgressSavedData.get(player.getServer());
+                            PlayerProgress progress = data.get(player.getUUID());
+                            progress.addProgressionExperience(amount);
+                            data.changed();
+                            ModNetwork.sync(player);
+                            player.sendSystemMessage(Component.literal("Granted " + amount
+                                    + " Tierborne XP. Current level: " + progress.level() + "."));
+                            return amount;
+                        })));
     }
 
     @SubscribeEvent
     public void onShieldBlock(ShieldBlockEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        PlayerProgress progress = PlayerProgressSavedData.get(player.getServer()).get(player.getUUID());
+        if (progress.hasSkill(BarbarianPlayerClass.BERSERKER)) {
+            event.setCanceled(true);
+            return;
+        }
         event.setBlockedDamage((float)(event.getOriginalBlockedDamage()
                 * RpgBalanceConfig.SHIELD_BLOCK_PERCENT.get() / 100.0));
         SHIELD_BLOCKING_DAMAGE.add(player.getUUID());
@@ -104,8 +164,108 @@ public final class TierborneEvents {
 
     @SubscribeEvent
     public void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        if(event.getEntity() instanceof ServerPlayer player)AbilityRuntime.resetTransient(player);
+        if(event.getEntity() instanceof ServerPlayer player){AbilityRuntime.resetTransient(player);giveStartingArmor(player);removeObsoleteArmor(player, true);com.ollie.tierborne.dungeon.DungeonManager.recoverOnLogin(player);ProgressionRuntime.clearVanillaExperience(player);ProgressionRuntime.stripEnchantments(player);}
         sync(event.getEntity());
+    }
+
+    @SubscribeEvent
+    public void onVanillaExperiencePickup(PlayerXpEvent.PickupXp event) {
+        event.setCanceled(true);
+        event.getOrb().discard();
+    }
+
+    @SubscribeEvent
+    public void onVanillaExperienceChange(PlayerXpEvent.XpChange event) {
+        event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public void onVanillaLevelChange(PlayerXpEvent.LevelChange event) {
+        event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public void onAnvilEnchantAttempt(AnvilUpdateEvent event) {
+        if (event.getLeft().isEnchanted() || event.getRight().isEnchanted()
+                || event.getLeft().is(Items.ENCHANTED_BOOK)
+                || event.getRight().is(Items.ENCHANTED_BOOK)) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public void onObsoleteArmorPickup(EntityItemPickupEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)
+                || !RemovedVanillaArmor.contains(event.getItem().getItem())) return;
+
+        event.setCanceled(true);
+        event.getItem().discard();
+        player.displayClientMessage(Component.translatable("message.tierborne.obsolete_armor_removed"), true);
+    }
+
+    @SubscribeEvent
+    public void onVillagerTrades(VillagerTradesEvent event) {
+        event.getTrades().values().forEach(listings -> listings.replaceAll(original -> (trader, random) -> {
+            net.minecraft.world.item.trading.MerchantOffer offer = original.getOffer(trader, random);
+            return offer != null && RemovedVanillaArmor.contains(offer.getResult()) ? null : offer;
+        }));
+    }
+
+    @SubscribeEvent
+    public void onObsoleteArmorEquipped(LivingEquipmentChangeEvent event) {
+        if (event.getEntity().level.isClientSide || !RemovedVanillaArmor.contains(event.getTo())) return;
+        event.getEntity().setItemSlot(event.getSlot(), ItemStack.EMPTY);
+        if (event.getEntity() instanceof ServerPlayer player) {
+            player.displayClientMessage(Component.translatable("message.tierborne.obsolete_armor_removed"), true);
+        }
+    }
+
+    @SubscribeEvent
+    public void onSmithingTableUsed(PlayerInteractEvent.RightClickBlock event) {
+        if (event.getHand() != InteractionHand.MAIN_HAND
+                || !event.getLevel().getBlockState(event.getPos()).is(Blocks.SMITHING_TABLE)) return;
+
+        event.setCanceled(true);
+        event.setCancellationResult(InteractionResult.sidedSuccess(event.getLevel().isClientSide));
+        if (event.getEntity() instanceof ServerPlayer player) {
+            NetworkHooks.openScreen(player, new SimpleMenuProvider(
+                    (containerId, inventory, ignored) -> new ArmorUpgradeMenu(containerId, inventory,
+                            net.minecraft.world.inventory.ContainerLevelAccess.create(event.getLevel(), event.getPos())),
+                    Component.translatable("container.tierborne.armor_upgrade")), event.getPos());
+        }
+    }
+
+    @SubscribeEvent
+    public void onEnchantingTableUsed(PlayerInteractEvent.RightClickBlock event) {
+        if (!event.getLevel().getBlockState(event.getPos()).is(Blocks.ENCHANTING_TABLE)) return;
+        event.setCanceled(true);
+        event.setCancellationResult(InteractionResult.FAIL);
+        if (event.getEntity() instanceof ServerPlayer player) {
+            player.displayClientMessage(Component.translatable(
+                    "message.tierborne.enchantments_disabled"), true);
+        }
+    }
+
+    private static void giveStartingArmor(ServerPlayer player) {
+        PlayerProgressSavedData data = PlayerProgressSavedData.get(player.getServer());
+        PlayerProgress progress = data.get(player.getUUID());
+        if (progress.receivedStartingArmor()) return;
+
+        giveStartingPiece(player, EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
+        giveStartingPiece(player, EquipmentSlot.CHEST, new ItemStack(Items.LEATHER_CHESTPLATE));
+        giveStartingPiece(player, EquipmentSlot.LEGS, new ItemStack(Items.LEATHER_LEGGINGS));
+        giveStartingPiece(player, EquipmentSlot.FEET, new ItemStack(Items.LEATHER_BOOTS));
+        progress.markReceivedStartingArmor();
+        data.changed();
+        player.sendSystemMessage(Component.translatable("message.tierborne.starting_armor_received"));
+    }
+
+    private static void giveStartingPiece(ServerPlayer player, EquipmentSlot slot, ItemStack stack) {
+        if (player.getItemBySlot(slot).isEmpty()) {
+            player.setItemSlot(slot, stack);
+        } else if (!player.getInventory().add(stack)) {
+            player.drop(stack, false);
+        }
     }
 
     @SubscribeEvent
@@ -115,12 +275,16 @@ public final class TierborneEvents {
 
     @SubscribeEvent
     public void onRespawn(PlayerEvent.PlayerRespawnEvent event) {
-        if(event.getEntity() instanceof ServerPlayer player)AbilityRuntime.resetTransient(player);
+        if(event.getEntity() instanceof ServerPlayer player){AbilityRuntime.resetTransient(player);com.ollie.tierborne.dungeon.DungeonManager.recoverAfterRespawn(player);}
         sync(event.getEntity());
     }
 
     @SubscribeEvent
     public void onDeath(LivingDeathEvent event) {
+        if (event.getSource().getEntity() instanceof ServerPlayer player
+                && event.getEntity() != player) {
+            ProgressionRuntime.rewardHostileKill(player, event.getEntity());
+        }
         com.ollie.tierborne.combat.ElementalCombat.clear(event.getEntity());
         com.ollie.tierborne.combat.CombatControl.clear(event.getEntity());
         AbilityRuntime.resetRoot(event.getEntity());
@@ -128,7 +292,17 @@ public final class TierborneEvents {
     }
 
     @SubscribeEvent
+    public void onLivingChangeTarget(LivingChangeTargetEvent event) {
+        if(event.getEntity() instanceof net.minecraft.world.entity.Mob
+                &&event.getNewTarget() instanceof ServerPlayer player
+                &&AbilityRuntime.isCloaked(player))event.setNewTarget(null);
+    }
+
+    @SubscribeEvent
     public void onLivingAttack(LivingAttackEvent event) {
+        if(event.getEntity() instanceof ServerPlayer player
+                &&event.getSource().getEntity() instanceof net.minecraft.world.entity.Mob
+                &&AbilityRuntime.isCloaked(player)){event.setCanceled(true);return;}
         if(event.getSource().getEntity()!=null&&(AbilityRuntime.isRooted(event.getSource().getEntity())||FighterCombat.offenseDisabled(event.getSource().getEntity()))){event.setCanceled(true);return;}
         if(event.getEntity() instanceof ServerPlayer defender&&event.getSource().getEntity() instanceof LivingEntity attacker&&!(attacker instanceof ServerPlayer serverAttacker&&AbilityRuntime.internalDamage(serverAttacker))&&FighterCombat.tryCounter(defender,attacker,event.getAmount())){event.setCanceled(true);return;}
         if(!(event.getSource().getEntity() instanceof ServerPlayer player)
@@ -160,8 +334,31 @@ public final class TierborneEvents {
         int bonus = progress.totalBonus(SkillBonusType.SWORD_DAMAGE);
         double totalBonus = bonus + AbilityRuntime.additionalSwordDamagePercent(player, event.getEntity());
         float swordDamage=(float)(event.getAmount() * (1.0 + totalBonus / 100.0));
-        if(progress.hasSkill(SwordsmanPlayerClass.MAGIC))swordDamage=com.ollie.tierborne.combat.ElementalCombat.modifyDamage(event.getEntity(),com.ollie.tierborne.combat.Element.FIRE,swordDamage);
+        if(progress.hasSkill(SwordsmanPlayerClass.MAGIC)) {
+            swordDamage = com.ollie.tierborne.combat.ElementalCombat.modifyDamage(
+                    event.getEntity(), com.ollie.tierborne.combat.Element.FIRE, swordDamage);
+            swordDamage *= (float) player.getAttributeValue(ModAttributes.MAGIC_DAMAGE.get());
+        }
         event.setAmount(swordDamage);
+    }
+
+    @SubscribeEvent
+    public void onAxeDamage(LivingHurtEvent event) {
+        if (!(event.getSource().getEntity() instanceof ServerPlayer player)
+                || event.getSource().getDirectEntity() != player
+                || !(player.getMainHandItem().getItem() instanceof AxeItem)) return;
+        event.setAmount(BarbarianCombat.modifyAxeDamage(player, event.getEntity(), event.getAmount()));
+    }
+
+    @SubscribeEvent
+    public void onBarbarianDamageApplied(LivingDamageEvent event) {
+        if (event.getEntity() instanceof ServerPlayer defender) {
+            BarbarianCombat.onDamageTaken(defender, event.getAmount());
+        }
+        if (event.getSource().getEntity() instanceof ServerPlayer attacker
+                && event.getSource().getDirectEntity() == attacker) {
+            BarbarianCombat.onDamageDealt(attacker, event.getEntity(), event.getAmount());
+        }
     }
 
     @SubscribeEvent
@@ -182,7 +379,8 @@ public final class TierborneEvents {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if(AbilityRuntime.isRooted(player)||FighterCombat.offenseDisabled(player)){event.setCanceled(true);return;}
         AbilityRuntime.offensiveAction(player);
-        boolean trackedMelee=player.getMainHandItem().getItem() instanceof SwordItem||progressIsMonkFist(player);
+        boolean trackedMelee=player.getMainHandItem().getItem() instanceof SwordItem
+                || player.getMainHandItem().getItem() instanceof AxeItem || progressIsMonkFist(player);
         if(trackedMelee&&!AbilityRuntime.beginNormalSwordAttack(player))event.setCanceled(true);
     }
 
@@ -194,14 +392,26 @@ public final class TierborneEvents {
         if(!(event.getSource().getEntity() instanceof ServerPlayer player))return;
         LivingEntity target=event.getEntity();
         Entity direct=event.getSource().getDirectEntity();
-        boolean intentional=direct==player||direct instanceof AbstractArrow||direct instanceof com.ollie.tierborne.entity.FireballProjectile;
+        boolean intentional=direct==player||direct instanceof AbstractArrow||direct instanceof com.ollie.tierborne.entity.FireballProjectile||direct instanceof com.ollie.tierborne.entity.FlameSlashProjectile;
         if(!intentional)return;
         event.setAmount(FighterCombat.modifyIntentionalHit(player,target,event.getAmount()));
     }
 
     @SubscribeEvent
+    public void onArmorDamageReduction(LivingHurtEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player) || event.getSource().isBypassArmor()) return;
+        double reduction = Math.max(0.0D,
+                player.getAttributeValue(ModAttributes.DAMAGE_REDUCTION.get()) - 1.0D);
+        if (reduction > 0.0D) {
+            event.setAmount((float) (event.getAmount() * (1.0D - Math.min(reduction, 0.8D))));
+        }
+    }
+
+    @SubscribeEvent
     public void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase != TickEvent.Phase.END || !(event.player instanceof ServerPlayer player)) return;
+        removeObsoleteArmor(player, false);
+        ProgressionRuntime.tick(player);
         AbilityRuntime.tick(player);
         if (player.tickCount % 2 == 0) ModNetwork.syncAbilities(player);
         applySkillEffects(player, PlayerProgressSavedData.get(player.getServer()).get(player.getUUID()));
@@ -219,10 +429,26 @@ public final class TierborneEvents {
     }
 
     @SubscribeEvent
-    public void onOffensiveItemUse(LivingEntityUseItemEvent.Start event){if(FighterCombat.offenseDisabled(event.getEntity())&&(event.getItem().getItem() instanceof BowItem||event.getItem().getItem() instanceof CrossbowItem||event.getItem().getItem() instanceof TridentItem))event.setCanceled(true);}
+    public void onOffensiveItemUse(LivingEntityUseItemEvent.Start event){
+        if(FighterCombat.offenseDisabled(event.getEntity())&&(event.getItem().getItem() instanceof BowItem||event.getItem().getItem() instanceof CrossbowItem||event.getItem().getItem() instanceof TridentItem))event.setCanceled(true);
+        if(event.getEntity() instanceof ServerPlayer player && event.getItem().getItem() instanceof ShieldItem){
+            PlayerProgress progress=PlayerProgressSavedData.get(player.getServer()).get(player.getUUID());
+            if(progress.hasSkill(BarbarianPlayerClass.BERSERKER)){event.setCanceled(true);player.stopUsingItem();}
+        }
+    }
 
     @SubscribeEvent
-    public void onDisabledRightClick(PlayerInteractEvent.RightClickItem event){if(FighterCombat.offenseDisabled(event.getEntity())&&event.getItemStack().getItem() instanceof net.minecraft.world.item.ThrowablePotionItem)event.setCanceled(true);}
+    public void onDisabledRightClick(PlayerInteractEvent.RightClickItem event){
+        if(FighterCombat.offenseDisabled(event.getEntity())&&event.getItemStack().getItem() instanceof net.minecraft.world.item.ThrowablePotionItem)event.setCanceled(true);
+        if(event.getEntity() instanceof ServerPlayer player && event.getItemStack().getItem() instanceof ShieldItem){
+            PlayerProgress progress=PlayerProgressSavedData.get(player.getServer()).get(player.getUUID());
+            if(progress.hasSkill(BarbarianPlayerClass.BERSERKER)){
+                event.setCanceled(true);
+                event.setCancellationResult(InteractionResult.FAIL);
+                player.displayClientMessage(Component.literal("Berserkers cannot block with shields."),true);
+            }
+        }
+    }
 
     @SubscribeEvent
     public void onBlockedDamage(LivingHurtEvent event) {
@@ -248,7 +474,32 @@ public final class TierborneEvents {
 
     @SubscribeEvent
     public void onProjectileCreated(EntityJoinLevelEvent event) {
-        if (event.getLevel().isClientSide() || !(event.getEntity() instanceof AbstractArrow arrow)
+        if (event.getLevel().isClientSide()) return;
+        if (event.getEntity() instanceof ExperienceOrb experienceOrb) {
+            event.setCanceled(true);
+            experienceOrb.discard();
+            return;
+        }
+        if (event.getEntity() instanceof ItemEntity itemEntity
+                && RemovedVanillaArmor.contains(itemEntity.getItem())) {
+            itemEntity.discard();
+            return;
+        }
+        if (event.getEntity() instanceof ItemEntity itemEntity) {
+            ItemStack sanitized = ProgressionRuntime.sanitize(itemEntity.getItem());
+            if (sanitized != itemEntity.getItem()) itemEntity.setItem(sanitized);
+            ProgressionRuntime.removeEnchantmentTags(itemEntity.getItem());
+        }
+        if (event.getEntity() instanceof LivingEntity livingEntity) {
+            for (EquipmentSlot slot : EquipmentSlot.values()) {
+                if (RemovedVanillaArmor.contains(livingEntity.getItemBySlot(slot))) {
+                    livingEntity.setItemSlot(slot, ItemStack.EMPTY);
+                } else {
+                    ProgressionRuntime.removeEnchantmentTags(livingEntity.getItemBySlot(slot));
+                }
+            }
+        }
+        if (!(event.getEntity() instanceof AbstractArrow arrow)
                 || !(arrow.getOwner() instanceof ServerPlayer player)) return;
         if(arrow.getPersistentData().contains(RANGED_MULTIPLIER_TAG))return;
         boolean holdingBow = player.getMainHandItem().getItem() instanceof BowItem
@@ -256,6 +507,44 @@ public final class TierborneEvents {
         if (holdingBow) arrow.getPersistentData().putBoolean(BOW_ARROW_TAG, true);
         if(arrow.getPersistentData().getString("tierborne:ranged_type").isEmpty())arrow.getPersistentData().putString("tierborne:ranged_type",arrow.shotFromCrossbow()?"crossbow":"bow");
         arrow.getPersistentData().putDouble(RANGED_MULTIPLIER_TAG,AbilityRuntime.consumeArrowMultiplier(player,arrow));
+    }
+
+    @SubscribeEvent
+    public void onObsoleteArmorCrafted(PlayerEvent.ItemCraftedEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)
+                || !RemovedVanillaArmor.contains(event.getCrafting())) return;
+
+        event.getCrafting().setCount(0);
+        player.displayClientMessage(Component.translatable("message.tierborne.obsolete_armor_removed"), true);
+    }
+
+    private static void removeObsoleteArmor(ServerPlayer player, boolean notifyInChat) {
+        boolean removed = false;
+        for (int slotIndex = 0; slotIndex < player.getInventory().getContainerSize(); slotIndex++) {
+            if (RemovedVanillaArmor.contains(player.getInventory().getItem(slotIndex))) {
+                player.getInventory().setItem(slotIndex, ItemStack.EMPTY);
+                removed = true;
+            }
+        }
+
+        for (net.minecraft.world.inventory.Slot slot : player.containerMenu.slots) {
+            if (RemovedVanillaArmor.contains(slot.getItem())) {
+                slot.set(ItemStack.EMPTY);
+                removed = true;
+            }
+        }
+        if (RemovedVanillaArmor.contains(player.containerMenu.getCarried())) {
+            player.containerMenu.setCarried(ItemStack.EMPTY);
+            removed = true;
+        }
+
+        if (!removed) return;
+        player.containerMenu.broadcastChanges();
+        if (notifyInChat) {
+            player.sendSystemMessage(Component.translatable("message.tierborne.obsolete_armor_removed_existing"));
+        } else {
+            player.displayClientMessage(Component.translatable("message.tierborne.obsolete_armor_removed"), true);
+        }
     }
 
     @SubscribeEvent
@@ -287,24 +576,27 @@ public final class TierborneEvents {
     public void onBlockBroken(BlockEvent.BreakEvent event) {
         if (!(event.getPlayer() instanceof ServerPlayer player)
                 || !(event.getLevel() instanceof ServerLevel level)) return;
+        if (event.isCanceled()) return;
         PlayerProgress progress = PlayerProgressSavedData.get(player.getServer()).get(player.getUUID());
         BlockState state = event.getState();
         BlockPos pos = event.getPos();
         BlockEntity blockEntity = level.getBlockEntity(pos);
 
-        if (progress.hasEffect(SkillEffect.WOOD_DROPS)
+        int woodDropChance = progress.totalBonus(SkillBonusType.WOOD_DROP_CHANCE);
+        if (woodDropChance > 0
                 && GeneralSkillRules.isWoodBlock(state)
                 && !state.hasBlockEntity()
-                && chance(player, GeneralSkillBalance.EXTRA_DROP_CHANCE_PERCENT)) {
+                && chance(player, woodDropChance)) {
             ItemStack extra = new ItemStack(state.getBlock().asItem());
             if (!extra.isEmpty()) Block.popResource(level, pos, extra);
         }
 
         ItemStack tool = player.getMainHandItem();
-        if (progress.hasEffect(SkillEffect.ORE_DROPS)
+        int oreDropChance = progress.totalBonus(SkillBonusType.ORE_DROP_CHANCE);
+        if (oreDropChance > 0
                 && state.is(Tags.Blocks.ORES)
                 && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, tool) == 0
-                && chance(player, GeneralSkillBalance.EXTRA_DROP_CHANCE_PERCENT)) {
+                && chance(player, oreDropChance)) {
             List<ItemStack> drops = Block.getDrops(state, level, pos, blockEntity, player, tool);
             drops.stream().filter(stack -> !stack.isEmpty()).findFirst().ifPresent(stack -> {
                 ItemStack extra = stack.copy();
@@ -319,12 +611,12 @@ public final class TierborneEvents {
         if (!(event.getEntity() instanceof ServerPlayer player) || !isEquipment(event.getCrafting())) return;
         PlayerProgress progress = PlayerProgressSavedData.get(player.getServer()).get(player.getUUID());
 
-        if (progress.hasEffect(SkillEffect.MATERIAL_RECOVERY)
-                && chance(player, GeneralSkillBalance.MATERIAL_REFUND_CHANCE_PERCENT)) {
+        int materialRecoveryChance = progress.totalBonus(SkillBonusType.MATERIAL_RECOVERY_CHANCE);
+        if (materialRecoveryChance > 0 && chance(player, materialRecoveryChance)) {
             refundOneIngredient(player, event.getInventory());
         }
-        if (progress.hasEffect(SkillEffect.ENCHANTED_CRAFTING)
-                && chance(player, GeneralSkillBalance.ENCHANTED_CRAFTING_CHANCE_PERCENT)) {
+        int enchantedCraftingChance = progress.totalBonus(SkillBonusType.ENCHANTED_CRAFTING_CHANCE);
+        if (enchantedCraftingChance > 0 && chance(player, enchantedCraftingChance)) {
             int level = GeneralSkillBalance.ENCHANTMENT_MIN_LEVEL + player.getRandom().nextInt(
                     GeneralSkillBalance.ENCHANTMENT_MAX_LEVEL
                             - GeneralSkillBalance.ENCHANTMENT_MIN_LEVEL + 1);
@@ -348,8 +640,11 @@ public final class TierborneEvents {
         reach.removeModifier(HEAVY_REACH_ID);
         attackSpeed.removeModifier(SWORD_CHARGE_SPEED_ID);
         attackSpeed.removeModifier(FIGHTER_ATTACK_SPEED_ID);
+        attackSpeed.removeModifier(BARBARIAN_ATTACK_SPEED_ID);
+        movementSpeed.removeModifier(BARBARIAN_MOVEMENT_ID);
+        maxHealth.removeModifier(BARBARIAN_MAX_HEALTH_ID);
         int bonus = progress.totalBonus(SkillBonusType.MOVEMENT_SPEED);
-        if (bonus > 0) {
+        if (progress.moddedMovementSpeedEnabled() && bonus > 0) {
             movementSpeed.addPermanentModifier(new AttributeModifier(
                     INTRINSIC_MOVEMENT_SPEED_ID,
                     "Tierborne intrinsic movement speed",
@@ -362,13 +657,13 @@ public final class TierborneEvents {
         if (progress.hasSkill(SwordsmanPlayerClass.ROGUE)) subclassSpeed += RpgBalanceConfig.ROGUE_SPEED.get();
         if (progress.hasSkill(SwordsmanPlayerClass.HEAVY) && AbilityRuntime.heavyMovementPenaltyActive(player)) subclassSpeed += RpgBalanceConfig.HEAVY_MOVE_PENALTY.get();
         if(progress.hasSkill(FighterPlayerClass.MONK))subclassSpeed+=RpgBalanceConfig.MONK_MOVE.get();
-        if (subclassSpeed != 0) movementSpeed.addPermanentModifier(new AttributeModifier(SUBCLASS_MOVEMENT_SPEED_ID,"Tierborne subclass movement speed",subclassSpeed/100.0,AttributeModifier.Operation.MULTIPLY_TOTAL));
+        if (progress.moddedMovementSpeedEnabled() && subclassSpeed != 0) movementSpeed.addPermanentModifier(new AttributeModifier(SUBCLASS_MOVEMENT_SPEED_ID,"Tierborne subclass movement speed",subclassSpeed/100.0,AttributeModifier.Operation.MULTIPLY_TOTAL));
         double archerSpeed=progress.hasSkill(ArcherPlayerClass.RANGER)?RpgBalanceConfig.RANGER_MOVEMENT.get():0;
         boolean drawingBow=player.isUsingItem()&&player.getUseItem().getItem() instanceof BowItem;
         if(drawingBow&&progress.hasSkill(ArcherPlayerClass.LONGBOWMAN))archerSpeed+=progress.hasSkill(ArcherPlayerClass.FULLY_CHARGED_MOBILITY)?RpgBalanceConfig.FULLY_CHARGED_IMPROVED_MOVEMENT_PENALTY.get():RpgBalanceConfig.LONGBOWMAN_DRAW_MOVEMENT.get();
         else if(AbilityRuntime.fullyChargedActive(player))archerSpeed+=progress.hasSkill(ArcherPlayerClass.FULLY_CHARGED_MOBILITY)?RpgBalanceConfig.FULLY_CHARGED_IMPROVED_MOVEMENT_PENALTY.get():RpgBalanceConfig.FULLY_CHARGED_MOVEMENT_PENALTY.get();
-        if(archerSpeed!=0)movementSpeed.addPermanentModifier(new AttributeModifier(ARCHER_MOVEMENT_ID,"Tierborne Archer movement",archerSpeed/100,AttributeModifier.Operation.MULTIPLY_TOTAL));
-        if(progress.movementSpeedLimitPercent()<100)movementSpeed.addPermanentModifier(new AttributeModifier(MOVEMENT_SPEED_LIMIT_ID,"Tierborne voluntary movement speed limit",progress.movementSpeedLimitPercent()/100.0-1.0,AttributeModifier.Operation.MULTIPLY_TOTAL));
+        if(progress.moddedMovementSpeedEnabled()&&archerSpeed!=0)movementSpeed.addPermanentModifier(new AttributeModifier(ARCHER_MOVEMENT_ID,"Tierborne Archer movement",archerSpeed/100,AttributeModifier.Operation.MULTIPLY_TOTAL));
+        if(progress.moddedMovementSpeedEnabled()&&progress.movementSpeedLimitPercent()<100)movementSpeed.addPermanentModifier(new AttributeModifier(MOVEMENT_SPEED_LIMIT_ID,"Tierborne voluntary movement speed limit",progress.movementSpeedLimitPercent()/100.0-1.0,AttributeModifier.Operation.MULTIPLY_TOTAL));
         if (progress.hasSkill(SwordsmanPlayerClass.ROGUE)) {
             maxHealth.addPermanentModifier(new AttributeModifier(ROGUE_HEALTH_ID,"Tierborne Rogue health penalty",-RpgBalanceConfig.ROGUE_HEALTH_PENALTY.get(),AttributeModifier.Operation.ADDITION));
             if (player.getHealth() > player.getMaxHealth()) player.setHealth(player.getMaxHealth());
@@ -377,6 +672,18 @@ public final class TierborneEvents {
         double swordChargeSpeed=progress.hasSkill(SwordsmanPlayerClass.HEAVY)?RpgBalanceConfig.HEAVY_ATTACK_SPEED.get():progress.hasSkill(SwordsmanPlayerClass.DUAL_SPEED)?RpgBalanceConfig.DUAL_SPEED_UPGRADE.get():progress.hasSkill(SwordsmanPlayerClass.DUAL)?RpgBalanceConfig.DUAL_ATTACK_SPEED.get():0.0;
         if(swordChargeSpeed!=0.0 && player.getMainHandItem().getItem() instanceof SwordItem)attackSpeed.addPermanentModifier(new AttributeModifier(SWORD_CHARGE_SPEED_ID,"Tierborne sword charge speed",swordChargeSpeed/100.0,AttributeModifier.Operation.MULTIPLY_TOTAL));
         double fighterCharge=FighterStats.meleeChargeSpeed(progress);if(fighterCharge!=0)attackSpeed.addPermanentModifier(new AttributeModifier(FIGHTER_ATTACK_SPEED_ID,"Tierborne Fighter melee charge speed",fighterCharge/100.0,AttributeModifier.Operation.MULTIPLY_TOTAL));
+        if(progress.hasSkill(BarbarianPlayerClass.BERSERKER)){
+            maxHealth.addPermanentModifier(new AttributeModifier(BARBARIAN_MAX_HEALTH_ID,"Tierborne Berserker health",RpgBalanceConfig.BERSERKER_MAX_HEALTH.get(),AttributeModifier.Operation.ADDITION));
+        }
+        double barbarianMovement=BarbarianCombat.isBerserkActive(player)?BarbarianStats.berserkMovement(progress):0.0;
+        if(BarbarianCombat.executeMovementPenaltyActive(player))barbarianMovement+=BarbarianStats.executeMovement(progress);
+        if(progress.moddedMovementSpeedEnabled()&&barbarianMovement!=0)movementSpeed.addPermanentModifier(new AttributeModifier(BARBARIAN_MOVEMENT_ID,"Tierborne Barbarian movement",barbarianMovement/100.0,AttributeModifier.Operation.MULTIPLY_TOTAL));
+        if(BarbarianPlayerClass.ID.equals(progress.playerClassId())&&player.getMainHandItem().getItem() instanceof AxeItem){
+            double axeCharge=RpgBalanceConfig.BARBARIAN_AXE_CHARGE_SPEED.get();
+            if(progress.hasSkill(BarbarianPlayerClass.EXECUTIONER))axeCharge+=RpgBalanceConfig.EXECUTIONER_ATTACK_SPEED.get();
+            if(axeCharge!=0)attackSpeed.addPermanentModifier(new AttributeModifier(BARBARIAN_ATTACK_SPEED_ID,"Tierborne axe charge speed",axeCharge/100.0,AttributeModifier.Operation.MULTIPLY_TOTAL));
+        }
+        if(player.getHealth()>player.getMaxHealth())player.setHealth(player.getMaxHealth());
     }
 
     private void sync(Player entity) {

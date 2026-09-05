@@ -1,0 +1,4 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": { "layer0": "tierborne:item/tungsten_upgrade_template" }
+}

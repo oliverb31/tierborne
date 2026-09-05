@@ -14,6 +14,8 @@ public record SubclassMetadata(String skillId,String description){
   new SubclassMetadata(FighterPlayerClass.MONK,"A swift martial artist whose empty-main-hand attacks become devastating."),
   new SubclassMetadata(FighterPlayerClass.CHAMPION,"A relentless combatant whose same-target hits compound through Combo."),
   new SubclassMetadata(FighterPlayerClass.DUELIST,"A versatile weapon user who reacts to nearby attackers with counters."),
+  new SubclassMetadata(BarbarianPlayerClass.BERSERKER,"A blood-fuelled axe fighter who trades safety for speed, damage and lifesteal."),
+  new SubclassMetadata(BarbarianPlayerClass.EXECUTIONER,"A deliberate headsman who charges devastating attacks against wounded enemies."),
   new SubclassMetadata(GeneralSkillTree.LUMBERJACK,"A specialist in efficiently harvesting wood and trees."),
   new SubclassMetadata(GeneralSkillTree.MINER,"A specialist in mining stone and valuable ores."),
   new SubclassMetadata(GeneralSkillTree.BLACKSMITH,"A specialist in crafting and recovering equipment materials.")

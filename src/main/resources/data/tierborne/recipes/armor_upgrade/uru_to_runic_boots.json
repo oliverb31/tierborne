@@ -1,0 +1,7 @@
+{
+  "type": "tierborne:armor_upgrade",
+  "template": { "item": "tierborne:runic_upgrade_template" },
+  "base": { "item": "tierborne:uru_boots" },
+  "material": { "item": "tierborne:runic_ingot" },
+  "result": { "item": "tierborne:runic_boots" }
+}

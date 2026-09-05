@@ -9,9 +9,11 @@ import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public final class DungeonSavedData extends SavedData {
@@ -58,10 +60,12 @@ public final class DungeonSavedData extends SavedData {
         public long seed;
         public long lastOccupiedTick;
         public int partySizeSnapshot;
+        public boolean authoring;
         public UUID leader;
         public final List<UUID> party = new ArrayList<>();
         public final Map<UUID, Checkpoint> checkpoints = new HashMap<>();
         public final List<Long> firePositions = new ArrayList<>();
+        public final Set<Integer> spawnedMarkers = new LinkedHashSet<>();
 
         public boolean contains(double x, double z) {
             return x >= cellX && x < cellX + DungeonManager.CELL_SIZE
@@ -91,6 +95,7 @@ public final class DungeonSavedData extends SavedData {
             tag.putLong("Seed", seed);
             tag.putLong("LastOccupiedTick", lastOccupiedTick);
             tag.putInt("PartySizeSnapshot", partySizeSnapshot);
+            tag.putBoolean("Authoring", authoring);
             if (leader != null) tag.putUUID("Leader", leader);
             ListTag members = new ListTag();
             for (UUID member : party) {
@@ -109,6 +114,7 @@ public final class DungeonSavedData extends SavedData {
             ListTag fires = new ListTag();
             firePositions.forEach(position -> fires.add(LongTag.valueOf(position)));
             tag.put("FirePositions", fires);
+            tag.putIntArray("SpawnedMarkers", spawnedMarkers.stream().mapToInt(Integer::intValue).toArray());
             return tag;
         }
 
@@ -135,6 +141,7 @@ public final class DungeonSavedData extends SavedData {
             instance.seed = tag.getLong("Seed");
             instance.lastOccupiedTick = tag.getLong("LastOccupiedTick");
             instance.partySizeSnapshot = Math.max(1, tag.getInt("PartySizeSnapshot"));
+            instance.authoring = tag.getBoolean("Authoring");
             if (tag.hasUUID("Leader")) instance.leader = tag.getUUID("Leader");
             ListTag members = tag.getList("Party", Tag.TAG_COMPOUND);
             for (int i = 0; i < members.size(); i++) instance.party.add(members.getCompound(i).getUUID("Id"));
@@ -145,6 +152,7 @@ public final class DungeonSavedData extends SavedData {
             }
             ListTag fires = tag.getList("FirePositions", Tag.TAG_LONG);
             for (int i = 0; i < fires.size(); i++) instance.firePositions.add(((LongTag) fires.get(i)).getAsLong());
+            for (int marker : tag.getIntArray("SpawnedMarkers")) instance.spawnedMarkers.add(marker);
             return instance;
         }
     }

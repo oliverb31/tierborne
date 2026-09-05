@@ -25,9 +25,14 @@ public final class TierborneArmorItem extends ArmorItem {
     /** Armor is folded into the base value; skill-tree percentages are applied later. */
     private static final AttributeModifier.Operation ARMOR_BONUS_OPERATION =
             AttributeModifier.Operation.MULTIPLY_BASE;
+    private static final Map<EquipmentSlot, UUID> ARMOR_UUIDS = new EnumMap<>(EquipmentSlot.class);
     private static final Map<EquipmentSlot, UUID> BONUS_UUIDS = new EnumMap<>(EquipmentSlot.class);
 
     static {
+        ARMOR_UUIDS.put(EquipmentSlot.HEAD, UUID.fromString("f0c12201-b24f-4d98-b8db-6cb3e1a96c5d"));
+        ARMOR_UUIDS.put(EquipmentSlot.CHEST, UUID.fromString("85fae187-d268-4290-868b-421cd768bbc9"));
+        ARMOR_UUIDS.put(EquipmentSlot.LEGS, UUID.fromString("bb1184a5-fb9e-4294-b776-3ac701d802b6"));
+        ARMOR_UUIDS.put(EquipmentSlot.FEET, UUID.fromString("68c5d9fc-3552-4e0c-84e1-91e0781c166a"));
         BONUS_UUIDS.put(EquipmentSlot.HEAD, UUID.fromString("2c94897f-d8fb-4fab-a235-e72086b6d251"));
         BONUS_UUIDS.put(EquipmentSlot.CHEST, UUID.fromString("9de05dc8-ca43-44cd-b53b-95eada88dfe8"));
         BONUS_UUIDS.put(EquipmentSlot.LEGS, UUID.fromString("21580ae4-8ac1-4205-b116-22bbd2816c5e"));
@@ -43,16 +48,26 @@ public final class TierborneArmorItem extends ArmorItem {
 
     @Override
     public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot slot) {
-        Multimap<Attribute, AttributeModifier> baseModifiers = super.getDefaultAttributeModifiers(slot);
-        if (slot != this.slot || tierborneMaterial.path() == ModArmorMaterial.ArmorPath.NONE) {
-            return baseModifiers;
-        }
+        if (slot != this.slot) return ImmutableMultimap.of();
 
         ImmutableMultimap.Builder<Attribute, AttributeModifier> modifiers = ImmutableMultimap.builder();
-        modifiers.putAll(baseModifiers);
-        modifiers.put(pathAttribute(), new AttributeModifier(BONUS_UUIDS.get(slot),
-                "Tierborne armour path bonus", tierborneMaterial.bonusPerPiece(),
-                ARMOR_BONUS_OPERATION));
+        UUID armorUuid = ARMOR_UUIDS.get(slot);
+        modifiers.put(Attributes.ARMOR, new AttributeModifier(armorUuid,
+                "Tierborne armour defense", tierborneMaterial.getDefenseForSlot(slot),
+                AttributeModifier.Operation.ADDITION));
+        modifiers.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(armorUuid,
+                "Tierborne armour toughness", tierborneMaterial.getToughness(),
+                AttributeModifier.Operation.ADDITION));
+        if (tierborneMaterial.getKnockbackResistance() > 0.0F) {
+            modifiers.put(Attributes.KNOCKBACK_RESISTANCE, new AttributeModifier(armorUuid,
+                    "Tierborne armour knockback resistance", tierborneMaterial.getKnockbackResistance(),
+                    AttributeModifier.Operation.ADDITION));
+        }
+        if (tierborneMaterial.path() != ModArmorMaterial.ArmorPath.NONE) {
+            modifiers.put(pathAttribute(), new AttributeModifier(BONUS_UUIDS.get(slot),
+                    "Tierborne armour path bonus", tierborneMaterial.bonusPerPiece(),
+                    ARMOR_BONUS_OPERATION));
+        }
         return modifiers.build();
     }
 

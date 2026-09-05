@@ -138,6 +138,7 @@ public final class ClientEvents {
         if (event.phase != TickEvent.Phase.END) return;
         ClientUppercutState.tick();
         ClientProgress.tryOpenSelectionScreen();
+        ClientPartyState.tryOpenDungeonInvitation();
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.player == null) {offhandUseHeld=false;alternateHeld=false;return;}
         if(minecraft.screen!=null){if(alternateHeld){alternateHeld=false;ModNetwork.CHANNEL.sendToServer(new AbilityActionPacket(AbilityAction.ALTERNATE_RELEASE));}offhandUseHeld=false;return;}
@@ -206,19 +207,16 @@ public final class ClientEvents {
         int screenHeight = event.getWindow().getGuiScaledHeight();
         int width = 182;
         int left = (screenWidth - width) / 2;
-        int top = screenHeight - 32;
+        int top = screenHeight - 29;
         int required = ClientProgress.experienceToNextLevel();
         float progress = required <= 0 ? 1.0F
                 : Mth.clamp(ClientProgress.progressionExperience() / (float) required, 0.0F, 1.0F);
         GuiComponent.fill(event.getPoseStack(), left, top, left + width, top + 5, 0xD0000000);
         GuiComponent.fill(event.getPoseStack(), left + 1, top + 1,
                 left + 1 + Math.round((width - 2) * progress), top + 4, 0xFF59C7A5);
-        String text = ClientProgress.level() >= 30
-                ? "Level 30 - MAX"
-                : "Level " + ClientProgress.level() + "  "
-                + ClientProgress.progressionExperience() + "/" + required;
+        String text = Integer.toString(ClientProgress.level());
         minecraft.font.drawShadow(event.getPoseStack(), text,
-                (screenWidth - minecraft.font.width(text)) / 2.0F, top - 9, 0xFFE9E2D0);
+                (screenWidth - minecraft.font.width(text)) / 2.0F, top - 6, 0xFFE9E2D0);
     }
 
     private static void renderTargetHealth(RenderGuiOverlayEvent.Post event,Minecraft minecraft){
@@ -428,6 +426,7 @@ public final class ClientEvents {
         ClientBlockState.clear();
         ClientUppercutState.clear();
         ClientAbilityState.clear();
+        ClientPartyState.clear();
         offhandUseHeld=false;
         alternateHeld=false;
     }

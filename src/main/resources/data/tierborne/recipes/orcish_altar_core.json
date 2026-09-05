@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DLD",
+    "LAL",
+    "DLD"
+  ],
+  "key": {
+    "D": { "item": "minecraft:diamond" },
+    "L": { "item": "minecraft:mangrove_log" },
+    "A": { "item": "tierborne:orc_elite_axe" }
+  },
+  "result": {
+    "item": "tierborne:orcish_altar_core",
+    "count": 1
+  }
+}

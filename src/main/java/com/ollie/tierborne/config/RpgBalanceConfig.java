@@ -6,6 +6,21 @@ public final class RpgBalanceConfig {
     public static final ForgeConfigSpec SPEC;
     public static final ForgeConfigSpec.DoubleValue DUNGEON_HEALTH_PER_EXTRA_PLAYER;
     public static final ForgeConfigSpec.DoubleValue DUNGEON_DAMAGE_PER_EXTRA_PLAYER;
+    public static final ForgeConfigSpec.DoubleValue DUNGEON_MOB_VISION_RANGE;
+    public static final ForgeConfigSpec.DoubleValue DUNGEON_MARKER_ACTIVATION_RANGE;
+    public static final ForgeConfigSpec.IntValue BIOME_DISCOVERY_EXPERIENCE;
+    public static final ForgeConfigSpec.IntValue RAID_WAVE_EXPERIENCE;
+    public static final ForgeConfigSpec.DoubleValue RAID_REWARD_RADIUS;
+    public static final ForgeConfigSpec.DoubleValue ENEMY_HEALTH_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue ENEMY_DAMAGE_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue ARMOR_DEFENSE_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue ARMOR_BUFF_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue SWORD_DAMAGE_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue AXE_DAMAGE_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue BOW_DAMAGE_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue CROSSBOW_DAMAGE_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue FIST_DAMAGE_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue NODE_BUFF_MULTIPLIER;
 
     public static final ForgeConfigSpec.DoubleValue SWORDMASTER_DAMAGE;
     public static final ForgeConfigSpec.DoubleValue SWORDMASTER_SPEED;
@@ -103,7 +118,7 @@ public final class RpgBalanceConfig {
     public static final ForgeConfigSpec.DoubleValue ELEMENTAL_RANGED_DAMAGE_I, ELEMENTAL_RANGED_DAMAGE_II, ELEMENTAL_SHOT_COOLDOWN_SECONDS, ELEMENTAL_SHOT_FIRE_SECONDS, ELEMENTAL_SHOT_SLOW_SECONDS, FIRE_PASSIVE_SECONDS, FIRE_UPGRADED_SECONDS, FIRE_BONUS_DAMAGE, ICE_PASSIVE_SECONDS, ICE_UPGRADED_SECONDS;
     public static final ForgeConfigSpec.IntValue ELEMENTAL_SHOT_SLOW_LEVEL, ICE_PASSIVE_LEVEL, ICE_UPGRADED_LEVEL;
     public static final ForgeConfigSpec.DoubleValue RANGER_RANGED_DAMAGE, RANGER_PRE_MOVEMENT, RANGER_MOVEMENT, BACKSTEP_DISTANCE, BACKSTEP_UPGRADED_DISTANCE, BACKSTEP_COOLDOWN_SECONDS, BACKSTEP_RECAST_SECONDS, ROOTS_RANGE, ROOTS_CHANNEL_SECONDS, ROOTS_TAIL_SECONDS, ROOTS_COOLDOWN_SECONDS;
-    public static final ForgeConfigSpec.DoubleValue FIGHTER_MONK_PATH_MOVE,FIGHTER_MONK_PATH_FIST,FIGHTER_CHAMPION_PATH_DAMAGE,FIGHTER_CHAMPION_PATH_CHARGE,FIGHTER_DUELIST_PATH_DAMAGE,FIGHTER_DUELIST_PATH_CHARGE;
+    public static final ForgeConfigSpec.DoubleValue FIGHTER_ROOT_GENERAL_DAMAGE,FIGHTER_ROOT_FIST_DAMAGE,FIGHTER_MONK_PATH_MOVE,FIGHTER_MONK_PATH_FIST,FIGHTER_CHAMPION_PATH_DAMAGE,FIGHTER_CHAMPION_PATH_CHARGE,FIGHTER_DUELIST_PATH_DAMAGE,FIGHTER_DUELIST_PATH_CHARGE;
     public static final ForgeConfigSpec.DoubleValue MONK_MOVE,MONK_FIST,PULL_RANGE,PULL_COOLDOWN_SECONDS,PULL_STRENGTH,PULL_MAX_SECONDS,PULL_UPGRADED_RANGE,PULL_UPGRADED_COOLDOWN_SECONDS,MONK_FIST_UPGRADE;
     public static final ForgeConfigSpec.DoubleValue UPPERCUT_DAMAGE_PERCENT,UPPERCUT_RANGE,
             UPPERCUT_HORIZONTAL_KNOCKBACK,UPPERCUT_VERTICAL_KNOCKBACK,UPPERCUT_WINDUP_SECONDS,
@@ -131,6 +146,30 @@ public final class RpgBalanceConfig {
         b.push("dungeons");
         DUNGEON_HEALTH_PER_EXTRA_PLAYER = percent(b, "healthPerExtraPlayerPercent", 65.0);
         DUNGEON_DAMAGE_PER_EXTRA_PLAYER = percent(b, "damagePerExtraPlayerPercent", 35.0);
+        DUNGEON_MOB_VISION_RANGE = b.comment("How far dungeon mobs can acquire players when line of sight is unobstructed.")
+                .defineInRange("mobVisionRangeBlocks", 48.0, 16.0, 256.0);
+        DUNGEON_MARKER_ACTIVATION_RANGE = b.comment("Marker mobs spawn inside this distance even when a wall blocks line of sight.")
+                .defineInRange("markerActivationRangeBlocks", 40.0, 1.0, 128.0);
+        b.pop().push("progression");
+        BIOME_DISCOVERY_EXPERIENCE = b.comment("Tierborne XP awarded the first time a player discovers a biome.")
+                .defineInRange("biomeDiscoveryExperience", 25, 0, 100000);
+        RAID_WAVE_EXPERIENCE = b.comment("Tierborne XP awarded to nearby players whenever an Orc raid wave is defeated.")
+                .defineInRange("orcRaidWaveExperience", 20, 0, 100000);
+        RAID_REWARD_RADIUS = value(b, "orcRaidRewardRadiusBlocks", 128.0, 1.0, 512.0);
+        b.pop().push("enemyScaling");
+        ENEMY_HEALTH_MULTIPLIER = multiplier(b, "healthMultiplier", 1.0);
+        ENEMY_DAMAGE_MULTIPLIER = multiplier(b, "damageMultiplier", 1.0);
+        b.pop().push("armorScaling");
+        ARMOR_DEFENSE_MULTIPLIER = multiplier(b, "defenseMultiplier", 1.0);
+        ARMOR_BUFF_MULTIPLIER = multiplier(b, "pathBuffMultiplier", 1.0);
+        b.pop().push("weaponScaling");
+        SWORD_DAMAGE_MULTIPLIER = multiplier(b, "swordDamageMultiplier", 1.0);
+        AXE_DAMAGE_MULTIPLIER = multiplier(b, "axeDamageMultiplier", 1.0);
+        BOW_DAMAGE_MULTIPLIER = multiplier(b, "bowDamageMultiplier", 1.0);
+        CROSSBOW_DAMAGE_MULTIPLIER = multiplier(b, "crossbowDamageMultiplier", 1.0);
+        FIST_DAMAGE_MULTIPLIER = multiplier(b, "fistDamageMultiplier", 1.0);
+        b.pop().push("skillNodes");
+        NODE_BUFF_MULTIPLIER = multiplier(b, "numericalBuffMultiplier", 1.0);
         b.pop().push("swordmaster");
         SWORDMASTER_DAMAGE = percent(b, "subclassSwordDamagePercent", 20.0);
         SWORDMASTER_SPEED = percent(b, "subclassMovementSpeedPercent", 10.0);
@@ -234,7 +273,7 @@ public final class RpgBalanceConfig {
         b.pop().push("ranger");
         RANGER_RANGED_DAMAGE=percent(b,"preSubclassRangedDamagePercent",10); RANGER_PRE_MOVEMENT=percent(b,"preSubclassMovementSpeedPercent",10); RANGER_MOVEMENT=percent(b,"subclassMovementSpeedPercent",20); BACKSTEP_DISTANCE=value(b,"backstepDistanceBlocks",5,0,20); BACKSTEP_UPGRADED_DISTANCE=value(b,"upgradedBackstepDistanceBlocks",7,0,30); BACKSTEP_COOLDOWN_SECONDS=seconds(b,"backstepCooldownSeconds",6); BACKSTEP_RECAST_SECONDS=seconds(b,"backstepRecastWindowSeconds",1); ROOTS_RANGE=value(b,"naturesRootsRangeBlocks",16,1,64); ROOTS_CHANNEL_SECONDS=seconds(b,"naturesRootsMaximumChannelSeconds",5); ROOTS_TAIL_SECONDS=seconds(b,"naturesRootsTargetTailSeconds",0.5); ROOTS_COOLDOWN_SECONDS=seconds(b,"naturesRootsCooldownSeconds",15);
         b.pop().push("fighterPreNodes");
-        FIGHTER_MONK_PATH_MOVE=percent(b,"monkPathMovementPercent",10);FIGHTER_MONK_PATH_FIST=percent(b,"monkPathFistDamagePercent",50);FIGHTER_CHAMPION_PATH_DAMAGE=percent(b,"championPathGeneralDamagePercent",5);FIGHTER_CHAMPION_PATH_CHARGE=percent(b,"championPathMeleeChargeSpeedPercent",10);FIGHTER_DUELIST_PATH_DAMAGE=percent(b,"duelistPathGeneralDamagePercent",5);FIGHTER_DUELIST_PATH_CHARGE=percent(b,"duelistPathMeleeChargeSpeedPercent",10);
+        FIGHTER_ROOT_GENERAL_DAMAGE=percent(b,"rootGeneralDamagePercent",10);FIGHTER_ROOT_FIST_DAMAGE=percent(b,"rootAdditionalFistDamagePercent",25);FIGHTER_MONK_PATH_MOVE=percent(b,"monkPathMovementPercent",10);FIGHTER_MONK_PATH_FIST=percent(b,"monkPathFistDamagePercent",50);FIGHTER_CHAMPION_PATH_DAMAGE=percent(b,"championPathGeneralDamagePercent",5);FIGHTER_CHAMPION_PATH_CHARGE=percent(b,"championPathMeleeChargeSpeedPercent",10);FIGHTER_DUELIST_PATH_DAMAGE=percent(b,"duelistPathGeneralDamagePercent",5);FIGHTER_DUELIST_PATH_CHARGE=percent(b,"duelistPathMeleeChargeSpeedPercent",10);
         b.pop().push("monk");
         MONK_MOVE=percent(b,"movementSpeedPercent",20);MONK_FIST=percent(b,"fistDamagePercent",550);PULL_RANGE=value(b,"pullRangeBlocks",6,1,32);PULL_COOLDOWN_SECONDS=seconds(b,"pullCooldownSeconds",5);PULL_STRENGTH=value(b,"pullStrength",1.15,0.1,5);PULL_MAX_SECONDS=seconds(b,"pullMaximumDurationSeconds",1.5);PULL_UPGRADED_RANGE=value(b,"upgradedPullRangeBlocks",9,1,48);PULL_UPGRADED_COOLDOWN_SECONDS=seconds(b,"upgradedPullCooldownSeconds",3.5);MONK_FIST_UPGRADE=percent(b,"fistDamageUpgradePercent",150);
         UPPERCUT_DAMAGE_PERCENT=percent(b,"uppercutExtraDamagePercent",50);
@@ -290,6 +329,11 @@ public final class RpgBalanceConfig {
     private static ForgeConfigSpec.DoubleValue percent(ForgeConfigSpec.Builder b, String name, double value) { return b.comment("Percentage value.").defineInRange(name, value, -100.0, 1000.0); }
     private static ForgeConfigSpec.DoubleValue seconds(ForgeConfigSpec.Builder b, String name, double value) { return b.comment("Duration in seconds.").defineInRange(name, value, 0.0, 3600.0); }
     private static ForgeConfigSpec.DoubleValue value(ForgeConfigSpec.Builder b, String name, double value, double min, double max) { return b.defineInRange(name, value, min, max); }
+    private static ForgeConfigSpec.DoubleValue multiplier(ForgeConfigSpec.Builder b, String name, double value) { return b.comment("Multiplier where 1.0 keeps the current value.").defineInRange(name, value, 0.0, 100.0); }
     public static int ticks(ForgeConfigSpec.DoubleValue seconds) { return Math.max(0, (int)Math.round(seconds.get() * 20.0)); }
     public static int ticksValue(double seconds) { return Math.max(0, (int)Math.round(seconds * 20.0)); }
+    public static int scaledNodeBonus(int value) {
+        double multiplier = SPEC.isLoaded() ? NODE_BUFF_MULTIPLIER.get() : 1.0D;
+        return (int) Math.round(value * multiplier);
+    }
 }

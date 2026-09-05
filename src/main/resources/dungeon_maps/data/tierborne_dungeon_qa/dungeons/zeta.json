@@ -1,0 +1,848 @@
+{
+  "format": 1,
+  "name": "zeta",
+  "namespace": "tierborne_dungeon_qa",
+  "source_sha256": "eed823b1eb23846f030e3606b1e401503a202a0d278063ba92f33ff05215dea9",
+  "source_dimensions": [
+    417,
+    158,
+    347
+  ],
+  "decoded_blocks": 22862442,
+  "manifest_only": true,
+  "non_air_blocks": 923559,
+  "tile_size": 48,
+  "tiles": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2160,
+      "structure": "tierborne_dungeon_qa:zeta/tile_0_0_2"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 8809,
+      "structure": "tierborne_dungeon_qa:zeta/tile_0_0_3"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2540,
+      "structure": "tierborne_dungeon_qa:zeta/tile_0_1_2"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7886,
+      "structure": "tierborne_dungeon_qa:zeta/tile_0_1_3"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3910,
+      "structure": "tierborne_dungeon_qa:zeta/tile_1_0_1"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 13163,
+      "structure": "tierborne_dungeon_qa:zeta/tile_1_0_2"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 20698,
+      "structure": "tierborne_dungeon_qa:zeta/tile_1_0_3"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3452,
+      "structure": "tierborne_dungeon_qa:zeta/tile_1_1_1"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 11615,
+      "structure": "tierborne_dungeon_qa:zeta/tile_1_1_2"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 15798,
+      "structure": "tierborne_dungeon_qa:zeta/tile_1_1_3"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 9963,
+      "structure": "tierborne_dungeon_qa:zeta/tile_2_0_1"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 23011,
+      "structure": "tierborne_dungeon_qa:zeta/tile_2_0_2"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 12052,
+      "structure": "tierborne_dungeon_qa:zeta/tile_2_0_3"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7380,
+      "structure": "tierborne_dungeon_qa:zeta/tile_2_1_1"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 16434,
+      "structure": "tierborne_dungeon_qa:zeta/tile_2_1_2"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 14059,
+      "structure": "tierborne_dungeon_qa:zeta/tile_2_1_3"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6956,
+      "structure": "tierborne_dungeon_qa:zeta/tile_3_0_1"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 17625,
+      "structure": "tierborne_dungeon_qa:zeta/tile_3_0_2"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7644,
+      "structure": "tierborne_dungeon_qa:zeta/tile_3_0_3"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 19624,
+      "structure": "tierborne_dungeon_qa:zeta/tile_3_0_4"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 25295,
+      "structure": "tierborne_dungeon_qa:zeta/tile_3_0_5"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7021,
+      "structure": "tierborne_dungeon_qa:zeta/tile_3_0_6"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 8233,
+      "structure": "tierborne_dungeon_qa:zeta/tile_3_1_1"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 14280,
+      "structure": "tierborne_dungeon_qa:zeta/tile_3_1_2"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 9031,
+      "structure": "tierborne_dungeon_qa:zeta/tile_3_1_3"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 22045,
+      "structure": "tierborne_dungeon_qa:zeta/tile_3_1_4"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 22834,
+      "structure": "tierborne_dungeon_qa:zeta/tile_3_1_5"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7648,
+      "structure": "tierborne_dungeon_qa:zeta/tile_3_1_6"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 15305,
+      "structure": "tierborne_dungeon_qa:zeta/tile_4_0_1"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 17315,
+      "structure": "tierborne_dungeon_qa:zeta/tile_4_0_2"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 15760,
+      "structure": "tierborne_dungeon_qa:zeta/tile_4_0_3"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 26797,
+      "structure": "tierborne_dungeon_qa:zeta/tile_4_0_4"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 26551,
+      "structure": "tierborne_dungeon_qa:zeta/tile_4_0_5"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 11948,
+      "structure": "tierborne_dungeon_qa:zeta/tile_4_0_6"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 17275,
+      "structure": "tierborne_dungeon_qa:zeta/tile_4_1_1"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 19961,
+      "structure": "tierborne_dungeon_qa:zeta/tile_4_1_2"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 23689,
+      "structure": "tierborne_dungeon_qa:zeta/tile_4_1_3"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 29044,
+      "structure": "tierborne_dungeon_qa:zeta/tile_4_1_4"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 24717,
+      "structure": "tierborne_dungeon_qa:zeta/tile_4_1_5"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 13006,
+      "structure": "tierborne_dungeon_qa:zeta/tile_4_1_6"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6825,
+      "structure": "tierborne_dungeon_qa:zeta/tile_5_0_2"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 9654,
+      "structure": "tierborne_dungeon_qa:zeta/tile_5_0_3"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 11675,
+      "structure": "tierborne_dungeon_qa:zeta/tile_5_0_4"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 22212,
+      "structure": "tierborne_dungeon_qa:zeta/tile_5_0_5"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 13825,
+      "structure": "tierborne_dungeon_qa:zeta/tile_5_0_6"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 9402,
+      "structure": "tierborne_dungeon_qa:zeta/tile_5_1_2"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 14631,
+      "structure": "tierborne_dungeon_qa:zeta/tile_5_1_3"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 14556,
+      "structure": "tierborne_dungeon_qa:zeta/tile_5_1_4"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 27388,
+      "structure": "tierborne_dungeon_qa:zeta/tile_5_1_5"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 15361,
+      "structure": "tierborne_dungeon_qa:zeta/tile_5_1_6"
+    },
+    {
+      "x": 6,
+      "y": 0,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6340,
+      "structure": "tierborne_dungeon_qa:zeta/tile_6_0_4"
+    },
+    {
+      "x": 6,
+      "y": 0,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 17995,
+      "structure": "tierborne_dungeon_qa:zeta/tile_6_0_5"
+    },
+    {
+      "x": 6,
+      "y": 0,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 19118,
+      "structure": "tierborne_dungeon_qa:zeta/tile_6_0_6"
+    },
+    {
+      "x": 6,
+      "y": 1,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6076,
+      "structure": "tierborne_dungeon_qa:zeta/tile_6_1_4"
+    },
+    {
+      "x": 6,
+      "y": 1,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 9854,
+      "structure": "tierborne_dungeon_qa:zeta/tile_6_1_5"
+    },
+    {
+      "x": 6,
+      "y": 1,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 13291,
+      "structure": "tierborne_dungeon_qa:zeta/tile_6_1_6"
+    },
+    {
+      "x": 7,
+      "y": 0,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7595,
+      "structure": "tierborne_dungeon_qa:zeta/tile_7_0_4"
+    },
+    {
+      "x": 7,
+      "y": 0,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 25248,
+      "structure": "tierborne_dungeon_qa:zeta/tile_7_0_5"
+    },
+    {
+      "x": 7,
+      "y": 0,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 24689,
+      "structure": "tierborne_dungeon_qa:zeta/tile_7_0_6"
+    },
+    {
+      "x": 7,
+      "y": 1,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7749,
+      "structure": "tierborne_dungeon_qa:zeta/tile_7_1_4"
+    },
+    {
+      "x": 7,
+      "y": 1,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 13257,
+      "structure": "tierborne_dungeon_qa:zeta/tile_7_1_5"
+    },
+    {
+      "x": 7,
+      "y": 1,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 16389,
+      "structure": "tierborne_dungeon_qa:zeta/tile_7_1_6"
+    },
+    {
+      "x": 8,
+      "y": 0,
+      "z": 4,
+      "size": [
+        33,
+        48,
+        48
+      ],
+      "blocks": 1449,
+      "structure": "tierborne_dungeon_qa:zeta/tile_8_0_4"
+    },
+    {
+      "x": 8,
+      "y": 0,
+      "z": 5,
+      "size": [
+        33,
+        48,
+        48
+      ],
+      "blocks": 6824,
+      "structure": "tierborne_dungeon_qa:zeta/tile_8_0_5"
+    },
+    {
+      "x": 8,
+      "y": 0,
+      "z": 6,
+      "size": [
+        33,
+        48,
+        48
+      ],
+      "blocks": 5497,
+      "structure": "tierborne_dungeon_qa:zeta/tile_8_0_6"
+    },
+    {
+      "x": 8,
+      "y": 1,
+      "z": 4,
+      "size": [
+        33,
+        48,
+        48
+      ],
+      "blocks": 1704,
+      "structure": "tierborne_dungeon_qa:zeta/tile_8_1_4"
+    },
+    {
+      "x": 8,
+      "y": 1,
+      "z": 5,
+      "size": [
+        33,
+        48,
+        48
+      ],
+      "blocks": 6967,
+      "structure": "tierborne_dungeon_qa:zeta/tile_8_1_5"
+    },
+    {
+      "x": 8,
+      "y": 1,
+      "z": 6,
+      "size": [
+        33,
+        48,
+        48
+      ],
+      "blocks": 5454,
+      "structure": "tierborne_dungeon_qa:zeta/tile_8_1_6"
+    }
+  ],
+  "sanitization": {
+    "block_entities_removed": 211,
+    "entities_removed": 0,
+    "portal_blocks_removed": true,
+    "leaf_decay_disabled": true
+  },
+  "entrance": {
+    "position": [
+      66.5,
+      40.0,
+      163.5
+    ],
+    "yaw": -90.0,
+    "pitch": 0.0
+  }
+}

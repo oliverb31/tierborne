@@ -39,6 +39,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -65,6 +67,7 @@ import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.ShieldBlockEvent;
@@ -102,6 +105,7 @@ public final class TierborneEvents {
     private static final UUID BARBARIAN_MAX_HEALTH_ID = UUID.fromString("70e391ef-f76c-48d6-8c80-fbd180079454");
     private static final UUID BARBARIAN_ATTACK_SPEED_ID = UUID.fromString("18d50fa9-483f-4caf-bade-79082b1575d9");
     private static final UUID BARBARIAN_MOVEMENT_ID = UUID.fromString("16f38554-2c4a-4100-aecf-af73c9da9831");
+    private static final UUID ENEMY_HEALTH_SCALE_ID = UUID.fromString("ae5d33c7-46cf-419d-87cc-30adb9d052d1");
     private static final java.util.Set<UUID> SHIELD_BLOCKING_DAMAGE = new java.util.HashSet<>();
 
     @SubscribeEvent
@@ -116,18 +120,18 @@ public final class TierborneEvents {
             applySkillEffects(player, progress);
             ModNetwork.sync(player);
             ModNetwork.syncAbilities(player);
-            player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                    "RPG progression reset. All spent skill points have been refunded."));
+            player.displayClientMessage(net.minecraft.network.chat.Component.literal(
+                    "RPG progression reset. All spent skill points have been refunded."), true);
             return 1;
         }));
         event.getDispatcher().register(net.minecraft.commands.Commands.literal("rpgprogress")
                 .executes(context -> {
                     ServerPlayer player = context.getSource().getPlayerOrException();
                     PlayerProgress progress = PlayerProgressSavedData.get(player.getServer()).get(player.getUUID());
-                    player.sendSystemMessage(Component.literal("Tierborne level " + progress.level()
+                    player.displayClientMessage(Component.literal("Tierborne level " + progress.level()
                             + " — " + progress.progressionExperience() + "/"
                             + progress.experienceToNextLevel() + " XP — "
-                            + progress.skillPoints() + " skill points"));
+                            + progress.skillPoints() + " skill points"), true);
                     return progress.level();
                 }));
         event.getDispatcher().register(net.minecraft.commands.Commands.literal("rpgxp")
@@ -143,8 +147,8 @@ public final class TierborneEvents {
                             progress.addProgressionExperience(amount);
                             data.changed();
                             ModNetwork.sync(player);
-                            player.sendSystemMessage(Component.literal("Granted " + amount
-                                    + " Tierborne XP. Current level: " + progress.level() + "."));
+                            player.displayClientMessage(Component.literal("Granted " + amount
+                                    + " Tierborne XP. Current level: " + progress.level() + "."), true);
                             return amount;
                         })));
     }
@@ -164,7 +168,7 @@ public final class TierborneEvents {
 
     @SubscribeEvent
     public void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        if(event.getEntity() instanceof ServerPlayer player){AbilityRuntime.resetTransient(player);giveStartingArmor(player);removeObsoleteArmor(player, true);com.ollie.tierborne.dungeon.DungeonManager.recoverOnLogin(player);ProgressionRuntime.clearVanillaExperience(player);ProgressionRuntime.stripEnchantments(player);}
+        if(event.getEntity() instanceof ServerPlayer player){AbilityRuntime.resetTransient(player);giveStartingArmor(player);removeObsoleteArmor(player, true);com.ollie.tierborne.dungeon.DungeonManager.recoverOnLogin(player);com.ollie.tierborne.dungeon.DungeonPartyManager.onLogin(player);ProgressionRuntime.clearVanillaExperience(player);ProgressionRuntime.stripEnchantments(player);}
         sync(event.getEntity());
     }
 
@@ -257,7 +261,7 @@ public final class TierborneEvents {
         giveStartingPiece(player, EquipmentSlot.FEET, new ItemStack(Items.LEATHER_BOOTS));
         progress.markReceivedStartingArmor();
         data.changed();
-        player.sendSystemMessage(Component.translatable("message.tierborne.starting_armor_received"));
+        player.displayClientMessage(Component.translatable("message.tierborne.starting_armor_received"), true);
     }
 
     private static void giveStartingPiece(ServerPlayer player, EquipmentSlot slot, ItemStack stack) {
@@ -270,7 +274,17 @@ public final class TierborneEvents {
 
     @SubscribeEvent
     public void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
-        if(event.getEntity() instanceof ServerPlayer player)AbilityRuntime.resetTransient(player);
+        if(event.getEntity() instanceof ServerPlayer player){
+            AbilityRuntime.resetTransient(player);
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerDrops(LivingDropsEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player
+                && com.ollie.tierborne.dungeon.DungeonManager.shouldKeepInventoryAfterDungeonDeath(player)) {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent
@@ -288,7 +302,11 @@ public final class TierborneEvents {
         com.ollie.tierborne.combat.ElementalCombat.clear(event.getEntity());
         com.ollie.tierborne.combat.CombatControl.clear(event.getEntity());
         AbilityRuntime.resetRoot(event.getEntity());
-        if(event.getEntity() instanceof ServerPlayer player)AbilityRuntime.resetTransient(player);
+        if(event.getEntity() instanceof ServerPlayer player){
+            ProgressionRuntime.resetExperienceOnDeath(player);
+            com.ollie.tierborne.dungeon.DungeonManager.handlePlayerDeath(player);
+            AbilityRuntime.resetTransient(player);
+        }
     }
 
     @SubscribeEvent
@@ -309,6 +327,32 @@ public final class TierborneEvents {
                 ||!(player.getMainHandItem().getItem() instanceof SwordItem))return;
         PlayerProgress progress=PlayerProgressSavedData.get(player.getServer()).get(player.getUUID());
         if(progress.hasSkill(SwordsmanPlayerClass.DUAL))event.getEntity().invulnerableTime=0;
+    }
+
+    @SubscribeEvent
+    public void onConfiguredDamageScaling(LivingHurtEvent event) {
+        if (event.getSource().getEntity() instanceof Mob) {
+            event.setAmount(event.getAmount() * RpgBalanceConfig.ENEMY_DAMAGE_MULTIPLIER.get().floatValue());
+            return;
+        }
+        if (!(event.getSource().getEntity() instanceof ServerPlayer player)) return;
+
+        double multiplier = 1.0D;
+        Entity direct = event.getSource().getDirectEntity();
+        if (direct instanceof AbstractArrow arrow) {
+            multiplier = arrow.shotFromCrossbow()
+                    ? RpgBalanceConfig.CROSSBOW_DAMAGE_MULTIPLIER.get()
+                    : RpgBalanceConfig.BOW_DAMAGE_MULTIPLIER.get();
+        } else if (direct == player) {
+            if (player.getMainHandItem().getItem() instanceof SwordItem) {
+                multiplier = RpgBalanceConfig.SWORD_DAMAGE_MULTIPLIER.get();
+            } else if (player.getMainHandItem().getItem() instanceof AxeItem) {
+                multiplier = RpgBalanceConfig.AXE_DAMAGE_MULTIPLIER.get();
+            } else if (player.getMainHandItem().isEmpty()) {
+                multiplier = RpgBalanceConfig.FIST_DAMAGE_MULTIPLIER.get();
+            }
+        }
+        event.setAmount(event.getAmount() * (float) multiplier);
     }
 
     @SubscribeEvent
@@ -491,6 +535,7 @@ public final class TierborneEvents {
             ProgressionRuntime.removeEnchantmentTags(itemEntity.getItem());
         }
         if (event.getEntity() instanceof LivingEntity livingEntity) {
+            applyConfiguredEnemyHealth(livingEntity);
             for (EquipmentSlot slot : EquipmentSlot.values()) {
                 if (RemovedVanillaArmor.contains(livingEntity.getItemBySlot(slot))) {
                     livingEntity.setItemSlot(slot, ItemStack.EMPTY);
@@ -507,6 +552,23 @@ public final class TierborneEvents {
         if (holdingBow) arrow.getPersistentData().putBoolean(BOW_ARROW_TAG, true);
         if(arrow.getPersistentData().getString("tierborne:ranged_type").isEmpty())arrow.getPersistentData().putString("tierborne:ranged_type",arrow.shotFromCrossbow()?"crossbow":"bow");
         arrow.getPersistentData().putDouble(RANGED_MULTIPLIER_TAG,AbilityRuntime.consumeArrowMultiplier(player,arrow));
+    }
+
+    public static void applyConfiguredEnemyHealth(LivingEntity entity) {
+        if (entity.level.isClientSide || entity.getType().getCategory() != MobCategory.MONSTER
+                || com.ollie.tierborne.raid.OrcPillagerReplacementEvents.isReplacedVanillaMob(entity)) return;
+        AttributeInstance health = entity.getAttribute(Attributes.MAX_HEALTH);
+        if (health == null) return;
+
+        float healthRatio = entity.getMaxHealth() <= 0.0F ? 1.0F : entity.getHealth() / entity.getMaxHealth();
+        health.removeModifier(ENEMY_HEALTH_SCALE_ID);
+        double multiplier = RpgBalanceConfig.ENEMY_HEALTH_MULTIPLIER.get();
+        if (multiplier != 1.0D) {
+            health.addPermanentModifier(new AttributeModifier(ENEMY_HEALTH_SCALE_ID,
+                    "Tierborne configured enemy health", multiplier - 1.0D,
+                    AttributeModifier.Operation.MULTIPLY_TOTAL));
+        }
+        entity.setHealth(Math.max(0.01F, entity.getMaxHealth() * healthRatio));
     }
 
     @SubscribeEvent
@@ -541,7 +603,7 @@ public final class TierborneEvents {
         if (!removed) return;
         player.containerMenu.broadcastChanges();
         if (notifyInChat) {
-            player.sendSystemMessage(Component.translatable("message.tierborne.obsolete_armor_removed_existing"));
+            player.displayClientMessage(Component.translatable("message.tierborne.obsolete_armor_removed_existing"), true);
         } else {
             player.displayClientMessage(Component.translatable("message.tierborne.obsolete_armor_removed"), true);
         }

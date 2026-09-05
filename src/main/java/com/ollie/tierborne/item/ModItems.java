@@ -3,14 +3,18 @@ package com.ollie.tierborne.item;
 import com.ollie.tierborne.Tierborne;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Tiers;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import com.ollie.tierborne.entity.ModEntities;
+import com.ollie.tierborne.registry.ModBlocks;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +41,14 @@ public final class ModItems {
     public static final RegistryObject<Item> URU_INGOT = registerBasicItem("uru_ingot");
     public static final RegistryObject<Item> ORICHALCUM_INGOT = registerBasicItem("orichalcum_ingot");
     public static final RegistryObject<Item> ADAMANTITE_INGOT = registerBasicItem("adamantite_ingot");
+    public static final RegistryObject<Item> ORC_ELITE_AXE = ITEMS.register("orc_elite_axe",
+            () -> new AxeItem(Tiers.IRON, 6.0F, -3.1F,
+                    new Item.Properties().tab(TIERBORNE_TAB)));
+    public static final RegistryObject<Item> ORCISH_ALTAR_CORE = ITEMS.register("orcish_altar_core",
+            () -> new BlockItem(ModBlocks.ORCISH_ALTAR_CORE.get(),
+                    new Item.Properties().tab(TIERBORNE_TAB)));
+    public static final RegistryObject<Item> DUNGEON_MARKER_WAND = ITEMS.register("dungeon_marker_wand",
+            () -> new DungeonMarkerWandItem(new Item.Properties().tab(TIERBORNE_TAB).stacksTo(1)));
 
     public static final RegistryObject<Item> DUNE_REVENANT_SPAWN_EGG = registerSpawnEgg(
             "dune_revenant_spawn_egg", () -> ModEntities.DUNE_REVENANT.get(), 0x75634A, 0x8CC6A3);

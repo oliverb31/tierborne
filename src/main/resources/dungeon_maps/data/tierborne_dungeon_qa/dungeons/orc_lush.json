@@ -1,0 +1,884 @@
+{
+  "format": 1,
+  "name": "orc_lush",
+  "namespace": "tierborne_dungeon_qa",
+  "source_sha256": "b5630e090a010079c7aad99ab916c9954c9ba590e2d2ef87297f45e209de42bf",
+  "source_dimensions": [
+    253,
+    118,
+    303
+  ],
+  "decoded_blocks": 9045762,
+  "manifest_only": true,
+  "non_air_blocks": 712358,
+  "tile_size": 48,
+  "tiles": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 34337,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_0_0_0"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 22337,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_0_0_1"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 12063,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_0_0_2"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6802,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_0_0_3"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4994,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_0_0_4"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 12643,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_0_0_5"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        15
+      ],
+      "blocks": 720,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_0_0_6"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1544,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_0_1_0"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 938,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_0_1_1"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4702,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_0_1_2"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7418,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_0_1_3"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 10654,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_1_0_0"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 16287,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_1_0_1"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 17598,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_1_0_2"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 21472,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_1_0_3"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 9214,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_1_0_4"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 13733,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_1_0_5"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        15
+      ],
+      "blocks": 720,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_1_0_6"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 0,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1602,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_1_1_0"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 5678,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_1_1_1"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 8445,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_1_1_2"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 11670,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_1_1_3"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1688,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_1_1_4"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2257,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_1_1_5"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 0,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 15039,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_2_0_0"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 16739,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_2_0_1"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 15817,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_2_0_2"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 19672,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_2_0_3"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6476,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_2_0_4"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 12685,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_2_0_5"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        15
+      ],
+      "blocks": 720,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_2_0_6"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 0,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7097,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_2_1_0"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 10761,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_2_1_1"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6115,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_2_1_2"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6970,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_2_1_3"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3245,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_2_1_4"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4359,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_2_1_5"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 0,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 19149,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_3_0_0"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 13573,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_3_0_1"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 21495,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_3_0_2"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 27822,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_3_0_3"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 11156,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_3_0_4"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 24442,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_3_0_5"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        15
+      ],
+      "blocks": 720,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_3_0_6"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 0,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 5343,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_3_1_0"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3385,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_3_1_1"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6285,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_3_1_2"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7551,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_3_1_3"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2402,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_3_1_4"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 5505,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_3_1_5"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 0,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2304,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_4_0_0"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2304,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_4_0_1"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 45611,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_4_0_2"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 48050,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_4_0_3"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 8753,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_4_0_4"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 5824,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_4_0_5"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        15
+      ],
+      "blocks": 720,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_4_0_6"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 19761,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_4_1_2"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 21149,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_4_1_3"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1751,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_4_1_4"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1126,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_4_1_5"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 0,
+      "size": [
+        13,
+        48,
+        48
+      ],
+      "blocks": 624,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_5_0_0"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 1,
+      "size": [
+        13,
+        48,
+        48
+      ],
+      "blocks": 624,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_5_0_1"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 2,
+      "size": [
+        13,
+        48,
+        48
+      ],
+      "blocks": 15490,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_5_0_2"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 3,
+      "size": [
+        13,
+        48,
+        48
+      ],
+      "blocks": 21430,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_5_0_3"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 4,
+      "size": [
+        13,
+        48,
+        48
+      ],
+      "blocks": 1373,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_5_0_4"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 5,
+      "size": [
+        13,
+        48,
+        48
+      ],
+      "blocks": 624,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_5_0_5"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 6,
+      "size": [
+        13,
+        48,
+        15
+      ],
+      "blocks": 195,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_5_0_6"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": 2,
+      "size": [
+        13,
+        48,
+        48
+      ],
+      "blocks": 4268,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_5_1_2"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": 3,
+      "size": [
+        13,
+        48,
+        48
+      ],
+      "blocks": 6134,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_5_1_3"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": 4,
+      "size": [
+        13,
+        48,
+        48
+      ],
+      "blocks": 204,
+      "structure": "tierborne_dungeon_qa:orc_lush/tile_5_1_4"
+    }
+  ],
+  "sanitization": {
+    "block_entities_removed": 3142,
+    "entities_removed": 0,
+    "portal_blocks_removed": true,
+    "leaf_decay_disabled": true
+  },
+  "entrance": {
+    "position": [
+      233.5,
+      27.0,
+      151.5
+    ],
+    "yaw": 90.0,
+    "pitch": 0.0
+  }
+}

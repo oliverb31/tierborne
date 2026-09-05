@@ -1,5 +1,7 @@
 package com.ollie.tierborne.playerclass;
 
+import com.ollie.tierborne.config.RpgBalanceConfig;
+
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -26,7 +28,7 @@ public interface SkillTreeDefinition {
         return skills().stream().filter(skill -> unlockedSkills.contains(skill.id()))
                 .map(Skill::upgrade).filter(Objects::nonNull)
                 .filter(upgrade -> upgrade.type() == type)
-                .mapToInt(SkillUpgrade::percentagePoints).sum();
+                .mapToInt(upgrade -> RpgBalanceConfig.scaledNodeBonus(upgrade.percentagePoints())).sum();
     }
 
     default Set<SkillBonusType> displayedBonusTypes() {

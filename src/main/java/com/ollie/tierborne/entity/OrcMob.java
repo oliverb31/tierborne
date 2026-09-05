@@ -1,34 +1,54 @@
 package com.ollie.tierborne.entity;
 
+import com.ollie.tierborne.item.ModItems;
+import com.ollie.tierborne.dungeon.DungeonManager;
+import com.ollie.tierborne.dungeon.DungeonSavedData;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.raid.Raid;
+import net.minecraft.world.entity.raid.Raider;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.BossEvent;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 /** Forge-native runtime shared by the purchased orc models. Orcs are only spawned explicitly. */
-public final class OrcMob extends Monster {
+public final class OrcMob extends Raider {
+    private static final String RAID_ELITE_TAG = "tierborne:raid_elite";
+    private static final String DUNGEON_AWAKENED_TAG = "tierborne:dungeon_awakened";
     private static final EntityDataAccessor<String> ATTACK_ANIMATION =
             SynchedEntityData.defineId(OrcMob.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Integer> ANIMATION_START =
@@ -37,6 +57,10 @@ public final class OrcMob extends Monster {
     private int attackCooldown;
     private int activeAttack;
     private LivingEntity attackTarget;
+    private final ServerBossEvent dungeonBossBar = new ServerBossEvent(
+            Component.translatable("entity.tierborne.orc_boss"),
+            BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.PROGRESS);
+    private final Set<UUID> dungeonBossBarPlayers = new HashSet<>();
 
     public OrcMob(EntityType<? extends OrcMob> entityType, Level level) {
         super(entityType, level);
@@ -52,8 +76,13 @@ public final class OrcMob extends Monster {
 
     @Override
     protected void registerGoals() {
+        super.registerGoals();
         this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.85D));
+        WaterAvoidingRandomStrollGoal strollGoal = new WaterAvoidingRandomStrollGoal(this, 0.85D);
+        if (kind() == Kind.WARRIOR || kind() == Kind.SPEARTHROWER || kind() == Kind.SHAMAN) {
+            strollGoal.setInterval(1);
+        }
+        this.goalSelector.addGoal(6, strollGoal);
         this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 12.0F));
         this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this).setAlertOthers());
@@ -66,6 +95,9 @@ public final class OrcMob extends Monster {
         if (this.level.isClientSide || !isAlive()) {
             return;
         }
+
+        updateDungeonTargeting();
+        updateDungeonBossBar();
 
         if (this.activeAttack > 0) {
             tickAttack(this.tickCount - getAnimationStartTick());
@@ -87,6 +119,68 @@ public final class OrcMob extends Monster {
         } else if (distance > (isRanged() ? 10.0D : 2.5D)) {
             getNavigation().moveTo(target, kind() == Kind.BOSS ? 1.05D : 1.1D);
         }
+    }
+
+    private void updateDungeonTargeting() {
+        if (!(this.level instanceof ServerLevel serverLevel)
+                || !DungeonManager.isActiveDungeonPosition(serverLevel, blockPosition())) return;
+
+        LivingEntity current = getTarget();
+        if (current != null && current.isAlive()) {
+            if (hasLineOfSight(current)) getPersistentData().putBoolean(DUNGEON_AWAKENED_TAG, true);
+            return;
+        }
+
+        boolean awakened = getPersistentData().getBoolean(DUNGEON_AWAKENED_TAG);
+        double range = getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.FOLLOW_RANGE);
+        Player nearest = this.level.getEntitiesOfClass(Player.class, getBoundingBox().inflate(range),
+                        player -> player.isAlive() && !player.isCreative() && !player.isSpectator()
+                                && (awakened || hasLineOfSight(player)))
+                .stream()
+                .min(java.util.Comparator.comparingDouble(this::distanceToSqr))
+                .orElse(null);
+        if (nearest == null) return;
+        setTarget(nearest);
+        if (hasLineOfSight(nearest)) getPersistentData().putBoolean(DUNGEON_AWAKENED_TAG, true);
+    }
+
+    private void updateDungeonBossBar() {
+        if (kind() != Kind.BOSS || !(this.level instanceof ServerLevel serverLevel)) return;
+        Optional<DungeonSavedData.Instance> found =
+                DungeonManager.instanceAt(serverLevel.getServer(), getX(), getZ());
+        if (found.isEmpty() || !found.get().state.equals("ACTIVE") || found.get().authoring) {
+            clearDungeonBossBar();
+            return;
+        }
+
+        LivingEntity target = getTarget();
+        if (target instanceof Player && target.isAlive()) {
+            getPersistentData().putBoolean("tierborne:dungeon_boss_engaged", true);
+        }
+        if (!getPersistentData().getBoolean("tierborne:dungeon_boss_engaged")) return;
+
+        this.dungeonBossBar.setName(getDisplayName());
+        this.dungeonBossBar.setProgress(Mth.clamp(getHealth() / getMaxHealth(), 0.0F, 1.0F));
+        Set<UUID> desiredPlayers = new HashSet<>();
+        for (UUID playerId : found.get().party) {
+            ServerPlayer player = serverLevel.getServer().getPlayerList().getPlayer(playerId);
+            if (player == null || player.level != serverLevel
+                    || !found.get().contains(player.getX(), player.getZ())) continue;
+            desiredPlayers.add(playerId);
+            this.dungeonBossBar.addPlayer(player);
+        }
+        for (UUID playerId : new HashSet<>(this.dungeonBossBarPlayers)) {
+            if (desiredPlayers.contains(playerId)) continue;
+            ServerPlayer player = serverLevel.getServer().getPlayerList().getPlayer(playerId);
+            if (player != null) this.dungeonBossBar.removePlayer(player);
+        }
+        this.dungeonBossBarPlayers.clear();
+        this.dungeonBossBarPlayers.addAll(desiredPlayers);
+    }
+
+    private void clearDungeonBossBar() {
+        this.dungeonBossBar.removeAllPlayers();
+        this.dungeonBossBarPlayers.clear();
     }
 
     private void beginAttack(int attack, LivingEntity target) {
@@ -280,11 +374,62 @@ public final class OrcMob extends Monster {
 
     @Override
     public void die(DamageSource source) {
+        boolean wasInRaid = getCurrentRaid() != null;
+        boolean wasCaptain = isPatrolLeader()
+                && ItemStack.matches(getItemBySlot(EquipmentSlot.HEAD), Raid.getLeaderBannerInstance());
         if (!this.level.isClientSide) {
             this.entityData.set(ATTACK_ANIMATION, "death");
             this.entityData.set(ANIMATION_START, this.tickCount);
         }
+        clearDungeonBossBar();
         super.die(source);
+        if (!this.level.isClientSide && !wasInRaid && !wasCaptain
+                && (kind() == Kind.WARRIOR || kind() == Kind.SPEARTHROWER || kind() == Kind.SHAMAN)) {
+            Player player = killingPlayer(source);
+            if (player != null) grantBadOmen(player);
+        }
+    }
+
+    @Override
+    public void remove(RemovalReason reason) {
+        clearDungeonBossBar();
+        super.remove(reason);
+    }
+
+    @Override
+    protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHit) {
+        super.dropCustomDeathLoot(source, looting, recentlyHit);
+        if (kind() != Kind.ELITE || !getPersistentData().getBoolean(RAID_ELITE_TAG)) return;
+        spawnAtLocation(new ItemStack(ModItems.ORC_ELITE_AXE.get()));
+    }
+
+    @Override
+    public void applyRaidBuffs(int wave, boolean unused) {
+    }
+
+    @Override
+    public SoundEvent getCelebrateSound() {
+        return SoundEvents.PILLAGER_CELEBRATE;
+    }
+
+    public void markAsRaidElite() {
+        getPersistentData().putBoolean(RAID_ELITE_TAG, true);
+    }
+
+    private Player killingPlayer(DamageSource source) {
+        if (source.getEntity() instanceof Player player) return player;
+        if (source.getEntity() instanceof Wolf wolf && wolf.isTame()
+                && wolf.getOwner() instanceof Player player) return player;
+        return null;
+    }
+
+    private void grantBadOmen(Player player) {
+        if (level.getGameRules().getBoolean(GameRules.RULE_DISABLE_RAIDS)) return;
+        MobEffectInstance current = player.getEffect(MobEffects.BAD_OMEN);
+        int amplifier = current == null ? 0 : Mth.clamp(current.getAmplifier() + 1, 0, 4);
+        player.removeEffectNoUpdate(MobEffects.BAD_OMEN);
+        player.addEffect(new MobEffectInstance(MobEffects.BAD_OMEN,
+                120000, amplifier, false, false, true));
     }
 
     @Override

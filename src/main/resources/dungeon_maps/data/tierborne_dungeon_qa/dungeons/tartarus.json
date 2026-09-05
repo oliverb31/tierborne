@@ -1,0 +1,812 @@
+{
+  "format": 1,
+  "name": "tartarus",
+  "namespace": "tierborne_dungeon_qa",
+  "source_sha256": "d9123708053cd49534f192822bc6fe2fd92a35548e1372e974739e17fc235d56",
+  "source_dimensions": [
+    164,
+    97,
+    493
+  ],
+  "decoded_blocks": 7842644,
+  "manifest_only": false,
+  "non_air_blocks": 684952,
+  "tile_size": 48,
+  "tiles": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6975,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_0_0_0"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 18931,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_0_0_1"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 27320,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_0_0_2"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6874,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_0_0_3"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3876,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_0_0_4"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7866,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_0_0_5"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 24448,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_0_0_6"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 12468,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_0_0_7"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 14023,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_0_0_8"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 14485,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_0_0_9"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2326,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_0_1_0"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 724,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_0_1_1"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 11850,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_0_1_2"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2387,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_0_1_3"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1451,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_0_1_4"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3399,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_0_1_5"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 8376,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_0_1_6"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3861,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_0_1_7"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3243,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_0_1_8"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3319,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_0_1_9"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 30484,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_0_0"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 24706,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_0_1"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 17341,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_0_2"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 32834,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_0_3"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 23306,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_0_4"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 26717,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_0_5"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 26347,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_0_6"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 34211,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_0_7"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 26659,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_0_8"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 25514,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_0_9"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        13
+      ],
+      "blocks": 7242,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_0_10"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 0,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 5307,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_1_0"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4305,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_1_1"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6999,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_1_2"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 9748,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_1_3"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 8863,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_1_4"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 10767,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_1_5"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 13491,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_1_6"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 10049,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_1_7"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 10977,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_1_8"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 10873,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_1_9"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        13
+      ],
+      "blocks": 3575,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_1_1_10"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 0,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4353,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_2_0_0"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 14590,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_2_0_1"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 22735,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_2_0_2"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4054,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_2_0_3"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 361,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_2_0_5"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 18996,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_2_0_6"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 9505,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_2_0_7"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7677,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_2_0_8"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7869,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_2_0_9"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 0,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 588,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_2_1_0"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 189,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_2_1_1"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7579,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_2_1_2"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3819,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_2_1_3"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 521,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_2_1_5"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 13469,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_2_1_6"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 8746,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_2_1_7"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1225,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_2_1_8"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1260,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_2_1_9"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 7,
+      "size": [
+        48,
+        1,
+        48
+      ],
+      "blocks": 1,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_2_2_7"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 6,
+      "size": [
+        20,
+        48,
+        48
+      ],
+      "blocks": 3622,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_3_0_6"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 7,
+      "size": [
+        20,
+        48,
+        48
+      ],
+      "blocks": 32,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_3_0_7"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 6,
+      "size": [
+        20,
+        48,
+        48
+      ],
+      "blocks": 4935,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_3_1_6"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 7,
+      "size": [
+        20,
+        48,
+        48
+      ],
+      "blocks": 309,
+      "structure": "tierborne_dungeon_qa:tartarus/tile_3_1_7"
+    }
+  ],
+  "sanitization": {
+    "block_entities_removed": 1704,
+    "entities_removed": 0,
+    "portal_blocks_removed": true,
+    "leaf_decay_disabled": true
+  },
+  "entrance": {
+    "position": [
+      68.5,
+      29.0,
+      36.5
+    ],
+    "yaw": 1.1873779296875,
+    "pitch": -3.750225782394409
+  }
+}

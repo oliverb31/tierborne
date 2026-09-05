@@ -30,7 +30,7 @@ public final class PlayerProgress {
     private int movementSpeedLimitPercent = 100;
     private boolean moddedMovementSpeedEnabled = true;
     private boolean receivedStartingArmor;
-    private final Set<String> discoveredChunks = new HashSet<>();
+    private final Set<String> discoveredBiomes = new HashSet<>();
     private final Map<String, Integer> recentHostileKills = new HashMap<>();
     private long hostileKillWindowStart;
     private int hostileKillsInWindow;
@@ -55,16 +55,25 @@ public final class PlayerProgress {
         while (level < MAX_LEVEL && progressionExperience >= experienceRequired(level)) {
             progressionExperience -= experienceRequired(level);
             level++;
-            skillPoints++;
+            skillPoints += level % 5 == 0 ? 2 : 1;
             levelsGained++;
         }
         if (level >= MAX_LEVEL) progressionExperience = 0;
         return levelsGained;
     }
 
-    public boolean discoverChunk(String dimensionAndChunk) {
-        if (level >= MAX_LEVEL || discoveredChunks.size() >= 8192) return false;
-        return discoveredChunks.add(dimensionAndChunk);
+    public boolean discoverBiome(String biomeId) {
+        return discoveredBiomes.add(biomeId);
+    }
+
+    public void grantSkillPoints(int amount) {
+        skillPoints += Math.max(0, amount);
+    }
+
+    public int resetCurrentLevelExperience() {
+        int lost = progressionExperience;
+        progressionExperience = 0;
+        return lost;
     }
 
     public int applyHostileKillDiminishingReturns(String entityType, long gameTime, int baseExperience) {
@@ -168,9 +177,9 @@ public final class PlayerProgress {
         ListTag skills = new ListTag();
         unlockedSkills.forEach(id -> skills.add(StringTag.valueOf(id)));
         tag.put("UnlockedSkills", skills);
-        ListTag chunks = new ListTag();
-        discoveredChunks.forEach(chunk -> chunks.add(StringTag.valueOf(chunk)));
-        tag.put("DiscoveredChunks", chunks);
+        ListTag biomes = new ListTag();
+        discoveredBiomes.forEach(biome -> biomes.add(StringTag.valueOf(biome)));
+        tag.put("DiscoveredBiomes", biomes);
         CompoundTag kills = new CompoundTag();
         recentHostileKills.forEach(kills::putInt);
         tag.put("RecentHostileKills", kills);
@@ -192,8 +201,8 @@ public final class PlayerProgress {
         if(tag.contains("ModdedMovementSpeedEnabled"))progress.moddedMovementSpeedEnabled=tag.getBoolean("ModdedMovementSpeedEnabled");
         ListTag skills = tag.getList("UnlockedSkills", Tag.TAG_STRING);
         for (int i = 0; i < skills.size(); i++) progress.unlockedSkills.add(skills.getString(i));
-        ListTag chunks = tag.getList("DiscoveredChunks", Tag.TAG_STRING);
-        for (int i = 0; i < chunks.size() && i < 8192; i++) progress.discoveredChunks.add(chunks.getString(i));
+        ListTag biomes = tag.getList("DiscoveredBiomes", Tag.TAG_STRING);
+        for (int i = 0; i < biomes.size(); i++) progress.discoveredBiomes.add(biomes.getString(i));
         CompoundTag kills = tag.getCompound("RecentHostileKills");
         for (String key : kills.getAllKeys()) progress.recentHostileKills.put(key, kills.getInt(key));
         progress.hostileKillWindowStart = tag.getLong("HostileKillWindowStart");

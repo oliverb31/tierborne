@@ -2,6 +2,7 @@ package com.ollie.tierborne.progression;
 
 import com.ollie.tierborne.data.PlayerProgress;
 import com.ollie.tierborne.data.PlayerProgressSavedData;
+import com.ollie.tierborne.config.RpgBalanceConfig;
 import com.ollie.tierborne.network.ModNetwork;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -14,7 +15,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public final class ProgressionRuntime {
     private static final int EXPLORATION_CHECK_TICKS = 200;
-    private static final int EXPLORATION_EXPERIENCE = 1;
 
     private ProgressionRuntime() {}
 
@@ -25,12 +25,14 @@ public final class ProgressionRuntime {
 
         PlayerProgressSavedData data = PlayerProgressSavedData.get(player.getServer());
         PlayerProgress progress = data.get(player.getUUID());
-        String chunkKey = player.level.dimension().location() + "|"
-                + player.chunkPosition().x + "|" + player.chunkPosition().z;
-        if (progress.discoverChunk(chunkKey)) {
-            award(player, data, progress, EXPLORATION_EXPERIENCE,
-                    Component.literal("Exploration"));
-        }
+        player.level.getBiome(player.blockPosition()).unwrapKey().ifPresent(biomeKey -> {
+            if (progress.discoverBiome(biomeKey.location().toString())) {
+                int experience = RpgBalanceConfig.BIOME_DISCOVERY_EXPERIENCE.get();
+                award(player, data, progress, experience, Component.literal("Biome discovery"));
+                player.displayClientMessage(Component.translatable(
+                        "message.tierborne.biome_discovered", biomeKey.location(), experience), true);
+            }
+        });
     }
 
     public static void rewardHostileKill(ServerPlayer player, LivingEntity defeated) {
@@ -47,10 +49,28 @@ public final class ProgressionRuntime {
         }
     }
 
+    public static void rewardRaidWave(ServerPlayer player, int wave) {
+        int experience = RpgBalanceConfig.RAID_WAVE_EXPERIENCE.get();
+        PlayerProgressSavedData data = PlayerProgressSavedData.get(player.getServer());
+        award(player, data, data.get(player.getUUID()), experience, Component.literal("Orc raid wave"));
+        player.displayClientMessage(Component.translatable(
+                "message.tierborne.orc_raid_wave_defeated", wave, experience), true);
+    }
+
     public static void clearVanillaExperience(ServerPlayer player) {
         player.totalExperience = 0;
         player.experienceLevel = 0;
         player.experienceProgress = 0.0F;
+    }
+
+    public static void resetExperienceOnDeath(ServerPlayer player) {
+        PlayerProgressSavedData data = PlayerProgressSavedData.get(player.getServer());
+        int lost = data.get(player.getUUID()).resetCurrentLevelExperience();
+        data.changed();
+        if (lost > 0) {
+            player.displayClientMessage(Component.literal("Death removed " + lost
+                    + " Tierborne XP. Your current level and skills were preserved."), true);
+        }
     }
 
     public static void stripEnchantments(ServerPlayer player) {
@@ -100,8 +120,8 @@ public final class ProgressionRuntime {
         data.changed();
         ModNetwork.sync(player);
         if (levelsGained > 0) {
-            player.sendSystemMessage(Component.translatable(
-                    "message.tierborne.level_up", progress.level(), progress.skillPoints()));
+            player.displayClientMessage(Component.translatable(
+                    "message.tierborne.level_up", progress.level(), progress.skillPoints()), true);
         } else {
             player.displayClientMessage(Component.translatable(
                     "message.tierborne.progression_xp", amount, source), true);

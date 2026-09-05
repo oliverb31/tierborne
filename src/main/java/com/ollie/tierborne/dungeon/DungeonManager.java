@@ -17,6 +17,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -37,6 +39,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public final class DungeonManager {
+    public static final String ORC_LUSH_DUNGEON = "orc_lush";
     public static final int CELL_SIZE = 2_048;
     public static final int MAP_PADDING = 16;
     public static final ResourceKey<Level> DUNGEON_LEVEL = ResourceKey.create(
@@ -47,7 +50,10 @@ public final class DungeonManager {
     private static final UUID DAMAGE_SCALE_ID = UUID.fromString("93cba4f1-771a-41ca-a910-b679fefb7c52");
     private static final Map<Integer, LoadedTile> TILE_CACHE = new HashMap<>();
     private static final Map<Integer, Map<Long, BlockState>> FIRE_GUARDS = new HashMap<>();
+    private static final Map<UUID, Long> DUNGEON_WAKE_PULSES = new HashMap<>();
     private static final java.util.Set<UUID> AUTHORIZED_TRAVEL = new java.util.HashSet<>();
+    private static final String DUNGEON_DEATH = "tierborne:dungeon_death";
+    private static final String DUNGEON_INVENTORY = "tierborne:dungeon_inventory";
     private static Map<String, DungeonManifest> manifests = Map.of();
 
     private record PlacedBlock(BlockPos position, BlockState state) {
@@ -61,6 +67,7 @@ public final class DungeonManager {
 
     public static void reload(MinecraftServer server) {
         manifests = DungeonManifest.loadAll(server);
+        DungeonMarkerDefaults.reload(server);
         TILE_CACHE.clear();
     }
 
@@ -70,33 +77,72 @@ public final class DungeonManager {
     }
 
     public static boolean start(ServerPlayer leader, String dungeonName) {
+        if (!validateStart(leader, dungeonName)) return false;
+        if (DungeonPartyManager.members(leader).size() > 1) {
+            return DungeonPartyManager.offerDungeon(leader, dungeonName);
+        }
+        return startSolo(leader, dungeonName);
+    }
+
+    public static boolean startSolo(ServerPlayer player, String dungeonName) {
+        if (!validateStart(player, dungeonName)) return false;
+        captureReturnPoint(player);
+        if (startAccepted(player, dungeonName, List.of(player))) return true;
+        discardReturnPoint(player.getServer(), player.getUUID());
+        return false;
+    }
+
+    public static boolean startEditing(ServerPlayer player, String dungeonName) {
+        if (!player.hasPermissions(2)) {
+            player.displayClientMessage(Component.literal("Only an operator can open a dungeon editing instance."), true);
+            return false;
+        }
+        if (!validateStart(player, dungeonName)) return false;
+        captureReturnPoint(player);
+        if (startAccepted(player, dungeonName, List.of(player), true)) return true;
+        discardReturnPoint(player.getServer(), player.getUUID());
+        return false;
+    }
+
+    private static boolean validateStart(ServerPlayer leader, String dungeonName) {
         MinecraftServer server = leader.getServer();
         if (server == null) return false;
         if (manifests.isEmpty()) reload(server);
         DungeonManifest manifest = manifests.get(dungeonName);
         if (manifest == null) {
-            leader.sendSystemMessage(Component.literal("Dungeon data '" + dungeonName
-                    + "' is not installed. Add its locally converted datapack, then run /reload."));
+            leader.displayClientMessage(Component.literal("Dungeon data '" + dungeonName
+                    + "' is not installed. Add its locally converted datapack, then run /reload."), true);
             return false;
         }
         ServerLevel dungeonLevel = server.getLevel(DUNGEON_LEVEL);
         if (dungeonLevel == null) {
-            leader.sendSystemMessage(Component.literal("The Tierborne dungeon dimension is unavailable."));
+            leader.displayClientMessage(Component.literal("The Tierborne dungeon dimension is unavailable."), true);
             return false;
         }
         if (manifest.width() + MAP_PADDING * 2 > CELL_SIZE || manifest.length() + MAP_PADDING * 2 > CELL_SIZE
                 || manifest.height() > dungeonLevel.getHeight() - 16) {
-            leader.sendSystemMessage(Component.literal("Dungeon dimensions exceed the safe instance bounds."));
+            leader.displayClientMessage(Component.literal("Dungeon dimensions exceed the safe instance bounds."), true);
             return false;
         }
 
+        return true;
+    }
+
+    static boolean startAccepted(ServerPlayer leader, String dungeonName, List<ServerPlayer> party) {
+        return startAccepted(leader, dungeonName, party, false);
+    }
+
+    private static boolean startAccepted(ServerPlayer leader, String dungeonName,
+                                         List<ServerPlayer> party, boolean authoring) {
+        if (!validateStart(leader, dungeonName) || party.isEmpty()) return false;
+        MinecraftServer server = leader.getServer();
+        ServerLevel dungeonLevel = server.getLevel(DUNGEON_LEVEL);
+        DungeonManifest manifest = manifests.get(dungeonName);
         DungeonSavedData data = DungeonSavedData.get(server);
-        List<ServerPlayer> party = DungeonPartyManager.membersForStart(leader);
-        if (party.isEmpty()) return false;
         for (ServerPlayer member : party) {
             if (findByPlayer(data, member.getUUID()).isPresent()) {
-                leader.sendSystemMessage(Component.literal(member.getGameProfile().getName()
-                        + " is already assigned to a dungeon."));
+                leader.displayClientMessage(Component.literal(member.getGameProfile().getName()
+                        + " is already assigned to a dungeon."), true);
                 return false;
             }
         }
@@ -120,16 +166,15 @@ public final class DungeonManager {
         instance.leader = leader.getUUID();
         instance.party.addAll(party.stream().map(ServerPlayer::getUUID).toList());
         instance.partySizeSnapshot = party.size();
+        instance.authoring = authoring;
         instance.lastOccupiedTick = dungeonLevel.getGameTime();
         for (ServerPlayer member : party) {
-            data.returnPoints().put(member.getUUID(), new DungeonSavedData.ReturnPoint(
-                    member.level.dimension().location().toString(), member.getX(), member.getY(), member.getZ(),
-                    member.getYRot(), member.getXRot(), member.gameMode.getGameModeForPlayer().getId()));
+            captureReturnPoint(member);
         }
         data.instances().put(id, instance);
         data.changed();
-        party.forEach(member -> member.sendSystemMessage(Component.literal("Preparing the full " + dungeonName
-                + " dungeon for a party of " + party.size() + ". Entry begins only after every tile is verified.")));
+        party.forEach(member -> member.displayClientMessage(Component.literal("Preparing the full " + dungeonName
+                + " dungeon for a party of " + party.size() + ". Entry begins only after every tile is verified."), true));
         return true;
     }
 
@@ -144,13 +189,19 @@ public final class DungeonManager {
         }
         ServerLevel level = server.getLevel(DUNGEON_LEVEL);
         if (level == null) return;
+        applyDungeonWakePulses(level);
         DungeonSavedData data = DungeonSavedData.get(server);
         for (DungeonSavedData.Instance instance : new ArrayList<>(data.instances().values())) {
             if (instance.state.equals("PREPARING")) prepare(level, data, instance);
             else if (instance.state.equals("CLEANING")) clean(level, data, instance);
             if (!instance.state.equals("CLEANING")) {
                 enforceParty(level, data, instance);
-                if (instance.state.equals("ACTIVE")) protectFromFire(level, instance);
+                if (instance.state.equals("ACTIVE")) {
+                    protectFromFire(level, instance);
+                    if ((level.getGameTime() + instance.id) % 5L == 0L) {
+                        DungeonMarkerManager.tickConfiguredSpawns(level, instance);
+                    }
+                }
             }
         }
     }
@@ -249,11 +300,23 @@ public final class DungeonManager {
             if (stateId < 0 || stateId >= palette.size()) {
                 throw new IllegalStateException("Invalid palette entry in " + tile.structure());
             }
-            loadedBlocks.add(new PlacedBlock(worldPosition, NbtUtils.readBlockState(palette.getCompound(stateId))));
+            BlockState state = NbtUtils.readBlockState(palette.getCompound(stateId));
+            loadedBlocks.add(new PlacedBlock(worldPosition, removeDungeonCrop(state)));
         }
         LoadedTile loaded = new LoadedTile(tileIndex, List.copyOf(loadedBlocks));
         TILE_CACHE.put(instance.id, loaded);
         return loaded;
+    }
+
+    private static BlockState removeDungeonCrop(BlockState state) {
+        if (state.is(Blocks.WHEAT) || state.is(Blocks.CARROTS) || state.is(Blocks.POTATOES)
+                || state.is(Blocks.BEETROOTS) || state.is(Blocks.MELON_STEM)
+                || state.is(Blocks.ATTACHED_MELON_STEM) || state.is(Blocks.PUMPKIN_STEM)
+                || state.is(Blocks.ATTACHED_PUMPKIN_STEM) || state.is(Blocks.NETHER_WART)
+                || state.is(Blocks.COCOA)) {
+            return Blocks.AIR.defaultBlockState();
+        }
+        return state;
     }
 
     private static void enterParty(ServerLevel level, DungeonSavedData data, DungeonSavedData.Instance instance) {
@@ -276,10 +339,12 @@ public final class DungeonManager {
                     configuredEntrance == null ? player.getXRot() : configuredEntrance.pitch());
             instance.checkpoints.put(playerId, checkpoint);
             player.stopRiding();
-            player.setGameMode(GameType.ADVENTURE);
+            player.setGameMode(instance.authoring ? GameType.CREATIVE : GameType.ADVENTURE);
             player.teleportTo(level, checkpoint.x(), checkpoint.y(), checkpoint.z(), checkpoint.yaw(), checkpoint.pitch());
-            player.sendSystemMessage(Component.literal("Dungeon ready: all " + manifests.get(instance.dungeon).tiles().size()
-                    + " tiles and " + instance.placedBlocks + " blocks were verified and placed."));
+            if (instance.authoring) DungeonMarkerManager.giveWand(player);
+            player.displayClientMessage(Component.literal("Dungeon ready: all " + manifests.get(instance.dungeon).tiles().size()
+                    + " tiles and " + instance.placedBlocks + " blocks were verified and placed."
+                    + (instance.authoring ? " Marker editing mode is active." : "")), true);
         }
     }
 
@@ -323,13 +388,13 @@ public final class DungeonManager {
         Optional<DungeonSavedData.Instance> found = findByPlayer(data, player.getUUID());
         if (found.isEmpty() || !player.level.dimension().equals(DUNGEON_LEVEL)
                 || !found.get().contains(player.getX(), player.getZ())) {
-            player.sendSystemMessage(Component.literal("You are not inside your active dungeon instance."));
+            player.displayClientMessage(Component.literal("You are not inside your active dungeon instance."), true);
             return;
         }
         found.get().checkpoints.put(player.getUUID(), new DungeonSavedData.Checkpoint(
                 player.getX(), player.getY(), player.getZ(), player.getYRot(), player.getXRot()));
         data.changed();
-        player.sendSystemMessage(Component.literal("Dungeon checkpoint saved."));
+        player.displayClientMessage(Component.literal("Dungeon checkpoint saved."), true);
     }
 
     public static void teleportToCheckpoint(ServerPlayer player, DungeonSavedData.Instance instance, String message) {
@@ -339,21 +404,21 @@ public final class DungeonManager {
         player.stopRiding();
         player.teleportTo(level, checkpoint.x(), checkpoint.y(), checkpoint.z(), checkpoint.yaw(), checkpoint.pitch());
         player.setDeltaMovement(0.0D, 0.0D, 0.0D);
-        player.sendSystemMessage(Component.literal(message));
+        player.displayClientMessage(Component.literal(message), true);
     }
 
     public static void leave(ServerPlayer player) {
         DungeonSavedData data = DungeonSavedData.get(player.getServer());
         Optional<DungeonSavedData.Instance> instance = findByPlayer(data, player.getUUID());
         if (instance.isEmpty()) {
-            player.sendSystemMessage(Component.literal("You are not assigned to an active dungeon."));
+            player.displayClientMessage(Component.literal("You are not assigned to an active dungeon."), true);
             return;
         }
         restorePlayer(player, data);
         DungeonSavedData.Instance value = instance.get();
         value.party.remove(player.getUUID());
         value.checkpoints.remove(player.getUUID());
-        player.sendSystemMessage(Component.literal("You left the dungeon."));
+        player.displayClientMessage(Component.literal("You left the dungeon."), true);
         if (value.party.isEmpty()) beginCleanup(player.getServer(), value, "Dungeon instance is being cleaned up.");
         data.changed();
     }
@@ -362,7 +427,7 @@ public final class DungeonManager {
         DungeonSavedData data = DungeonSavedData.get(player.getServer());
         Optional<DungeonSavedData.Instance> found = findByPlayer(data, player.getUUID());
         if (found.isEmpty() || (!player.getUUID().equals(found.get().leader) && !player.hasPermissions(2))) {
-            player.sendSystemMessage(Component.literal("Only the party leader can finish this dungeon."));
+            player.displayClientMessage(Component.literal("Only the party leader can finish this dungeon."), true);
             return;
         }
         beginCleanup(player.getServer(), found.get(), "The party left the dungeon; cleanup has started.");
@@ -385,7 +450,7 @@ public final class DungeonManager {
             ServerPlayer player = server.getPlayerList().getPlayer(playerId);
             if (player != null) {
                 restorePlayer(player, data);
-                player.sendSystemMessage(Component.literal(message));
+                player.displayClientMessage(Component.literal(message), true);
             }
         }
         instance.party.clear();
@@ -485,6 +550,36 @@ public final class DungeonManager {
         return findByPlayer(DungeonSavedData.get(player.getServer()), player.getUUID()).isPresent();
     }
 
+    public static void captureReturnPoint(ServerPlayer player) {
+        DungeonSavedData data = DungeonSavedData.get(player.getServer());
+        data.returnPoints().putIfAbsent(player.getUUID(), new DungeonSavedData.ReturnPoint(
+                player.level.dimension().location().toString(), player.getX(), player.getY(), player.getZ(),
+                player.getYRot(), player.getXRot(), player.gameMode.getGameModeForPlayer().getId()));
+        data.changed();
+    }
+
+    public static void discardReturnPoint(MinecraftServer server, UUID playerId) {
+        DungeonSavedData data = DungeonSavedData.get(server);
+        if (data.returnPoints().remove(playerId) != null) data.changed();
+    }
+
+    public static void handlePlayerDeath(ServerPlayer player) {
+        DungeonSavedData data = DungeonSavedData.get(player.getServer());
+        Optional<DungeonSavedData.Instance> found = findByPlayer(data, player.getUUID());
+        if (found.isEmpty() || !found.get().state.equals("ACTIVE")
+                || !player.level.dimension().equals(DUNGEON_LEVEL)
+                || !found.get().contains(player.getX(), player.getZ())) return;
+        CompoundTag forgeData = player.getPersistentData();
+        CompoundTag persisted = forgeData.getCompound(Player.PERSISTED_NBT_TAG);
+        persisted.putBoolean(DUNGEON_DEATH, true);
+        persisted.put(DUNGEON_INVENTORY, player.getInventory().save(new ListTag()));
+        forgeData.put(Player.PERSISTED_NBT_TAG, persisted);
+    }
+
+    public static boolean shouldKeepInventoryAfterDungeonDeath(ServerPlayer player) {
+        return player.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG).getBoolean(DUNGEON_DEATH);
+    }
+
     public static void initializeFireGuards(MinecraftServer server) {
         ServerLevel level = server.getLevel(DUNGEON_LEVEL);
         if (level == null) return;
@@ -539,9 +634,27 @@ public final class DungeonManager {
     }
 
     public static void recoverAfterRespawn(ServerPlayer player) {
-        findByPlayer(DungeonSavedData.get(player.getServer()), player.getUUID())
-                .filter(instance -> instance.state.equals("ACTIVE"))
-                .ifPresent(instance -> teleportToCheckpoint(player, instance, "You respawned at your dungeon checkpoint."));
+        CompoundTag persisted = player.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
+        if (!persisted.getBoolean(DUNGEON_DEATH)) return;
+        player.getInventory().load(persisted.getList(DUNGEON_INVENTORY, Tag.TAG_COMPOUND));
+        persisted.remove(DUNGEON_DEATH);
+        persisted.remove(DUNGEON_INVENTORY);
+        player.getPersistentData().put(Player.PERSISTED_NBT_TAG, persisted);
+
+        DungeonSavedData data = DungeonSavedData.get(player.getServer());
+        Optional<DungeonSavedData.Instance> found = findByPlayer(data, player.getUUID());
+        if (found.isEmpty()) return;
+        DungeonSavedData.Instance instance = found.get();
+        restorePlayer(player, data);
+        instance.party.remove(player.getUUID());
+        instance.checkpoints.remove(player.getUUID());
+        if (player.getUUID().equals(instance.leader) && !instance.party.isEmpty()) {
+            instance.leader = instance.party.iterator().next();
+        }
+        player.containerMenu.broadcastChanges();
+        player.displayClientMessage(Component.literal("Dungeon death: your inventory was kept and you were returned to where you accepted the invitation."), true);
+        if (instance.party.isEmpty()) beginCleanup(player.getServer(), instance, "Dungeon instance is being cleaned up.");
+        data.changed();
     }
 
     private static void restorePlayer(ServerPlayer player, DungeonSavedData data) {
@@ -572,20 +685,39 @@ public final class DungeonManager {
         double damageBonus = RpgBalanceConfig.DUNGEON_DAMAGE_PER_EXTRA_PLAYER.get() / 100.0D * (partySize - 1);
         AttributeInstance health = mob.getAttribute(Attributes.MAX_HEALTH);
         AttributeInstance damage = mob.getAttribute(Attributes.ATTACK_DAMAGE);
+        AttributeInstance followRange = mob.getAttribute(Attributes.FOLLOW_RANGE);
         if (health != null && healthBonus > 0.0D) health.addPermanentModifier(new AttributeModifier(
                 HEALTH_SCALE_ID, "Tierborne dungeon party health scaling", healthBonus, AttributeModifier.Operation.MULTIPLY_TOTAL));
         if (damage != null && damageBonus > 0.0D) damage.addPermanentModifier(new AttributeModifier(
                 DAMAGE_SCALE_ID, "Tierborne dungeon party damage scaling", damageBonus, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        if (followRange != null) followRange.setBaseValue(Math.max(followRange.getBaseValue(),
+                RpgBalanceConfig.DUNGEON_MOB_VISION_RANGE.get()));
         mob.setHealth(mob.getMaxHealth());
         mob.getPersistentData().putBoolean("tierborne:dungeon_scaled", true);
         mob.getPersistentData().putLong("tierborne:dungeon_seed", found.get().seed);
+        DUNGEON_WAKE_PULSES.put(mob.getUUID(), level.getGameTime() + 1L);
+    }
+
+    private static void applyDungeonWakePulses(ServerLevel level) {
+        long gameTime = level.getGameTime();
+        DUNGEON_WAKE_PULSES.entrySet().removeIf(entry -> {
+            if (entry.getValue() > gameTime) return false;
+            Entity entity = level.getEntity(entry.getKey());
+            if (entity instanceof Mob mob && mob.isAlive()
+                    && isActiveDungeonPosition(level, mob.blockPosition())) {
+                mob.hurt(DamageSource.GENERIC, 0.0F);
+                double angle = mob.getRandom().nextDouble() * Math.PI * 2.0D;
+                mob.push(Math.cos(angle) * 0.08D, 0.04D, Math.sin(angle) * 0.08D);
+            }
+            return true;
+        });
     }
 
     private static void fail(MinecraftServer server, DungeonSavedData data,
                              DungeonSavedData.Instance instance, String message) {
         for (UUID playerId : instance.party) {
             ServerPlayer player = server.getPlayerList().getPlayer(playerId);
-            if (player != null) player.sendSystemMessage(Component.literal(message));
+            if (player != null) player.displayClientMessage(Component.literal(message), true);
         }
         beginCleanup(server, instance, message);
         data.changed();

@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "tierborne:block/orcish_altar_core_top",
+    "up": "tierborne:block/orcish_altar_core_top",
+    "north": "tierborne:block/orcish_altar_core_front",
+    "south": "tierborne:block/orcish_altar_core_side",
+    "west": "tierborne:block/orcish_altar_core_side",
+    "east": "tierborne:block/orcish_altar_core_side",
+    "particle": "tierborne:block/orcish_altar_core_side"
+  }
+}

@@ -17,6 +17,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -49,6 +50,7 @@ public final class DungeonManager {
     private static final UUID DAMAGE_SCALE_ID = UUID.fromString("93cba4f1-771a-41ca-a910-b679fefb7c52");
     private static final Map<Integer, LoadedTile> TILE_CACHE = new HashMap<>();
     private static final Map<Integer, Map<Long, BlockState>> FIRE_GUARDS = new HashMap<>();
+    private static final Map<UUID, Long> DUNGEON_WAKE_PULSES = new HashMap<>();
     private static final java.util.Set<UUID> AUTHORIZED_TRAVEL = new java.util.HashSet<>();
     private static final String DUNGEON_DEATH = "tierborne:dungeon_death";
     private static final String DUNGEON_INVENTORY = "tierborne:dungeon_inventory";
@@ -187,13 +189,19 @@ public final class DungeonManager {
         }
         ServerLevel level = server.getLevel(DUNGEON_LEVEL);
         if (level == null) return;
+        applyDungeonWakePulses(level);
         DungeonSavedData data = DungeonSavedData.get(server);
         for (DungeonSavedData.Instance instance : new ArrayList<>(data.instances().values())) {
             if (instance.state.equals("PREPARING")) prepare(level, data, instance);
             else if (instance.state.equals("CLEANING")) clean(level, data, instance);
             if (!instance.state.equals("CLEANING")) {
                 enforceParty(level, data, instance);
-                if (instance.state.equals("ACTIVE")) protectFromFire(level, instance);
+                if (instance.state.equals("ACTIVE")) {
+                    protectFromFire(level, instance);
+                    if ((level.getGameTime() + instance.id) % 5L == 0L) {
+                        DungeonMarkerManager.tickConfiguredSpawns(level, instance);
+                    }
+                }
             }
         }
     }
@@ -260,7 +268,6 @@ public final class DungeonManager {
             instance.lastOccupiedTick = level.getGameTime();
             createFireGuard(level, instance);
             enterParty(level, data, instance);
-            DungeonMarkerManager.spawnConfigured(level, instance);
         }
         data.changed();
     }
@@ -293,11 +300,23 @@ public final class DungeonManager {
             if (stateId < 0 || stateId >= palette.size()) {
                 throw new IllegalStateException("Invalid palette entry in " + tile.structure());
             }
-            loadedBlocks.add(new PlacedBlock(worldPosition, NbtUtils.readBlockState(palette.getCompound(stateId))));
+            BlockState state = NbtUtils.readBlockState(palette.getCompound(stateId));
+            loadedBlocks.add(new PlacedBlock(worldPosition, removeDungeonCrop(state)));
         }
         LoadedTile loaded = new LoadedTile(tileIndex, List.copyOf(loadedBlocks));
         TILE_CACHE.put(instance.id, loaded);
         return loaded;
+    }
+
+    private static BlockState removeDungeonCrop(BlockState state) {
+        if (state.is(Blocks.WHEAT) || state.is(Blocks.CARROTS) || state.is(Blocks.POTATOES)
+                || state.is(Blocks.BEETROOTS) || state.is(Blocks.MELON_STEM)
+                || state.is(Blocks.ATTACHED_MELON_STEM) || state.is(Blocks.PUMPKIN_STEM)
+                || state.is(Blocks.ATTACHED_PUMPKIN_STEM) || state.is(Blocks.NETHER_WART)
+                || state.is(Blocks.COCOA)) {
+            return Blocks.AIR.defaultBlockState();
+        }
+        return state;
     }
 
     private static void enterParty(ServerLevel level, DungeonSavedData data, DungeonSavedData.Instance instance) {
@@ -666,13 +685,32 @@ public final class DungeonManager {
         double damageBonus = RpgBalanceConfig.DUNGEON_DAMAGE_PER_EXTRA_PLAYER.get() / 100.0D * (partySize - 1);
         AttributeInstance health = mob.getAttribute(Attributes.MAX_HEALTH);
         AttributeInstance damage = mob.getAttribute(Attributes.ATTACK_DAMAGE);
+        AttributeInstance followRange = mob.getAttribute(Attributes.FOLLOW_RANGE);
         if (health != null && healthBonus > 0.0D) health.addPermanentModifier(new AttributeModifier(
                 HEALTH_SCALE_ID, "Tierborne dungeon party health scaling", healthBonus, AttributeModifier.Operation.MULTIPLY_TOTAL));
         if (damage != null && damageBonus > 0.0D) damage.addPermanentModifier(new AttributeModifier(
                 DAMAGE_SCALE_ID, "Tierborne dungeon party damage scaling", damageBonus, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        if (followRange != null) followRange.setBaseValue(Math.max(followRange.getBaseValue(),
+                RpgBalanceConfig.DUNGEON_MOB_VISION_RANGE.get()));
         mob.setHealth(mob.getMaxHealth());
         mob.getPersistentData().putBoolean("tierborne:dungeon_scaled", true);
         mob.getPersistentData().putLong("tierborne:dungeon_seed", found.get().seed);
+        DUNGEON_WAKE_PULSES.put(mob.getUUID(), level.getGameTime() + 1L);
+    }
+
+    private static void applyDungeonWakePulses(ServerLevel level) {
+        long gameTime = level.getGameTime();
+        DUNGEON_WAKE_PULSES.entrySet().removeIf(entry -> {
+            if (entry.getValue() > gameTime) return false;
+            Entity entity = level.getEntity(entry.getKey());
+            if (entity instanceof Mob mob && mob.isAlive()
+                    && isActiveDungeonPosition(level, mob.blockPosition())) {
+                mob.hurt(DamageSource.GENERIC, 0.0F);
+                double angle = mob.getRandom().nextDouble() * Math.PI * 2.0D;
+                mob.push(Math.cos(angle) * 0.08D, 0.04D, Math.sin(angle) * 0.08D);
+            }
+            return true;
+        });
     }
 
     private static void fail(MinecraftServer server, DungeonSavedData data,

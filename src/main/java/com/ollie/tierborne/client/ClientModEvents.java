@@ -33,7 +33,7 @@ public final class ClientModEvents {
         event.registerEntityRenderer(ModEntities.ORC_ELITE.get(),
                 context -> new OrcRenderer(context, "orc_elite_am", 0.65F));
         event.registerEntityRenderer(ModEntities.ORC_BOSS.get(),
-                context -> new OrcRenderer(context, "orc_boss_am", 1.0F));
+                context -> new OrcRenderer(context, "orc_boss_am", 1.44F));
         event.registerEntityRenderer(ModEntities.ORC_PROJECTILE.get(), OrcProjectileRenderer::new);
     }
 

@@ -6,6 +6,8 @@ public final class RpgBalanceConfig {
     public static final ForgeConfigSpec SPEC;
     public static final ForgeConfigSpec.DoubleValue DUNGEON_HEALTH_PER_EXTRA_PLAYER;
     public static final ForgeConfigSpec.DoubleValue DUNGEON_DAMAGE_PER_EXTRA_PLAYER;
+    public static final ForgeConfigSpec.DoubleValue DUNGEON_MOB_VISION_RANGE;
+    public static final ForgeConfigSpec.DoubleValue DUNGEON_MARKER_ACTIVATION_RANGE;
     public static final ForgeConfigSpec.IntValue BIOME_DISCOVERY_EXPERIENCE;
     public static final ForgeConfigSpec.IntValue RAID_WAVE_EXPERIENCE;
     public static final ForgeConfigSpec.DoubleValue RAID_REWARD_RADIUS;
@@ -144,6 +146,10 @@ public final class RpgBalanceConfig {
         b.push("dungeons");
         DUNGEON_HEALTH_PER_EXTRA_PLAYER = percent(b, "healthPerExtraPlayerPercent", 65.0);
         DUNGEON_DAMAGE_PER_EXTRA_PLAYER = percent(b, "damagePerExtraPlayerPercent", 35.0);
+        DUNGEON_MOB_VISION_RANGE = b.comment("How far dungeon mobs can acquire players when line of sight is unobstructed.")
+                .defineInRange("mobVisionRangeBlocks", 48.0, 16.0, 256.0);
+        DUNGEON_MARKER_ACTIVATION_RANGE = b.comment("Marker mobs spawn inside this distance even when a wall blocks line of sight.")
+                .defineInRange("markerActivationRangeBlocks", 40.0, 1.0, 128.0);
         b.pop().push("progression");
         BIOME_DISCOVERY_EXPERIENCE = b.comment("Tierborne XP awarded the first time a player discovers a biome.")
                 .defineInRange("biomeDiscoveryExperience", 25, 0, 100000);

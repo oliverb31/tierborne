@@ -49,7 +49,7 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<OrcMob>> ORC_SPEARTHROWER = registerOrc("orc_spearthrower", 0.95F, 2.5F);
     public static final RegistryObject<EntityType<OrcMob>> ORC_SHAMAN = registerOrc("orc_shaman", 0.95F, 2.5F);
     public static final RegistryObject<EntityType<OrcMob>> ORC_ELITE = registerOrc("orc_elite", 1.05F, 2.7F);
-    public static final RegistryObject<EntityType<OrcMob>> ORC_BOSS = registerOrc("orc_boss", 1.8F, 3.9F);
+    public static final RegistryObject<EntityType<OrcMob>> ORC_BOSS = registerOrc("orc_boss", 2.592F, 5.616F);
     public static final RegistryObject<EntityType<OrcProjectile>> ORC_PROJECTILE = ENTITIES.register("orc_projectile",
             () -> EntityType.Builder.<OrcProjectile>of(OrcProjectile::new, MobCategory.MISC)
                     .sized(0.4F, 0.4F).clientTrackingRange(12).updateInterval(1)

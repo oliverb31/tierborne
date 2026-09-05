@@ -5,7 +5,6 @@ import com.ollie.tierborne.network.OpenOrcishAltarScreenPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
@@ -92,13 +91,13 @@ public final class OrcishAltarCoreBlock extends HorizontalDirectionalBlock {
         }
         if (!(player instanceof ServerPlayer serverPlayer)) return InteractionResult.CONSUME;
         if (!active) {
-            serverPlayer.displayClientMessage(Component.translatable(
-                    "message.tierborne.orcish_altar_core.incomplete"), true);
+            ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
+                    new OpenOrcishAltarScreenPacket(position, false));
             return InteractionResult.CONSUME;
         }
 
         ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
-                new OpenOrcishAltarScreenPacket(position));
+                new OpenOrcishAltarScreenPacket(position, true));
         return InteractionResult.CONSUME;
     }
 

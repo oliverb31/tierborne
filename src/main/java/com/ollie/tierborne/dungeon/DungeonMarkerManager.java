@@ -1,6 +1,7 @@
 package com.ollie.tierborne.dungeon;
 
 import com.ollie.tierborne.Tierborne;
+import com.ollie.tierborne.config.RpgBalanceConfig;
 import com.ollie.tierborne.item.ModItems;
 import com.ollie.tierborne.network.ModNetwork;
 import com.ollie.tierborne.network.OpenDungeonMarkerScreenPacket;
@@ -15,6 +16,11 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -94,33 +100,100 @@ public final class DungeonMarkerManager {
         message(player, "Added " + displayName(action) + " at this block (" + count + " total).");
     }
 
-    public static void spawnConfigured(ServerLevel level, DungeonSavedData.Instance instance) {
+    public static void tickConfiguredSpawns(ServerLevel level, DungeonSavedData.Instance instance) {
         if (instance.authoring) return;
-        for (DungeonMarkerSavedData.MobMarker marker
-                : data(level.getServer(), instance.dungeon).markers(instance.dungeon)) {
-            ResourceLocation id = ResourceLocation.tryParse(marker.mob());
-            EntityType<?> type = id == null ? null : ForgeRegistries.ENTITY_TYPES.getValue(id);
-            Entity entity = type == null ? null : type.create(level);
-            if (!(entity instanceof Mob mob)) {
-                if (entity != null) entity.discard();
-                Tierborne.LOGGER.warn("Skipped unavailable dungeon marker mob {}", marker.mob());
-                continue;
-            }
+        java.util.List<DungeonMarkerSavedData.MobMarker> markers =
+                data(level.getServer(), instance.dungeon).markers(instance.dungeon);
+        for (int markerIndex = 0; markerIndex < markers.size(); markerIndex++) {
+            if (instance.spawnedMarkers.contains(markerIndex)) continue;
+            DungeonMarkerSavedData.MobMarker marker = markers.get(markerIndex);
             BlockPos position = new BlockPos(instance.originX + marker.x(),
                     instance.originY + marker.y(), instance.originZ + marker.z());
-            mob.moveTo(position.getX() + 0.5D, position.getY(), position.getZ() + 0.5D,
-                    marker.yaw(), 0.0F);
-            if (!level.noCollision(mob)) {
-                Tierborne.LOGGER.warn("Skipped dungeon marker mob {} at blocked position {}, {}, {}",
-                        marker.mob(), marker.x(), marker.y(), marker.z());
-                mob.discard();
-                continue;
-            }
-            mob.finalizeSpawn(level, level.getCurrentDifficultyAt(position), MobSpawnType.EVENT, null, null);
-            mob.setPersistenceRequired();
-            mob.getPersistentData().putBoolean("tierborne:dungeon_marker_spawn", true);
-            level.addFreshEntity(mob);
+            if (!level.hasChunkAt(position) || !shouldActivate(level, instance, position)) continue;
+            spawnMarker(level, marker, position);
+            instance.spawnedMarkers.add(markerIndex);
+            DungeonSavedData.get(level.getServer()).changed();
         }
+    }
+
+    private static void spawnMarker(ServerLevel level, DungeonMarkerSavedData.MobMarker marker,
+                                    BlockPos position) {
+        ResourceLocation id = ResourceLocation.tryParse(marker.mob());
+        EntityType<?> type = id == null ? null : ForgeRegistries.ENTITY_TYPES.getValue(id);
+        Entity entity = type == null ? null : type.create(level);
+        if (!(entity instanceof Mob mob)) {
+            if (entity != null) entity.discard();
+            Tierborne.LOGGER.warn("Skipped unavailable dungeon marker mob {}", marker.mob());
+            return;
+        }
+        Vec3 safePosition = findSafeSpawnPosition(level, mob, position, marker.yaw());
+        if (safePosition == null) {
+            Tierborne.LOGGER.warn("Skipped dungeon marker mob {} at blocked position {}, {}, {}",
+                    marker.mob(), marker.x(), marker.y(), marker.z());
+            mob.discard();
+            return;
+        }
+        mob.finalizeSpawn(level, level.getCurrentDifficultyAt(position), MobSpawnType.EVENT, null, null);
+        mob.moveTo(safePosition.x, safePosition.y, safePosition.z, marker.yaw(), 0.0F);
+        if (!level.noCollision(mob)) {
+            Tierborne.LOGGER.warn("Skipped dungeon marker mob {} because its final dimensions do not fit at {}, {}, {}",
+                    marker.mob(), marker.x(), marker.y(), marker.z());
+            mob.discard();
+            return;
+        }
+        mob.setDeltaMovement(Vec3.ZERO);
+        mob.setPersistenceRequired();
+        mob.getPersistentData().putBoolean("tierborne:dungeon_marker_spawn", true);
+        level.addFreshEntity(mob);
+    }
+
+    private static Vec3 findSafeSpawnPosition(ServerLevel level, Mob mob, BlockPos markerPosition,
+                                              float yaw) {
+        int[] supportOffsets = {-1, 0, -2, 1, 2};
+        for (int supportOffset : supportOffsets) {
+            BlockPos supportPosition = new BlockPos(markerPosition.getX(),
+                    markerPosition.getY() + supportOffset, markerPosition.getZ());
+            VoxelShape shape = level.getBlockState(supportPosition)
+                    .getCollisionShape(level, supportPosition);
+            if (shape.isEmpty()) continue;
+
+            double surfaceHeight = -1.0D;
+            for (AABB box : shape.toAabbs()) {
+                if (box.minX <= 0.5D && box.maxX >= 0.5D
+                        && box.minZ <= 0.5D && box.maxZ >= 0.5D) {
+                    surfaceHeight = Math.max(surfaceHeight, box.maxY);
+                }
+            }
+            if (surfaceHeight < 0.0D) continue;
+
+            Vec3 candidate = new Vec3(markerPosition.getX() + 0.5D,
+                    supportPosition.getY() + surfaceHeight + 1.0D, markerPosition.getZ() + 0.5D);
+            mob.moveTo(candidate.x, candidate.y, candidate.z, yaw, 0.0F);
+            if (level.noCollision(mob)) return candidate;
+            return null;
+        }
+        return null;
+    }
+
+    private static boolean shouldActivate(ServerLevel level, DungeonSavedData.Instance instance,
+                                          BlockPos spawnPosition) {
+        double activationRange = RpgBalanceConfig.DUNGEON_MARKER_ACTIVATION_RANGE.get();
+        double activationRangeSquared = activationRange * activationRange;
+        Vec3 target = Vec3.atBottomCenterOf(spawnPosition).add(0.0D, 1.0D, 0.0D);
+        for (java.util.UUID playerId : instance.party) {
+            ServerPlayer player = level.getServer().getPlayerList().getPlayer(playerId);
+            if (player == null || player.level != level || !player.isAlive() || player.isSpectator()) continue;
+            if (player.distanceToSqr(target) <= activationRangeSquared || hasClearLine(level, player, target)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean hasClearLine(ServerLevel level, ServerPlayer player, Vec3 target) {
+        HitResult hit = level.clip(new ClipContext(player.getEyePosition(), target,
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
+        return hit.getType() == HitResult.Type.MISS || hit.getLocation().distanceToSqr(target) < 0.25D;
     }
 
     public static void showMarkers(ServerPlayer player) {

@@ -62,5 +62,13 @@ public final class DungeonMapPackInstaller {
         if (!selectedPacks.contains(INSTALLED_PACK_ID)) selectedPacks.add(INSTALLED_PACK_ID);
         server.reloadResources(selectedPacks).join();
         DungeonManager.reload(server);
+        seedBundledMobMarkers(server);
+    }
+
+    private static void seedBundledMobMarkers(MinecraftServer server) {
+        DungeonMarkerSavedData markerData = DungeonMarkerSavedData.get(server);
+        for (String dungeon : DungeonManager.dungeonNames(server)) {
+            markerData.ensureDefaults(dungeon, DungeonMarkerDefaults.markers(dungeon));
+        }
     }
 }

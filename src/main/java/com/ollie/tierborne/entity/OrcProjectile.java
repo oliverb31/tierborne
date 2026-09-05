@@ -11,6 +11,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ItemSupplier;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
@@ -41,7 +42,7 @@ public final class OrcProjectile extends Projectile implements ItemSupplier {
         this.entityData.set(STYLE, style);
         this.damage = damage;
         Vec3 start = owner.position().add(0.0D, owner.getBbHeight() * 0.72D, 0.0D);
-        Vec3 aim = target.getEyePosition().subtract(start).normalize();
+        Vec3 aim = target.getBoundingBox().getCenter().subtract(start).normalize();
         setPos(start.x, start.y, start.z);
         setDeltaMovement(aim.scale(style == ESSENCE ? 0.82D : 1.05D));
     }
@@ -58,7 +59,14 @@ public final class OrcProjectile extends Projectile implements ItemSupplier {
             discard();
             return;
         }
+        Vec3 start = position();
+        Vec3 end = start.add(getDeltaMovement());
         HitResult hit = ProjectileUtil.getHitResult(this, this::canHitEntity);
+        EntityHitResult standardPlayerHit = CombatHitboxes.firstStandardPlayerHit(this, start, end);
+        if (standardPlayerHit != null && (hit.getType() == HitResult.Type.MISS
+                || start.distanceToSqr(standardPlayerHit.getLocation()) < start.distanceToSqr(hit.getLocation()))) {
+            hit = standardPlayerHit;
+        }
         if (hit.getType() != HitResult.Type.MISS) onHit(hit);
         if (isRemoved()) return;
         Vec3 movement = getDeltaMovement();
@@ -73,6 +81,7 @@ public final class OrcProjectile extends Projectile implements ItemSupplier {
 
     @Override
     protected boolean canHitEntity(Entity entity) {
+        if (entity instanceof Player player && (player.isCreative() || player.isSpectator())) return false;
         return entity != getOwner() && super.canHitEntity(entity);
     }
 

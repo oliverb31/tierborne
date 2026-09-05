@@ -57,6 +57,23 @@ edits are listed below.
 
 Minecraft and Minecraft Forge are not covered by these third-party notices.
 
+## SamusDev RPG Class Awakened Mage v1.1
+
+- Creator and copyright owner: SamusDev / samus2002
+- Source package: `samus2002_AWAKENED_MAGE_v1.1 (1).zip`, purchased from MCModels
+- Product site: https://samusdev.com/
+- Imported content: 52 animated Blockbench VFX models, their textures, the Runestaff
+  model and texture, and 14 Mage sound effects.
+- Tierborne changes: the original ModelEngine blueprints are read by Tierborne's
+  Forge-native Blockbench renderer; embedded textures were materialised as normal
+  resource-pack PNG files; namespaces and paths were adapted for the `tierborne`
+  resource domain. MythicMobs, MMOCore, MythicLib, ItemsAdder, Oraxen, Nexo, and
+  ModelEngine configurations are not shipped or executed as gameplay code.
+- The included terms permit editing the models, textures, and MythicMobs files for
+  server/content use and prohibit resale. Videos and streams using these assets must
+  credit “Custom minecraft models by SamusDev” with the website and YouTube links
+  supplied in the package terms.
+
 ## mobs_mc
 
 - Source: https://github.com/maikerumine/mobs_mc

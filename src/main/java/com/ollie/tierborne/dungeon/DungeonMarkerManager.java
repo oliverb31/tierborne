@@ -33,12 +33,36 @@ public final class DungeonMarkerManager {
     public static final String ORC_SHAMAN = "tierborne:orc_shaman";
     public static final String ORC_ELITE = "tierborne:orc_elite";
     public static final String ORC_BOSS = "tierborne:orc_boss";
-    private static final Map<String, String> MOB_NAMES = Map.of(
-            ORC_WARRIOR, "Orc Warrior",
-            ORC_SPEARTHROWER, "Orc Spearthrower",
-            ORC_SHAMAN, "Orc Shaman",
-            ORC_ELITE, "Orc Elite",
-            ORC_BOSS, "Orc Boss");
+    public static final String FROSTMITE = "tierborne:frostmite";
+    public static final String FROZEN_BLAZE = "tierborne:frozen_blaze";
+    public static final String GNUT = "tierborne:gnut";
+    public static final String ICE_WITCH = "tierborne:ice_witch";
+    public static final String ICEOLOGER = "tierborne:iceologer";
+    public static final String SNOWBALL_SPIRIT = "tierborne:snowball_spirit";
+    public static final String UNDEAD_ICE_WARRIOR = "tierborne:undead_ice_warrior";
+    public static final String TARTARUS_YETI = "tierborne:tartarus_yeti";
+    public static final String ICE_KNIGHT_MINION_SHIELD = "tierborne:ice_knight_minion_shield";
+    public static final String ICE_KNIGHT_MINION_SPEAR = "tierborne:ice_knight_minion_spear";
+    public static final String ICE_KNIGHT_MINION_SWORD = "tierborne:ice_knight_minion_sword";
+    public static final String ICE_KNIGHT = "tierborne:ice_knight";
+    private static final Map<String, String> MOB_NAMES = Map.ofEntries(
+            Map.entry(ORC_WARRIOR, "Orc Warrior"),
+            Map.entry(ORC_SPEARTHROWER, "Orc Spearthrower"),
+            Map.entry(ORC_SHAMAN, "Orc Shaman"),
+            Map.entry(ORC_ELITE, "Orc Elite"),
+            Map.entry(ORC_BOSS, "Orc Boss"),
+            Map.entry(FROSTMITE, "Frostmite"),
+            Map.entry(FROZEN_BLAZE, "Frozen Blaze"),
+            Map.entry(GNUT, "Gnut"),
+            Map.entry(ICE_WITCH, "Ice Witch"),
+            Map.entry(ICEOLOGER, "Iceologer"),
+            Map.entry(SNOWBALL_SPIRIT, "Snowball Spirit"),
+            Map.entry(UNDEAD_ICE_WARRIOR, "Undead Ice Warrior"),
+            Map.entry(TARTARUS_YETI, "Yeti"),
+            Map.entry(ICE_KNIGHT_MINION_SHIELD, "Ice Knight Shield"),
+            Map.entry(ICE_KNIGHT_MINION_SPEAR, "Ice Knight Spear"),
+            Map.entry(ICE_KNIGHT_MINION_SWORD, "Ice Knight Sword"),
+            Map.entry(ICE_KNIGHT, "Ice Knight Boss"));
 
     private DungeonMarkerManager() {
     }
@@ -63,6 +87,7 @@ public final class DungeonMarkerManager {
                 message(player, "There is no mob marker on that block.");
             } else {
                 message(player, "Removed one " + displayName(removed.mob()) + " marker.");
+                saveGlobal(player, data, target.instance.dungeon);
             }
             return;
         }
@@ -70,6 +95,7 @@ public final class DungeonMarkerManager {
             int removed = data.clear(target.instance.dungeon, target.localX, target.localY, target.localZ);
             message(player, removed == 0 ? "There are no mob markers on that block."
                     : "Removed " + removed + " mob marker" + (removed == 1 ? "." : "s."));
+            if (removed > 0) saveGlobal(player, data, target.instance.dungeon);
             return;
         }
         if (!MOB_NAMES.containsKey(action)) {
@@ -98,6 +124,7 @@ public final class DungeonMarkerManager {
                 target.localX, target.localY, target.localZ, action, player.getYRot()));
         int count = data.count(target.instance.dungeon, target.localX, target.localY, target.localZ);
         message(player, "Added " + displayName(action) + " at this block (" + count + " total).");
+        saveGlobal(player, data, target.instance.dungeon);
     }
 
     public static void tickConfiguredSpawns(ServerLevel level, DungeonSavedData.Instance instance) {
@@ -266,6 +293,16 @@ public final class DungeonMarkerManager {
 
     private static void message(ServerPlayer player, String text) {
         player.displayClientMessage(Component.literal(text), true);
+    }
+
+    private static void saveGlobal(ServerPlayer player, DungeonMarkerSavedData data, String dungeon) {
+        try {
+            DungeonMarkerDefaults.saveGlobal(dungeon, data.markers(dungeon));
+            message(player, "Dungeon markers saved for this and future worlds.");
+        } catch (java.io.IOException exception) {
+            Tierborne.LOGGER.error("Could not save shared {} dungeon markers", dungeon, exception);
+            message(player, "Marker saved in this world, but the shared marker file could not be updated.");
+        }
     }
 
     private record AuthoringTarget(DungeonSavedData.Instance instance, int localX, int localY, int localZ) {

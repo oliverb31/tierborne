@@ -15,6 +15,7 @@ import com.ollie.tierborne.playerclass.FighterPlayerClass;
 import com.ollie.tierborne.playerclass.FighterStats;
 import com.ollie.tierborne.playerclass.BarbarianPlayerClass;
 import com.ollie.tierborne.playerclass.BarbarianStats;
+import com.ollie.tierborne.playerclass.MagePlayerClass;
 import com.ollie.tierborne.combat.FighterCombat;
 import com.ollie.tierborne.combat.BarbarianCombat;
 import com.ollie.tierborne.combat.AbilityRuntime;
@@ -105,6 +106,7 @@ public final class TierborneEvents {
     private static final UUID BARBARIAN_MAX_HEALTH_ID = UUID.fromString("70e391ef-f76c-48d6-8c80-fbd180079454");
     private static final UUID BARBARIAN_ATTACK_SPEED_ID = UUID.fromString("18d50fa9-483f-4caf-bade-79082b1575d9");
     private static final UUID BARBARIAN_MOVEMENT_ID = UUID.fromString("16f38554-2c4a-4100-aecf-af73c9da9831");
+    private static final UUID MAGE_MAGIC_DAMAGE_ID = UUID.fromString("6b405c6f-9167-4d42-9b76-8d8aeed917b1");
     private static final UUID ENEMY_HEALTH_SCALE_ID = UUID.fromString("ae5d33c7-46cf-419d-87cc-30adb9d052d1");
     private static final java.util.Set<UUID> SHIELD_BLOCKING_DAMAGE = new java.util.HashSet<>();
 
@@ -151,6 +153,47 @@ public final class TierborneEvents {
                                     + " Tierborne XP. Current level: " + progress.level() + "."), true);
                             return amount;
                         })));
+        event.getDispatcher().register(net.minecraft.commands.Commands.literal("tierborne")
+                .then(net.minecraft.commands.Commands.literal("skillpoints")
+                        .requires(source -> source.hasPermission(2))
+                        .then(net.minecraft.commands.Commands.literal("give")
+                                .then(net.minecraft.commands.Commands.argument("amount",
+                                                com.mojang.brigadier.arguments.IntegerArgumentType
+                                                        .integer(1, 1_000_000))
+                                        .executes(context -> grantSkillPoints(
+                                                context.getSource(),
+                                                context.getSource().getPlayerOrException(),
+                                                com.mojang.brigadier.arguments.IntegerArgumentType
+                                                        .getInteger(context, "amount"))))
+                                .then(net.minecraft.commands.Commands.argument("player",
+                                                net.minecraft.commands.arguments.EntityArgument.player())
+                                        .then(net.minecraft.commands.Commands.argument("amount",
+                                                        com.mojang.brigadier.arguments.IntegerArgumentType
+                                                                .integer(1, 1_000_000))
+                                                .executes(context -> grantSkillPoints(
+                                                        context.getSource(),
+                                                        net.minecraft.commands.arguments.EntityArgument
+                                                                .getPlayer(context, "player"),
+                                                        com.mojang.brigadier.arguments.IntegerArgumentType
+                                                                .getInteger(context, "amount"))))))));
+    }
+
+    private static int grantSkillPoints(net.minecraft.commands.CommandSourceStack source,
+                                        ServerPlayer target, int amount) {
+        PlayerProgressSavedData data = PlayerProgressSavedData.get(target.getServer());
+        PlayerProgress progress = data.get(target.getUUID());
+        progress.grantSkillPoints(amount);
+        data.changed();
+        ModNetwork.sync(target);
+
+        source.sendSuccess(Component.literal("Granted " + amount + " skill point"
+                + (amount == 1 ? "" : "s") + " to " + target.getGameProfile().getName()
+                + ". New total: " + progress.skillPoints() + "."), true);
+        if (source.getEntity() != target) {
+            target.displayClientMessage(Component.literal("You received " + amount + " skill point"
+                    + (amount == 1 ? "" : "s") + ". New total: " + progress.skillPoints() + "."), false);
+        }
+        return amount;
     }
 
     @SubscribeEvent
@@ -705,6 +748,8 @@ public final class TierborneEvents {
         attackSpeed.removeModifier(BARBARIAN_ATTACK_SPEED_ID);
         movementSpeed.removeModifier(BARBARIAN_MOVEMENT_ID);
         maxHealth.removeModifier(BARBARIAN_MAX_HEALTH_ID);
+        AttributeInstance magicDamage = player.getAttribute(ModAttributes.MAGIC_DAMAGE.get());
+        if (magicDamage != null) magicDamage.removeModifier(MAGE_MAGIC_DAMAGE_ID);
         int bonus = progress.totalBonus(SkillBonusType.MOVEMENT_SPEED);
         if (progress.moddedMovementSpeedEnabled() && bonus > 0) {
             movementSpeed.addPermanentModifier(new AttributeModifier(
@@ -736,6 +781,21 @@ public final class TierborneEvents {
         double fighterCharge=FighterStats.meleeChargeSpeed(progress);if(fighterCharge!=0)attackSpeed.addPermanentModifier(new AttributeModifier(FIGHTER_ATTACK_SPEED_ID,"Tierborne Fighter melee charge speed",fighterCharge/100.0,AttributeModifier.Operation.MULTIPLY_TOTAL));
         if(progress.hasSkill(BarbarianPlayerClass.BERSERKER)){
             maxHealth.addPermanentModifier(new AttributeModifier(BARBARIAN_MAX_HEALTH_ID,"Tierborne Berserker health",RpgBalanceConfig.BERSERKER_MAX_HEALTH.get(),AttributeModifier.Operation.ADDITION));
+        }
+        if (magicDamage != null && MagePlayerClass.ID.equals(progress.playerClassId())) {
+            double mageMagicBonus = progress.totalBonus(SkillBonusType.MAGIC_DAMAGE);
+            if (progress.hasSkill(MagePlayerClass.FIRE_MAGE)) {
+                mageMagicBonus += RpgBalanceConfig.FIRE_MAGE_MAGIC_DAMAGE.get();
+            } else if (progress.hasSkill(MagePlayerClass.ICE_MAGE)) {
+                mageMagicBonus += RpgBalanceConfig.ICE_MAGE_MAGIC_DAMAGE.get();
+            } else if (progress.hasSkill(MagePlayerClass.LIGHTNING_MAGE)) {
+                mageMagicBonus += RpgBalanceConfig.LIGHTNING_MAGE_MAGIC_DAMAGE.get();
+            }
+            if (mageMagicBonus != 0.0D) {
+                magicDamage.addPermanentModifier(new AttributeModifier(MAGE_MAGIC_DAMAGE_ID,
+                        "Tierborne Mage magic damage", mageMagicBonus / 100.0D,
+                        AttributeModifier.Operation.MULTIPLY_TOTAL));
+            }
         }
         double barbarianMovement=BarbarianCombat.isBerserkActive(player)?BarbarianStats.berserkMovement(progress):0.0;
         if(BarbarianCombat.executeMovementPenaltyActive(player))barbarianMovement+=BarbarianStats.executeMovement(progress);

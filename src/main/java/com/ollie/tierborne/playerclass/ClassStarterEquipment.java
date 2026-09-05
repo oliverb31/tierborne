@@ -28,6 +28,11 @@ public final class ClassStarterEquipment {
                 player.displayClientMessage(Component.translatable(
                         "message.tierborne.class_starter.barbarian"), true);
             }
+            case MagePlayerClass.ID -> {
+                giveOrDrop(player, new ItemStack(com.ollie.tierborne.item.ModItems.MAGE_STAFF.get()));
+                player.displayClientMessage(Component.translatable(
+                        "message.tierborne.class_starter.mage"), true);
+            }
             default -> {
             }
         }

@@ -9,6 +9,7 @@ public enum SkillBonusType {
     RANGED_DAMAGE("All Ranged Damage Buff"),
     GENERAL_DAMAGE("General Damage Buff"),
     FIST_DAMAGE("Fist Damage Buff"),
+    MAGIC_DAMAGE("Magic Damage Buff"),
     MELEE_CHARGE_SPEED("Melee Charge Speed Buff"),
     MOVEMENT_SPEED("Movement Speed Buff"),
     WOODCUTTING_SPEED("Woodcutting Speed"),

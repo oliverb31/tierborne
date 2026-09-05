@@ -111,6 +111,34 @@ final class SkillDetailLines {
             case SwordsmanPlayerClass.BACKSTAB->lines.add("Backstab Damage: +"+n(RpgBalanceConfig.BACKSTAB_DAMAGE.get())+"%  Threshold: "+n(RpgBalanceConfig.BACKSTAB_DOT_THRESHOLD.get()));
             case SwordsmanPlayerClass.FIRST_HIT->lines.add("First Hit Damage: +"+n(RpgBalanceConfig.FIRST_HIT_DAMAGE.get())+"%  Reset: "+n(RpgBalanceConfig.FIRST_HIT_RESET_SECONDS.get())+"s");
             case SwordsmanPlayerClass.NON_AGGRO->lines.add("Non-Aggro Damage: +"+n(RpgBalanceConfig.NON_AGGRO_DAMAGE.get())+"%");
+            case MagePlayerClass.ROOT->{lines.add("Arcane Bolt: "+n(RpgBalanceConfig.MAGE_STAFF_DAMAGE.get())+" damage  Range: "+n(RpgBalanceConfig.MAGE_STAFF_RANGE.get())+" blocks");lines.add("Right-click Mage Staff  Cooldown: "+n(RpgBalanceConfig.MAGE_STAFF_COOLDOWN_SECONDS.get())+"s");}
+            case MagePlayerClass.QUICK_FOCUS->lines.add("Arcane Bolt Cooldown: "+n(RpgBalanceConfig.MAGE_STAFF_COOLDOWN_SECONDS.get())+"s -> "+n(RpgBalanceConfig.MAGE_STAFF_QUICK_COOLDOWN_SECONDS.get())+"s");
+            case MagePlayerClass.FIRE_MAGE->{lines.add("Magic Damage: +"+n(RpgBalanceConfig.FIRE_MAGE_MAGIC_DAMAGE.get())+"%");lines.add("Arcane Bolt Ignition: "+n(RpgBalanceConfig.FIRE_MAGE_BURN_SECONDS.get())+"s");lines.add("Reacts with Chill and consumes Toxic.");}
+            case MagePlayerClass.FIREBALL_VOLLEY->{lines.add("Fireballs: 3  Damage Each: "+n(RpgBalanceConfig.FIREBALL_VOLLEY_DAMAGE.get()));lines.add("Cooldown: "+n(RpgBalanceConfig.FIREBALL_VOLLEY_COOLDOWN_SECONDS.get())+"s");}
+            case MagePlayerClass.VOLLEY_MASTERY->lines.add("Fireballs: 3 -> 5  Damage Each: +25%");
+            case MagePlayerClass.FLAME_RING->{lines.add("Damage: "+n(RpgBalanceConfig.FLAME_RING_DAMAGE.get())+"  Radius: "+n(RpgBalanceConfig.FLAME_RING_RADIUS.get())+" blocks");lines.add("Cooldown: "+n(RpgBalanceConfig.FLAME_RING_COOLDOWN_SECONDS.get())+"s");}
+            case MagePlayerClass.INFERNO_CORE->lines.add("Flame Ring Radius: +2 blocks  Burn Duration: +3s");
+            case MagePlayerClass.ICE_MAGE->{lines.add("Magic Damage: +"+n(RpgBalanceConfig.ICE_MAGE_MAGIC_DAMAGE.get())+"%  Freezing Resistance: Active");lines.add("Arcane Bolt Slow: "+n(RpgBalanceConfig.ICE_MAGE_SLOW_SECONDS.get())+"s");lines.add("Extinguishes fire with Thermal Shock.");}
+            case MagePlayerClass.ICE_LANCE->{lines.add("Damage: "+n(RpgBalanceConfig.ICE_LANCE_DAMAGE.get())+"  Range: "+n(RpgBalanceConfig.ICE_LANCE_RANGE.get())+" blocks");lines.add("Cooldown: "+n(RpgBalanceConfig.ICE_LANCE_COOLDOWN_SECONDS.get())+"s");}
+            case MagePlayerClass.PIERCING_LANCE->lines.add("Ice Lance pierces every enemy along its ray.");
+            case MagePlayerClass.FROST_NOVA->{lines.add("Damage: "+n(RpgBalanceConfig.FROST_NOVA_DAMAGE.get())+"  Radius: "+n(RpgBalanceConfig.FROST_NOVA_RADIUS.get())+" blocks");lines.add("Cooldown: "+n(RpgBalanceConfig.FROST_NOVA_COOLDOWN_SECONDS.get())+"s");}
+            case MagePlayerClass.SHATTER->lines.add("Damage to slowed enemies: +"+n(RpgBalanceConfig.ICE_SHATTER_BONUS_PERCENT.get())+"%");
+            case MagePlayerClass.POISON_MAGE->{lines.add("Arcane Bolt Poison: "+n(RpgBalanceConfig.POISON_MAGE_POISON_SECONDS.get())+"s");lines.add("Toxic targets can be combusted or conducted.");}
+            case MagePlayerClass.VENOM_BOLT->{lines.add("Damage: "+n(RpgBalanceConfig.VENOM_BOLT_DAMAGE.get())+"  Range: "+n(RpgBalanceConfig.VENOM_BOLT_RANGE.get())+" blocks");lines.add("Cooldown: "+n(RpgBalanceConfig.VENOM_BOLT_COOLDOWN_SECONDS.get())+"s");}
+            case MagePlayerClass.VIRULENT_VENOM->lines.add("Venom Bolt and Toxic Cloud apply Poison II.");
+            case MagePlayerClass.TOXIC_CLOUD->{lines.add("Damage/Second: "+n(RpgBalanceConfig.TOXIC_CLOUD_DAMAGE.get())+"  Radius: "+n(RpgBalanceConfig.TOXIC_CLOUD_RADIUS.get())+" blocks");lines.add("Duration: "+n(RpgBalanceConfig.TOXIC_CLOUD_DURATION_SECONDS.get())+"s  Cooldown: "+n(RpgBalanceConfig.TOXIC_CLOUD_COOLDOWN_SECONDS.get())+"s");}
+            case MagePlayerClass.PLAGUE_CLOUD->lines.add("Toxic Cloud: +2 radius, +4s duration, +40% damage");
+            case MagePlayerClass.LIGHTNING_MAGE->{lines.add("Magic Damage: +"+n(RpgBalanceConfig.LIGHTNING_MAGE_MAGIC_DAMAGE.get())+"%");lines.add("Arcane Bolt chains once for 60% damage.");lines.add("Chilled/Toxic targets take +"+n(RpgBalanceConfig.CONDUCTIVE_LIGHTNING_BONUS_PERCENT.get())+"% lightning damage.");}
+            case MagePlayerClass.CHAIN_LIGHTNING->{lines.add("Damage: "+n(RpgBalanceConfig.CHAIN_LIGHTNING_DAMAGE.get())+"  Jumps: 3  Jump Range: "+n(RpgBalanceConfig.CHAIN_LIGHTNING_RANGE.get()));lines.add("Cooldown: "+n(RpgBalanceConfig.CHAIN_LIGHTNING_COOLDOWN_SECONDS.get())+"s");}
+            case MagePlayerClass.CONDUCTIVITY->lines.add("Chain Lightning: 3 -> 5 jumps  Jump Range: +3 blocks");
+            case MagePlayerClass.THUNDERSTEP->{lines.add("Impact Damage: "+n(RpgBalanceConfig.THUNDERSTEP_DAMAGE.get())+"  Range: "+n(RpgBalanceConfig.THUNDERSTEP_RANGE.get())+" blocks");lines.add("Impact Radius: "+n(RpgBalanceConfig.THUNDERSTEP_RADIUS.get())+"  Cooldown: "+n(RpgBalanceConfig.THUNDERSTEP_COOLDOWN_SECONDS.get())+"s");}
+            case MagePlayerClass.OVERCHARGE->lines.add("Thunderstep: +4 range and +40% impact damage");
+            case MagePlayerClass.DOCTOR->{lines.add("Arcane Bolt heals instead of damaging.");lines.add("Doctor Spell Healing: +"+n(RpgBalanceConfig.DOCTOR_HEALING_BONUS_PERCENT.get())+"%");}
+            case MagePlayerClass.HEALING_PULSE->{lines.add("Healing: "+n(RpgBalanceConfig.HEALING_PULSE_HEALTH.get())+"  Radius: "+n(RpgBalanceConfig.HEALING_PULSE_RADIUS.get())+" blocks");lines.add("Cooldown: "+n(RpgBalanceConfig.HEALING_PULSE_COOLDOWN_SECONDS.get())+"s");}
+            case MagePlayerClass.TRIAGE->lines.add("Healing Pulse: +35% base healing; +50% more below 40% health");
+            case MagePlayerClass.PURGE->{lines.add("Cleanses effects, fire, freezing, Chill, and Toxic.");lines.add("Undead Damage: "+n(RpgBalanceConfig.PURGE_DAMAGE.get())+"  Radius: "+n(RpgBalanceConfig.PURGE_RADIUS.get()));lines.add("Cooldown: "+n(RpgBalanceConfig.PURGE_COOLDOWN_SECONDS.get())+"s");}
+            case MagePlayerClass.ADRENALINE->{lines.add("Grants Regeneration, Speed, and Resistance.");lines.add("Duration: "+n(RpgBalanceConfig.ADRENALINE_DURATION_SECONDS.get())+"s  Cooldown: "+n(RpgBalanceConfig.ADRENALINE_COOLDOWN_SECONDS.get())+"s");}
+            case MagePlayerClass.FIELD_MEDIC->lines.add("Doctor Radius: +"+n(RpgBalanceConfig.FIELD_MEDIC_RADIUS_BONUS.get())+" blocks  Cooldowns: -"+n(RpgBalanceConfig.FIELD_MEDIC_COOLDOWN_REDUCTION_PERCENT.get())+"%");
             case GeneralSkillTree.WOOD_DROPS->lines.add("Additional Wood: 1");
             case GeneralSkillTree.ORE_DROPS->lines.add("Additional Ore Drop: 1");
             case GeneralSkillTree.MATERIAL_RECOVERY->lines.add("Materials Returned: 1");

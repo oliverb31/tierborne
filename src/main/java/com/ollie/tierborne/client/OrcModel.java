@@ -7,9 +7,10 @@ import com.google.gson.JsonParser;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
-import com.ollie.tierborne.entity.OrcMob;
+import com.ollie.tierborne.entity.AnimatedBlockbenchMob;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
@@ -23,7 +24,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /** Reads the original Blockbench geometry and animation timelines at runtime. */
-public final class OrcModel extends EntityModel<OrcMob> {
+public final class OrcModel<T extends Mob & AnimatedBlockbenchMob> extends EntityModel<T> {
     private static final Point ZERO = new Point(0.0F, 0.0F, 0.0F);
     private static final Point ONE = new Point(1.0F, 1.0F, 1.0F);
 
@@ -31,7 +32,7 @@ public final class OrcModel extends EntityModel<OrcMob> {
     private final Map<String, Animation> animations;
     private final float textureWidth;
     private final float textureHeight;
-    private OrcMob entity;
+    private T entity;
     private float ageInTicks;
     private String manualAnimationName;
     private float manualAnimationTime;
@@ -45,7 +46,7 @@ public final class OrcModel extends EntityModel<OrcMob> {
     }
 
     @Override
-    public void setupAnim(OrcMob entity, float limbSwing, float limbSwingAmount,
+    public void setupAnim(T entity, float limbSwing, float limbSwingAmount,
                           float ageInTicks, float netHeadYaw, float headPitch) {
         this.entity = entity;
         this.ageInTicks = ageInTicks;
@@ -89,10 +90,19 @@ public final class OrcModel extends EntityModel<OrcMob> {
         Animation animation = this.animations.get(animationName);
         if (animation == null) return new AnimationState(null, animationName, 0.0F);
         if (animation.length > 0.0F) {
-            if (animation.loop.equals("loop")) time = time % animation.length;
+            if (animation.loop.equals("loop") || isContinuousAnimation(animationName)) {
+                time = time % animation.length;
+            }
             else time = Math.min(time, animation.length);
         }
         return new AnimationState(animation, animationName, time);
+    }
+
+    private static boolean isContinuousAnimation(String animationName) {
+        return animationName.equals("idle") || animationName.equals("walk")
+                || animationName.equals("idle_mount") || animationName.equals("walk_mount")
+                || animationName.equals("spin") || animationName.equals("charge")
+                || animationName.equals("throw_dash_idle");
     }
 
     private void renderBone(Bone bone, Point parentOrigin, AnimationState state, PoseStack poseStack,
@@ -252,7 +262,9 @@ public final class OrcModel extends EntityModel<OrcMob> {
                     ? indexByUuid(model.getAsJsonArray("groups")) : Map.of();
             List<Bone> roots = new ArrayList<>();
             for (JsonElement root : model.getAsJsonArray("outliner")) {
-                if (root.isJsonObject()) roots.add(parseBone(root.getAsJsonObject(), elements, groups));
+                if (root.isJsonObject() && isVisible(root.getAsJsonObject())) {
+                    roots.add(parseBone(root.getAsJsonObject(), elements, groups));
+                }
             }
             JsonObject resolution = model.getAsJsonObject("resolution");
             return new ModelData(List.copyOf(roots), parseAnimations(model.getAsJsonArray("animations")),
@@ -316,12 +328,18 @@ public final class OrcModel extends EntityModel<OrcMob> {
                     cubes.add(parseCube(element));
                 }
             } else if (child.isJsonObject()) {
-                children.add(parseBone(child.getAsJsonObject(), elements, groups));
+                if (isVisible(child.getAsJsonObject())) {
+                    children.add(parseBone(child.getAsJsonObject(), elements, groups));
+                }
             }
         }
         return new Bone(uuid, definition.has("name") ? definition.get("name").getAsString() : "",
                 point(definition, "origin"), point(definition, "rotation"),
                 List.copyOf(cubes), List.copyOf(children));
+    }
+
+    private static boolean isVisible(JsonObject object) {
+        return !object.has("visibility") || object.get("visibility").getAsBoolean();
     }
 
     private static Cube parseCube(JsonObject element) {

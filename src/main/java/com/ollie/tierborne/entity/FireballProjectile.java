@@ -6,6 +6,9 @@ import com.ollie.tierborne.config.RpgBalanceConfig;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -25,8 +28,11 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 import com.ollie.tierborne.registry.ModAttributes;
+import com.ollie.tierborne.registry.ModSounds;
 
 public final class FireballProjectile extends Projectile implements ItemSupplier {
+    private static final EntityDataAccessor<Integer> VFX_STYLE =
+            SynchedEntityData.defineId(FireballProjectile.class, EntityDataSerializers.INT);
     private float damage;
     private float enchantmentScale;
     private float charge = 1.0F;
@@ -36,12 +42,18 @@ public final class FireballProjectile extends Projectile implements ItemSupplier
 
     public FireballProjectile(ServerPlayer owner, float damage, float enchantmentScale,
                               float charge, float travelSpeed) {
+        this(owner, damage, enchantmentScale, charge, travelSpeed, 0);
+    }
+
+    public FireballProjectile(ServerPlayer owner, float damage, float enchantmentScale,
+                              float charge, float travelSpeed, int vfxStyle) {
         this(ModEntities.FIREBALL.get(), owner.level);
         setOwner(owner);
         this.damage = damage;
         this.enchantmentScale = enchantmentScale;
         this.charge = charge;
         this.travelSpeed = travelSpeed;
+        this.entityData.set(VFX_STYLE, Math.floorMod(vfxStyle, 4));
         Vec3 look = owner.getLookAngle();
         Vec3 spawnPosition = owner.getEyePosition().add(look.scale(0.45D)).add(0.0D, -0.15D, 0.0D);
         setPos(spawnPosition.x, spawnPosition.y, spawnPosition.z);
@@ -87,7 +99,7 @@ public final class FireballProjectile extends Projectile implements ItemSupplier
             float amount = ElementalCombat.modifyDamage(target, Element.FIRE, damage + enchantmentDamage);
             amount *= (float) owner.getAttributeValue(ModAttributes.MAGIC_DAMAGE.get());
             if (target.hurt(DamageSource.indirectMagic(this, owner), amount)) {
-                target.setSecondsOnFire((int) Math.round(RpgBalanceConfig.FIREBALL_IGNITION_SECONDS.get()));
+                ElementalCombat.applyFire(owner, target, RpgBalanceConfig.FIREBALL_IGNITION_SECONDS.get());
                 Vec3 direction = getDeltaMovement().normalize();
                 target.push(direction.x * RpgBalanceConfig.FIREBALL_KNOCKBACK.get(), 0.2D,
                         direction.z * RpgBalanceConfig.FIREBALL_KNOCKBACK.get());
@@ -107,19 +119,24 @@ public final class FireballProjectile extends Projectile implements ItemSupplier
 
     private void impact() {
         if (level instanceof ServerLevel server) {
+            MageVfxEntity.spawn(server, position(), MageVfxEntity.FIRE_EXPLOSION,
+                    16, getYRot(), 0.0F);
             server.sendParticles(ParticleTypes.FLAME, getX(), getY(), getZ(), 28, 0.35D, 0.35D, 0.35D, 0.05D);
             server.sendParticles(ParticleTypes.LARGE_SMOKE, getX(), getY(), getZ(), 8, 0.25D, 0.25D, 0.25D, 0.02D);
-            server.playSound(null, blockPosition(), SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0F, 0.8F);
+            server.playSound(null, blockPosition(), ModSounds.MAGE_FIRE_EXPLODE.get(),
+                    SoundSource.PLAYERS, 1.0F, 0.9F);
         }
         discard();
     }
     @Override public ItemStack getItem() { return new ItemStack(Items.FIRE_CHARGE); }
 
+    public int getVfxStyle() { return entityData.get(VFX_STYLE); }
+
     private static int lerpCount(int minimum, int maximum, double amount) { return (int) Math.round(lerp(minimum, maximum, amount)); }
     private static double lerp(double minimum, double maximum, double amount) { return minimum + (maximum - minimum) * amount; }
 
-    @Override protected void defineSynchedData() {}
-    @Override protected void readAdditionalSaveData(CompoundTag tag) { damage=tag.getFloat("Damage");enchantmentScale=tag.getFloat("EnchantmentScale");charge=tag.getFloat("Charge");travelSpeed=tag.getFloat("TravelSpeed"); }
-    @Override protected void addAdditionalSaveData(CompoundTag tag) { tag.putFloat("Damage",damage);tag.putFloat("EnchantmentScale",enchantmentScale);tag.putFloat("Charge",charge);tag.putFloat("TravelSpeed",travelSpeed); }
+    @Override protected void defineSynchedData() { entityData.define(VFX_STYLE, 0); }
+    @Override protected void readAdditionalSaveData(CompoundTag tag) { damage=tag.getFloat("Damage");enchantmentScale=tag.getFloat("EnchantmentScale");charge=tag.getFloat("Charge");travelSpeed=tag.getFloat("TravelSpeed");entityData.set(VFX_STYLE,tag.getInt("VfxStyle")); }
+    @Override protected void addAdditionalSaveData(CompoundTag tag) { tag.putFloat("Damage",damage);tag.putFloat("EnchantmentScale",enchantmentScale);tag.putFloat("Charge",charge);tag.putFloat("TravelSpeed",travelSpeed);tag.putInt("VfxStyle",getVfxStyle()); }
     @Override public Packet<?> getAddEntityPacket() { return NetworkHooks.getEntitySpawningPacket(this); }
 }

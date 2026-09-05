@@ -18,12 +18,38 @@ public final class ClientModEvents {
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.FIREBALL.get(), FireballRenderer::new);
+        event.registerEntityRenderer(ModEntities.MAGE_VFX.get(), MageVfxRenderer::new);
         event.registerEntityRenderer(ModEntities.FLAME_SLASH.get(), FlameSlashRenderer::new);
         event.registerEntityRenderer(ModEntities.DUNE_REVENANT.get(), DuneRevenantRenderer::new);
         event.registerEntityRenderer(ModEntities.FROSTBOUND_ARCHER.get(), FrostboundArcherRenderer::new);
         event.registerEntityRenderer(ModEntities.RUNEBOUND_COLOSSUS.get(), RuneboundColossusRenderer::new);
         event.registerEntityRenderer(ModEntities.ABYSSAL_WATCHER.get(), AbyssalWatcherRenderer::new);
         event.registerEntityRenderer(ModEntities.GOOFY_GOBLIN.get(), GoofyGoblinRenderer::new);
+        event.registerEntityRenderer(ModEntities.FROSTMITE.get(),
+                context -> new IceMobRenderer(context, "frostmite", 1.2F, 1.0F));
+        event.registerEntityRenderer(ModEntities.FROZEN_BLAZE.get(),
+                context -> new IceMobRenderer(context, "frozen_blaze", 0.6F, 1.0F));
+        event.registerEntityRenderer(ModEntities.GNUT.get(),
+                context -> new IceMobRenderer(context, "gnut", 0.6F, 1.0F));
+        event.registerEntityRenderer(ModEntities.ICE_WITCH.get(),
+                context -> new IceMobRenderer(context, "ice_witch", 0.7F, 1.0F));
+        event.registerEntityRenderer(ModEntities.ICEOLOGER.get(),
+                context -> new IceMobRenderer(context, "iceologer", 0.6F, 1.0F));
+        event.registerEntityRenderer(ModEntities.SNOWBALL_SPIRIT.get(),
+                context -> new IceMobRenderer(context, "snowball_spirit", 0.35F, 1.0F));
+        event.registerEntityRenderer(ModEntities.UNDEAD_ICE_WARRIOR.get(),
+                context -> new IceMobRenderer(context, "undead_ice_warrior", 0.9F, 1.0F));
+        event.registerEntityRenderer(ModEntities.TARTARUS_YETI.get(),
+                context -> new IceMobRenderer(context, "tartarus_yeti", 1.2F, 1.5F));
+        event.registerEntityRenderer(ModEntities.ICE_KNIGHT_MINION_SHIELD.get(),
+                context -> new IceMobRenderer(context, "ice_knight_minion_shield", 0.8F, 1.25F));
+        event.registerEntityRenderer(ModEntities.ICE_KNIGHT_MINION_SPEAR.get(),
+                context -> new IceMobRenderer(context, "ice_knight_minion_spear", 0.8F, 1.25F));
+        event.registerEntityRenderer(ModEntities.ICE_KNIGHT_MINION_SWORD.get(),
+                context -> new IceMobRenderer(context, "ice_knight_minion_sword", 0.8F, 1.25F));
+        event.registerEntityRenderer(ModEntities.ICE_KNIGHT.get(),
+                context -> new IceMobRenderer(context, "ice_knight", 1.6F, 1.0F));
+        event.registerEntityRenderer(ModEntities.ICE_PROJECTILE.get(), IceProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.ORC_WARRIOR.get(),
                 context -> new OrcRenderer(context, "orc_warrior_am", 0.55F));
         event.registerEntityRenderer(ModEntities.ORC_SPEARTHROWER.get(),

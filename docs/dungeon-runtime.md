@@ -50,6 +50,14 @@ One tick after any encounter mob spawns, the server applies a zero-damage wake-u
 hit and a very small knockback pulse so its movement and collision state begin
 immediately.
 
+Hostile orc and Tartarus attacks collide with an explicit standard standing
+player box (0.6 blocks wide and 1.8 blocks tall), rather than testing only the
+point at the player's feet. Melee cones, area attacks, shockwaves, charges, and
+projectiles can therefore connect with any occupied portion of the visible
+player model while still requiring block-respecting line of sight. Full collision
+and imported-animation details are recorded in
+[`combat-hitboxes-and-animation-runtime.md`](combat-hitboxes-and-animation-runtime.md).
+
 ## Orcish Altar Core
 
 The Orc Lush dungeon can be entered from an active Orcish Altar Core. Place the

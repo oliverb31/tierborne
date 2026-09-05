@@ -20,6 +20,10 @@ public final class ModEntities {
             () -> EntityType.Builder.<FireballProjectile>of(FireballProjectile::new, MobCategory.MISC)
                     .sized(0.35F, 0.35F).clientTrackingRange(10).updateInterval(1)
                     .build(Tierborne.MOD_ID + ":fireball"));
+    public static final RegistryObject<EntityType<MageVfxEntity>> MAGE_VFX = ENTITIES.register("mage_vfx",
+            () -> EntityType.Builder.<MageVfxEntity>of(MageVfxEntity::new, MobCategory.MISC)
+                    .sized(0.01F, 0.01F).clientTrackingRange(16).updateInterval(1)
+                    .build(Tierborne.MOD_ID + ":mage_vfx"));
     public static final RegistryObject<EntityType<FlameSlashProjectile>> FLAME_SLASH = ENTITIES.register("flame_slash",
             () -> EntityType.Builder.<FlameSlashProjectile>of(FlameSlashProjectile::new, MobCategory.MISC)
                     .sized(2.0F, 2.0F).clientTrackingRange(12).updateInterval(1)
@@ -45,6 +49,26 @@ public final class ModEntities {
             () -> EntityType.Builder.of(GoofyGoblin::new, MobCategory.MONSTER)
                     .sized(0.9F, 2.45F).clientTrackingRange(10)
                     .build(Tierborne.MOD_ID + ":goofy_goblin"));
+    public static final RegistryObject<EntityType<IceMob>> FROSTMITE = registerIce("frostmite", 3.2F, 1.5F);
+    public static final RegistryObject<EntityType<IceMob>> FROZEN_BLAZE = registerIce("frozen_blaze", 1.2F, 1.9F);
+    public static final RegistryObject<EntityType<IceMob>> GNUT = registerIce("gnut", 1.1F, 1.9F);
+    public static final RegistryObject<EntityType<IceMob>> ICE_WITCH = registerIce("ice_witch", 1.4F, 2.2F);
+    public static final RegistryObject<EntityType<IceMob>> ICEOLOGER = registerIce("iceologer", 0.9F, 2.2F);
+    public static final RegistryObject<EntityType<IceMob>> SNOWBALL_SPIRIT = registerIce("snowball_spirit", 0.8F, 0.8F);
+    public static final RegistryObject<EntityType<IceMob>> UNDEAD_ICE_WARRIOR =
+            registerIce("undead_ice_warrior", 1.5F, 3.3F);
+    public static final RegistryObject<EntityType<IceMob>> TARTARUS_YETI = registerIce("tartarus_yeti", 2.5F, 3.4F);
+    public static final RegistryObject<EntityType<IceMob>> ICE_KNIGHT_MINION_SHIELD =
+            registerIce("ice_knight_minion_shield", 1.5F, 2.8F);
+    public static final RegistryObject<EntityType<IceMob>> ICE_KNIGHT_MINION_SPEAR =
+            registerIce("ice_knight_minion_spear", 1.4F, 2.8F);
+    public static final RegistryObject<EntityType<IceMob>> ICE_KNIGHT_MINION_SWORD =
+            registerIce("ice_knight_minion_sword", 1.4F, 2.8F);
+    public static final RegistryObject<EntityType<IceMob>> ICE_KNIGHT = registerIce("ice_knight", 3.5F, 4.5F);
+    public static final RegistryObject<EntityType<IceProjectile>> ICE_PROJECTILE = ENTITIES.register("ice_projectile",
+            () -> EntityType.Builder.<IceProjectile>of(IceProjectile::new, MobCategory.MISC)
+                    .sized(0.35F, 0.35F).clientTrackingRange(12).updateInterval(1)
+                    .build(Tierborne.MOD_ID + ":ice_projectile"));
     public static final RegistryObject<EntityType<OrcMob>> ORC_WARRIOR = registerOrc("orc_warrior", 0.95F, 2.5F);
     public static final RegistryObject<EntityType<OrcMob>> ORC_SPEARTHROWER = registerOrc("orc_spearthrower", 0.95F, 2.5F);
     public static final RegistryObject<EntityType<OrcMob>> ORC_SHAMAN = registerOrc("orc_shaman", 0.95F, 2.5F);
@@ -85,6 +109,18 @@ public final class ModEntities {
                 .add(Attributes.ATTACK_DAMAGE, 5.0D)
                 .add(Attributes.FOLLOW_RANGE, 28.0D)
                 .build());
+        event.put(FROSTMITE.get(), iceAttributes(70.0D, 0.30D, 7.0D, 6.0D, 0.90D));
+        event.put(FROZEN_BLAZE.get(), iceAttributes(35.0D, 0.25D, 5.0D, 1.0D, 0.0D));
+        event.put(GNUT.get(), iceAttributes(28.0D, 0.30D, 4.0D, 1.0D, 0.0D));
+        event.put(ICE_WITCH.get(), iceAttributes(50.0D, 0.24D, 6.0D, 2.0D, 0.75D));
+        event.put(ICEOLOGER.get(), iceAttributes(45.0D, 0.25D, 7.0D, 2.0D, 0.0D));
+        event.put(SNOWBALL_SPIRIT.get(), iceAttributes(12.0D, 0.32D, 6.0D, 0.0D, 0.0D));
+        event.put(UNDEAD_ICE_WARRIOR.get(), iceAttributes(85.0D, 0.24D, 10.0D, 7.0D, 0.60D));
+        event.put(TARTARUS_YETI.get(), iceAttributes(160.0D, 0.25D, 14.0D, 8.0D, 0.50D));
+        event.put(ICE_KNIGHT_MINION_SHIELD.get(), iceAttributes(120.0D, 0.23D, 3.0D, 12.0D, 0.90D));
+        event.put(ICE_KNIGHT_MINION_SPEAR.get(), iceAttributes(50.0D, 0.30D, 8.0D, 5.0D, 0.65D));
+        event.put(ICE_KNIGHT_MINION_SWORD.get(), iceAttributes(80.0D, 0.28D, 5.0D, 8.0D, 0.75D));
+        event.put(ICE_KNIGHT.get(), iceAttributes(500.0D, 0.20D, 16.0D, 12.0D, 1.0D));
         event.put(ORC_WARRIOR.get(), orcAttributes(40.0D, 0.25D, 7.0D, 2.0D));
         event.put(ORC_SPEARTHROWER.get(), orcAttributes(34.0D, 0.24D, 7.0D, 1.0D));
         event.put(ORC_SHAMAN.get(), orcAttributes(38.0D, 0.23D, 8.0D, 1.0D));
@@ -96,6 +132,24 @@ public final class ModEntities {
         return ENTITIES.register(name, () -> EntityType.Builder.of(OrcMob::new, MobCategory.MONSTER)
                 .sized(width, height).clientTrackingRange(12)
                 .build(Tierborne.MOD_ID + ":" + name));
+    }
+
+    private static RegistryObject<EntityType<IceMob>> registerIce(String name, float width, float height) {
+        return ENTITIES.register(name, () -> EntityType.Builder.of(IceMob::new, MobCategory.MONSTER)
+                .sized(width, height).clientTrackingRange(12)
+                .build(Tierborne.MOD_ID + ":" + name));
+    }
+
+    private static net.minecraft.world.entity.ai.attributes.AttributeSupplier iceAttributes(
+            double health, double speed, double damage, double armor, double knockbackResistance) {
+        return Monster.createMonsterAttributes()
+                .add(Attributes.MAX_HEALTH, health)
+                .add(Attributes.MOVEMENT_SPEED, speed)
+                .add(Attributes.ATTACK_DAMAGE, damage)
+                .add(Attributes.ARMOR, armor)
+                .add(Attributes.KNOCKBACK_RESISTANCE, knockbackResistance)
+                .add(Attributes.FOLLOW_RANGE, 48.0D)
+                .build();
     }
 
     private static net.minecraft.world.entity.ai.attributes.AttributeSupplier orcAttributes(

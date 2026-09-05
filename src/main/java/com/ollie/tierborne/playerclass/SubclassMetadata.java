@@ -16,6 +16,11 @@ public record SubclassMetadata(String skillId,String description){
   new SubclassMetadata(FighterPlayerClass.DUELIST,"A versatile weapon user who reacts to nearby attackers with counters."),
   new SubclassMetadata(BarbarianPlayerClass.BERSERKER,"A blood-fuelled axe fighter who trades safety for speed, damage and lifesteal."),
   new SubclassMetadata(BarbarianPlayerClass.EXECUTIONER,"A deliberate headsman who charges devastating attacks against wounded enemies."),
+  new SubclassMetadata(MagePlayerClass.FIRE_MAGE,"An explosive caster who controls space with burning volleys and rings of flame."),
+  new SubclassMetadata(MagePlayerClass.ICE_MAGE,"A control caster who slows, freezes and shatters enemies with precise frost magic."),
+  new SubclassMetadata(MagePlayerClass.POISON_MAGE,"An attrition caster who weakens enemies with venom and lingering toxic zones."),
+  new SubclassMetadata(MagePlayerClass.LIGHTNING_MAGE,"A mobile burst caster whose electricity leaps between clustered enemies."),
+  new SubclassMetadata(MagePlayerClass.DOCTOR,"A dedicated combat medic who heals, cleanses and strengthens nearby allies."),
   new SubclassMetadata(GeneralSkillTree.LUMBERJACK,"A specialist in efficiently harvesting wood and trees."),
   new SubclassMetadata(GeneralSkillTree.MINER,"A specialist in mining stone and valuable ores."),
   new SubclassMetadata(GeneralSkillTree.BLACKSMITH,"A specialist in crafting and recovering equipment materials.")

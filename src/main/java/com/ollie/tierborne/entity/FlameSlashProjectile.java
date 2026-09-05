@@ -108,7 +108,7 @@ public final class FlameSlashProjectile extends Projectile implements ItemSuppli
             float amount = ElementalCombat.modifyDamage(target, Element.FIRE, damage + enchantmentDamage);
             amount *= (float) owner.getAttributeValue(ModAttributes.MAGIC_DAMAGE.get());
             if (target.hurt(DamageSource.indirectMagic(this, owner), amount)) {
-                target.setSecondsOnFire((int)Math.round(RpgBalanceConfig.FIREBALL_IGNITION_SECONDS.get()));
+                ElementalCombat.applyFire(owner, target, RpgBalanceConfig.FIREBALL_IGNITION_SECONDS.get());
             }
         }
         impact();

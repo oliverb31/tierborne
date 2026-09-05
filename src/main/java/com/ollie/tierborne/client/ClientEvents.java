@@ -86,6 +86,28 @@ public final class ClientEvents {
                     modelArm.zRot = right ? 0.18F : -0.18F;
                 }
             });
+    private static final HumanoidModel.ArmPose MAGE_CAST_POSE = HumanoidModel.ArmPose.create(
+            "TIERBORNE_MAGE_CAST", false, (model, entity, arm) -> {
+                float progress = ClientMageCastState.progress(
+                        entity.getId(), Minecraft.getInstance().getFrameTime());
+                float pulse = Mth.sin(progress * (float) Math.PI);
+                int style = ClientMageCastState.style(entity.getId());
+                boolean right = arm == HumanoidArm.RIGHT;
+                var modelArm = right ? model.rightArm : model.leftArm;
+                if (style == 1) {
+                    modelArm.xRot = -1.55F - pulse * 0.35F;
+                    modelArm.yRot = right ? -0.55F : 0.55F;
+                    modelArm.zRot = right ? 0.35F : -0.35F;
+                } else if (style == 2) {
+                    modelArm.xRot = -1.15F - pulse * 0.55F;
+                    modelArm.yRot = right ? -0.95F : 0.95F;
+                    modelArm.zRot = right ? 0.65F : -0.65F;
+                } else {
+                    modelArm.xRot = right ? -1.75F - pulse * 0.25F : -0.85F;
+                    modelArm.yRot = right ? -0.15F : 0.55F;
+                    modelArm.zRot = right ? 0.08F : -0.32F;
+                }
+            });
     private static final KeyMapping OPEN_SKILLS = new KeyMapping(
             "key.tierborne.open_skills",
             InputConstants.Type.KEYSYM,
@@ -137,6 +159,7 @@ public final class ClientEvents {
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
         ClientUppercutState.tick();
+        ClientMageCastState.tick();
         ClientProgress.tryOpenSelectionScreen();
         ClientPartyState.tryOpenDungeonInvitation();
         Minecraft minecraft = Minecraft.getInstance();
@@ -303,6 +326,9 @@ public final class ClientEvents {
         if(ClientUppercutState.isActive(event.getEntity().getId())){
             event.getRenderer().getModel().rightArmPose=UPPERCUT_POSE;
             event.getRenderer().getModel().leftArmPose=UPPERCUT_POSE;
+        }else if(ClientMageCastState.isActive(event.getEntity().getId())){
+            event.getRenderer().getModel().rightArmPose=MAGE_CAST_POSE;
+            event.getRenderer().getModel().leftArmPose=MAGE_CAST_POSE;
         }else if(event.getEntity()==Minecraft.getInstance().player&&ClientProgress.hasSkill(FighterPlayerClass.MONK)&&event.getEntity().getMainHandItem().isEmpty()&&event.getEntity().getOffhandItem().isEmpty()){event.getRenderer().getModel().rightArmPose=HumanoidModel.ArmPose.BLOCK;event.getRenderer().getModel().leftArmPose=HumanoidModel.ArmPose.BLOCK;}
     }
 
@@ -310,6 +336,15 @@ public final class ClientEvents {
     public static void onRenderCloakedHand(RenderHandEvent event) {
         Minecraft minecraft=Minecraft.getInstance();
         if(minecraft.player!=null&&ClientCloakState.isCloaked(minecraft.player.getId())){event.setCanceled(true);return;}
+        if(minecraft.player!=null&&ClientMageCastState.isActive(minecraft.player.getId())){
+            float progress=ClientMageCastState.progress(minecraft.player.getId(),event.getPartialTick());
+            float pulse=Mth.sin(progress*(float)Math.PI);
+            int style=ClientMageCastState.style(minecraft.player.getId());
+            float side=event.getHand()==InteractionHand.MAIN_HAND?1.0F:-1.0F;
+            event.getPoseStack().translate(-0.12F*side*pulse,-0.10F*pulse,-0.20F*pulse);
+            event.getPoseStack().mulPose(Vector3f.XP.rotationDegrees(-(style==1?32.0F:18.0F)*pulse));
+            event.getPoseStack().mulPose(Vector3f.ZP.rotationDegrees(side*(style==2?28.0F:12.0F)*pulse));
+        }
         if(minecraft.player!=null&&ClientBlockState.isBlocking(minecraft.player.getId())&&event.getItemStack().getItem() instanceof SwordItem){
             boolean right=event.getHand()==InteractionHand.MAIN_HAND
                     ?minecraft.player.getMainArm()==net.minecraft.world.entity.HumanoidArm.RIGHT
@@ -425,6 +460,7 @@ public final class ClientEvents {
         ClientCloakState.clear();
         ClientBlockState.clear();
         ClientUppercutState.clear();
+        ClientMageCastState.clear();
         ClientAbilityState.clear();
         ClientPartyState.clear();
         offhandUseHeld=false;

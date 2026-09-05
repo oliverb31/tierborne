@@ -3,6 +3,7 @@ package com.ollie.tierborne.entity;
 import com.ollie.tierborne.item.ModItems;
 import com.ollie.tierborne.dungeon.DungeonManager;
 import com.ollie.tierborne.dungeon.DungeonSavedData;
+import com.ollie.tierborne.dungeon.OrcDungeonLoot;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -46,7 +47,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /** Forge-native runtime shared by the purchased orc models. Orcs are only spawned explicitly. */
-public final class OrcMob extends Raider {
+public final class OrcMob extends Raider implements AnimatedBlockbenchMob {
     private static final String RAID_ELITE_TAG = "tierborne:raid_elite";
     private static final String DUNGEON_AWAKENED_TAG = "tierborne:dungeon_awakened";
     private static final EntityDataAccessor<String> ATTACK_ANIMATION =
@@ -301,11 +302,13 @@ public final class OrcMob extends Raider {
         Vec3 forward = getLookAngle().multiply(1.0D, 0.0D, 1.0D).normalize();
         double minimumDot = Math.cos(Math.toRadians(angle * 0.5D));
         for (Player player : this.level.getEntitiesOfClass(Player.class, getBoundingBox().inflate(radius), Player::isAlive)) {
+            if (player.isCreative() || player.isSpectator()
+                    || !CombatHitboxes.intersectsCone(position(), forward, player, radius, minimumDot)
+                    || !CombatHitboxes.hasLineOfSightToPlayer(this, player)) continue;
             Vec3 offset = player.position().subtract(position()).multiply(1.0D, 0.0D, 1.0D);
-            if (offset.lengthSqr() > radius * radius || offset.lengthSqr() < 0.001D
-                    || forward.dot(offset.normalize()) < minimumDot) continue;
             damage(player, multiplier);
-            Vec3 push = offset.normalize().scale(horizontalKnockback);
+            Vec3 push = offset.lengthSqr() < 0.001D ? forward.scale(horizontalKnockback)
+                    : offset.normalize().scale(horizontalKnockback);
             player.push(push.x, verticalKnockback, push.z);
         }
         attackSound();
@@ -315,8 +318,10 @@ public final class OrcMob extends Raider {
         if (!(this.level instanceof ServerLevel server)) return;
         for (Player player : this.level.getEntitiesOfClass(Player.class,
                 getBoundingBox().move(center.subtract(position())).inflate(radius), Player::isAlive)) {
+            if (player.isCreative() || player.isSpectator()
+                    || !CombatHitboxes.intersectsHorizontalRadius(center, player, radius)
+                    || !CombatHitboxes.hasLineOfSightToPlayer(this, player)) continue;
             Vec3 offset = player.position().subtract(center);
-            if (offset.horizontalDistanceSqr() > radius * radius) continue;
             damage(player, multiplier);
             Vec3 push = offset.multiply(1.0D, 0.0D, 1.0D).normalize().scale(knockback);
             player.push(push.x, 0.5D, push.z);
@@ -399,8 +404,10 @@ public final class OrcMob extends Raider {
     @Override
     protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHit) {
         super.dropCustomDeathLoot(source, looting, recentlyHit);
-        if (kind() != Kind.ELITE || !getPersistentData().getBoolean(RAID_ELITE_TAG)) return;
-        spawnAtLocation(new ItemStack(ModItems.ORC_ELITE_AXE.get()));
+        OrcDungeonLoot.dropFor(this);
+        if (kind() == Kind.ELITE && getPersistentData().getBoolean(RAID_ELITE_TAG)) {
+            spawnAtLocation(new ItemStack(ModItems.ORC_ELITE_AXE.get()));
+        }
     }
 
     @Override

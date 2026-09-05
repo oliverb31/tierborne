@@ -226,6 +226,7 @@ public final class DungeonManager {
                 while (budget > 0 && instance.blockIndex < loaded.blocks().size()) {
                     PlacedBlock block = loaded.blocks().get(instance.blockIndex++);
                     level.setBlock(block.position(), block.state(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+                    OrcDungeonLoot.populateChest(level, block.position(), block.state(), instance);
                     if ((block.state().is(Blocks.FIRE) || block.state().is(Blocks.SOUL_FIRE))
                             && !instance.firePositions.contains(block.position().asLong())) {
                         instance.firePositions.add(block.position().asLong());

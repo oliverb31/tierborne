@@ -52,11 +52,15 @@ public final class AbilityRuntime {
         if(s.rootsActive)result.add(new AbilityStatus("Nature's Roots",(int)Math.max(0,s.rootsUntil-now),RpgBalanceConfig.ticks(RpgBalanceConfig.ROOTS_CHANNEL_SECONDS),true,"CHANNELING"));
         result.addAll(FighterCombat.statuses(p));
         result.addAll(BarbarianCombat.statuses(p));
+        result.addAll(MageCombat.statuses(p));
         result.sort(Comparator.comparing(AbilityStatus::name));return result;
     }
     public static void input(ServerPlayer p,AbilityAction action){
         PlayerProgress progress=progress(p); State s=state(p); long now=p.level.getGameTime();
-        if(CombatControl.offenseDisabled(p))return;
+        if(CombatControl.offenseDisabled(p)){
+            p.displayClientMessage(Component.literal("You cannot use offensive abilities while disarmed."),true);
+            return;
+        }
         if(BarbarianCombat.input(p,action))return;
         if(isRooted(p)&&action!=AbilityAction.ALTERNATE_RELEASE)return;
         if(s.fullyChargedDrawing&&action!=AbilityAction.ALTERNATE_RELEASE)return;
@@ -70,6 +74,7 @@ public final class AbilityRuntime {
         AlternateAttackDefinition attack=AlternateAttackDefinition.find(progress.selectedAlternateAttack());
         if(attack==null||!progress.hasSkill(attack.skillId())||s.cooldowns.getOrDefault(attack.id(),0L)>now||s.multislashActiveUntil>now)return;
         if(FighterCombat.input(p,attack.id()))return;
+        if(MageCombat.input(p,attack.id()))return;
         switch(attack.id()){
             case "dash_strike"->dashStrike(p,progress,s,now);
             case "multislash"->multislash(p,progress,s,now);
@@ -112,6 +117,7 @@ public final class AbilityRuntime {
         tickRooted(p.level,now);
         FighterCombat.tick(p);
         BarbarianCombat.tick(p);
+        MageCombat.tick(p);
     }
     public static boolean normalAttackBlocked(ServerPlayer p){State s=state(p);long now=p.level.getGameTime();return isRooted(p)||FighterCombat.uppercutActive(p)||BarbarianCombat.executeMovementPenaltyActive(p)||s.fireballActive||now<s.multislashActiveUntil||now<s.drawLockedUntil||(now<s.normalAttackLockedUntil&&!progress(p).hasSkill(SwordsmanPlayerClass.HEAVY_RECOVERY));}
     public static boolean beginNormalSwordAttack(ServerPlayer p){if(normalAttackBlocked(p))return false;state(p).mainLastAttack=p.level.getGameTime();return true;}
@@ -123,7 +129,7 @@ public final class AbilityRuntime {
     public static void cancelFireball(ServerPlayer p){State s=state(p);s.fireballActive=false;s.fireballCharging=false;s.fireballRecastUntil=0;s.fireballShots=0;}
     public static float mainHandCharge(ServerPlayer p){State s=state(p);long now=p.level.getGameTime();return s.mainLastAttack==Long.MIN_VALUE?1.0F:(float)Math.min(1.0,(now-s.mainLastAttack)/(double)recharge(p));}
     public static float offhandCharge(ServerPlayer p){State s=state(p);long now=p.level.getGameTime();return s.offLastAttack==Long.MIN_VALUE?1.0F:(float)Math.min(1.0,(now-s.offLastAttack)/(double)recharge(p));}
-    public static void resetTransient(ServerPlayer p){State s=STATES.get(p.getUUID());if(s!=null&&s.rootsTarget!=null)removeRoot(s.rootsTarget);removeRoot(p.getUUID());STATES.remove(p.getUUID());FighterCombat.reset(p);BarbarianCombat.reset(p);if(p.getPersistentData().getBoolean(CLOAK_TAG)){p.removeEffect(MobEffects.INVISIBILITY);p.getPersistentData().remove(CLOAK_TAG);}com.ollie.tierborne.network.ModNetwork.syncCloak(p,false);com.ollie.tierborne.network.ModNetwork.syncBlock(p,false);com.ollie.tierborne.network.ModNetwork.syncAbilities(p);}
+    public static void resetTransient(ServerPlayer p){State s=STATES.get(p.getUUID());if(s!=null&&s.rootsTarget!=null)removeRoot(s.rootsTarget);removeRoot(p.getUUID());STATES.remove(p.getUUID());FighterCombat.reset(p);BarbarianCombat.reset(p);MageCombat.reset(p);if(p.getPersistentData().getBoolean(CLOAK_TAG)){p.removeEffect(MobEffects.INVISIBILITY);p.getPersistentData().remove(CLOAK_TAG);}com.ollie.tierborne.network.ModNetwork.syncCloak(p,false);com.ollie.tierborne.network.ModNetwork.syncBlock(p,false);com.ollie.tierborne.network.ModNetwork.syncAbilities(p);}
     public static boolean heavyMovementPenaltyActive(ServerPlayer p){return p.level.getGameTime()<state(p).heavyMoveUntil;}
     public static void tryParry(ServerPlayer p,Entity attacker){PlayerProgress x=progress(p);State s=state(p);long now=p.level.getGameTime();if(!x.hasSkill(SwordsmanPlayerClass.PARRY)||now<s.parryReady||!(attacker instanceof LivingEntity target)||!sword(p.getMainHandItem())||!sword(p.getOffhandItem()))return;s.parryReady=now+RpgBalanceConfig.ticks(RpgBalanceConfig.PARRY_COOLDOWN_SECONDS);hurt(p,target,baseDamage(p));hurt(p,target,baseDamage(p));}
     public static double additionalSwordDamagePercent(ServerPlayer p,LivingEntity target){

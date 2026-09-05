@@ -1,5 +1,6 @@
 package com.ollie.tierborne.entity;
 
+import com.ollie.tierborne.item.ModItems;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -12,15 +13,22 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.raid.Raid;
+import net.minecraft.world.entity.raid.Raider;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -28,7 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Forge-native runtime shared by the purchased orc models. Orcs are only spawned explicitly. */
-public final class OrcMob extends Monster {
+public final class OrcMob extends Raider {
+    private static final String RAID_ELITE_TAG = "tierborne:raid_elite";
     private static final EntityDataAccessor<String> ATTACK_ANIMATION =
             SynchedEntityData.defineId(OrcMob.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Integer> ANIMATION_START =
@@ -52,6 +61,7 @@ public final class OrcMob extends Monster {
 
     @Override
     protected void registerGoals() {
+        super.registerGoals();
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.85D));
         this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 12.0F));
@@ -280,11 +290,55 @@ public final class OrcMob extends Monster {
 
     @Override
     public void die(DamageSource source) {
+        boolean wasInRaid = getCurrentRaid() != null;
+        boolean wasCaptain = isPatrolLeader()
+                && ItemStack.matches(getItemBySlot(EquipmentSlot.HEAD), Raid.getLeaderBannerInstance());
         if (!this.level.isClientSide) {
             this.entityData.set(ATTACK_ANIMATION, "death");
             this.entityData.set(ANIMATION_START, this.tickCount);
         }
         super.die(source);
+        if (!this.level.isClientSide && !wasInRaid && !wasCaptain
+                && (kind() == Kind.WARRIOR || kind() == Kind.SPEARTHROWER || kind() == Kind.SHAMAN)) {
+            Player player = killingPlayer(source);
+            if (player != null) grantBadOmen(player);
+        }
+    }
+
+    @Override
+    protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHit) {
+        super.dropCustomDeathLoot(source, looting, recentlyHit);
+        if (kind() != Kind.ELITE || !getPersistentData().getBoolean(RAID_ELITE_TAG)) return;
+        spawnAtLocation(new ItemStack(ModItems.ORC_ELITE_AXE.get()));
+    }
+
+    @Override
+    public void applyRaidBuffs(int wave, boolean unused) {
+    }
+
+    @Override
+    public SoundEvent getCelebrateSound() {
+        return SoundEvents.PILLAGER_CELEBRATE;
+    }
+
+    public void markAsRaidElite() {
+        getPersistentData().putBoolean(RAID_ELITE_TAG, true);
+    }
+
+    private Player killingPlayer(DamageSource source) {
+        if (source.getEntity() instanceof Player player) return player;
+        if (source.getEntity() instanceof Wolf wolf && wolf.isTame()
+                && wolf.getOwner() instanceof Player player) return player;
+        return null;
+    }
+
+    private void grantBadOmen(Player player) {
+        if (level.getGameRules().getBoolean(GameRules.RULE_DISABLE_RAIDS)) return;
+        MobEffectInstance current = player.getEffect(MobEffects.BAD_OMEN);
+        int amplifier = current == null ? 0 : Mth.clamp(current.getAmplifier() + 1, 0, 4);
+        player.removeEffectNoUpdate(MobEffects.BAD_OMEN);
+        player.addEffect(new MobEffectInstance(MobEffects.BAD_OMEN,
+                120000, amplifier, false, false, true));
     }
 
     @Override

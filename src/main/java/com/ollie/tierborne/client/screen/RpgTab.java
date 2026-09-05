@@ -3,7 +3,8 @@ package com.ollie.tierborne.client.screen;
 enum RpgTab {
     PLAYER("Player", 68),
     CLASS_SKILLTREE("Class Skilltree", 104),
-    GENERAL_SKILLTREE("General Skilltree", 110);
+    GENERAL_SKILLTREE("General Skilltree", 110),
+    PARTY("Party", 68);
 
     final String label;
     final int width;

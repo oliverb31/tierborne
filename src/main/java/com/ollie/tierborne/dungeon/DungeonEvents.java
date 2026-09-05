@@ -28,6 +28,7 @@ import net.minecraftforge.event.entity.EntityMobGriefingEvent;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.EntityTeleportEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
@@ -36,6 +37,24 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public final class DungeonEvents {
+    @SubscribeEvent
+    public void onDungeonMobAttack(LivingAttackEvent event) {
+        if (!(event.getEntity() instanceof Mob target)
+                || !(event.getSource().getEntity() instanceof Mob attacker)
+                || attacker.level != target.level
+                || !(target.level instanceof ServerLevel level)
+                || !level.dimension().equals(DungeonManager.DUNGEON_LEVEL)) return;
+
+        java.util.Optional<DungeonSavedData.Instance> attackerInstance = DungeonManager.instanceAt(
+                level.getServer(), attacker.getX(), attacker.getZ());
+        java.util.Optional<DungeonSavedData.Instance> targetInstance = DungeonManager.instanceAt(
+                level.getServer(), target.getX(), target.getZ());
+        if (attackerInstance.isPresent() && targetInstance.isPresent()
+                && attackerInstance.get().id == targetInstance.get().id) {
+            event.setCanceled(true);
+        }
+    }
+
     @SubscribeEvent
     public void onRegisterCommands(RegisterCommandsEvent event) {
         event.getDispatcher().register(Commands.literal("tierborne")
@@ -65,8 +84,27 @@ public final class DungeonEvents {
                                                 context.getSource().getPlayerOrException(),
                                                 StringArgumentType.getString(context, "dungeon")) ? 1 : 0)
                                 ))
+                        .then(Commands.literal("edit").requires(source -> source.hasPermission(2))
+                                .then(Commands.argument("dungeon", StringArgumentType.word())
+                                        .suggests((context, builder) -> SharedSuggestionProvider.suggest(
+                                                DungeonManager.dungeonNames(context.getSource().getServer()), builder))
+                                        .executes(context -> DungeonManager.startEditing(
+                                                context.getSource().getPlayerOrException(),
+                                                StringArgumentType.getString(context, "dungeon")) ? 1 : 0)))
                         .then(Commands.literal("checkpoint").executes(context -> {
                             DungeonManager.checkpoint(context.getSource().getPlayerOrException());
+                            return 1;
+                        }))
+                        .then(Commands.literal("join").executes(context -> {
+                            DungeonPartyManager.joinDungeon(context.getSource().getPlayerOrException());
+                            return 1;
+                        }))
+                        .then(Commands.literal("begin").executes(context -> {
+                            DungeonPartyManager.beginDungeon(context.getSource().getPlayerOrException());
+                            return 1;
+                        }))
+                        .then(Commands.literal("cancel").executes(context -> {
+                            DungeonPartyManager.cancelDungeon(context.getSource().getPlayerOrException());
                             return 1;
                         }))
                         .then(Commands.literal("leave").executes(context -> {
@@ -79,7 +117,13 @@ public final class DungeonEvents {
                         }))
                         .then(Commands.literal("reload").requires(source -> source.hasPermission(2)).executes(context -> {
                             DungeonManager.reload(context.getSource().getServer());
-                            context.getSource().sendSuccess(Component.literal("Tierborne dungeon manifests reloaded."), false);
+                            Component message = Component.literal("Tierborne dungeon manifests reloaded.");
+                            ServerPlayer player = context.getSource().getPlayer();
+                            if (player == null) {
+                                context.getSource().sendSuccess(message, false);
+                            } else {
+                                player.displayClientMessage(message, true);
+                            }
                             return 1;
                         }))));
     }
@@ -87,7 +131,12 @@ public final class DungeonEvents {
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.START) DungeonManager.initializeFireGuards(event.getServer());
-        else DungeonManager.tick(event.getServer());
+        else {
+            DungeonManager.tick(event.getServer());
+            if (event.getServer().overworld().getGameTime() % 10L == 0L) {
+                event.getServer().getPlayerList().getPlayers().forEach(DungeonMarkerManager::showMarkers);
+            }
+        }
     }
 
     @SubscribeEvent

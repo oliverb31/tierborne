@@ -1,6 +1,7 @@
 package com.ollie.tierborne.item;
 
 import com.ollie.tierborne.Tierborne;
+import com.ollie.tierborne.config.RpgBalanceConfig;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -75,7 +76,7 @@ public enum ModArmorMaterial implements ArmorMaterial {
     }
 
     public double bonusPerPiece() {
-        return bonusPerPiece;
+        return bonusPerPiece * configuredMultiplier(RpgBalanceConfig.ARMOR_BUFF_MULTIPLIER);
     }
 
     @Override
@@ -85,7 +86,8 @@ public enum ModArmorMaterial implements ArmorMaterial {
 
     @Override
     public int getDefenseForSlot(EquipmentSlot slot) {
-        return defenses.getOrDefault(slot, 0);
+        return Math.max(0, (int) Math.round(defenses.getOrDefault(slot, 0)
+                * configuredMultiplier(RpgBalanceConfig.ARMOR_DEFENSE_MULTIPLIER)));
     }
 
     @Override
@@ -110,12 +112,16 @@ public enum ModArmorMaterial implements ArmorMaterial {
 
     @Override
     public float getToughness() {
-        return toughness;
+        return toughness * (float) configuredMultiplier(RpgBalanceConfig.ARMOR_DEFENSE_MULTIPLIER);
     }
 
     @Override
     public float getKnockbackResistance() {
-        return knockbackResistance;
+        return knockbackResistance * (float) configuredMultiplier(RpgBalanceConfig.ARMOR_BUFF_MULTIPLIER);
+    }
+
+    private static double configuredMultiplier(net.minecraftforge.common.ForgeConfigSpec.DoubleValue value) {
+        return RpgBalanceConfig.SPEC.isLoaded() ? value.get() : 1.0D;
     }
 
     public enum ArmorPath {

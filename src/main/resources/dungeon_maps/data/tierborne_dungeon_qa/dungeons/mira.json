@@ -1,0 +1,812 @@
+{
+  "format": 1,
+  "name": "mira",
+  "namespace": "tierborne_dungeon_qa",
+  "source_sha256": "1b05180cc1e680d90eaa4ecf456f3a8bb8b40617c55bd5a88e800aaf53a58947",
+  "source_dimensions": [
+    131,
+    136,
+    572
+  ],
+  "decoded_blocks": 10190752,
+  "manifest_only": false,
+  "non_air_blocks": 1986072,
+  "tile_size": 48,
+  "tiles": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 53252,
+      "structure": "tierborne_dungeon_qa:mira/tile_0_0_0"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 59372,
+      "structure": "tierborne_dungeon_qa:mira/tile_0_0_1"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 64989,
+      "structure": "tierborne_dungeon_qa:mira/tile_0_0_2"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 60004,
+      "structure": "tierborne_dungeon_qa:mira/tile_0_0_3"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 60203,
+      "structure": "tierborne_dungeon_qa:mira/tile_0_0_4"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 53232,
+      "structure": "tierborne_dungeon_qa:mira/tile_0_0_5"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 56073,
+      "structure": "tierborne_dungeon_qa:mira/tile_0_0_6"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 54274,
+      "structure": "tierborne_dungeon_qa:mira/tile_0_0_7"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 53590,
+      "structure": "tierborne_dungeon_qa:mira/tile_0_0_8"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 55550,
+      "structure": "tierborne_dungeon_qa:mira/tile_0_0_9"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 59396,
+      "structure": "tierborne_dungeon_qa:mira/tile_0_0_10"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        44
+      ],
+      "blocks": 54100,
+      "structure": "tierborne_dungeon_qa:mira/tile_0_0_11"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 361,
+      "structure": "tierborne_dungeon_qa:mira/tile_0_1_1"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 838,
+      "structure": "tierborne_dungeon_qa:mira/tile_0_1_2"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 78,
+      "structure": "tierborne_dungeon_qa:mira/tile_0_1_3"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 68,
+      "structure": "tierborne_dungeon_qa:mira/tile_0_1_4"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1346,
+      "structure": "tierborne_dungeon_qa:mira/tile_0_1_9"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 5175,
+      "structure": "tierborne_dungeon_qa:mira/tile_0_1_10"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        44
+      ],
+      "blocks": 3555,
+      "structure": "tierborne_dungeon_qa:mira/tile_0_1_11"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 60109,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_0_0"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 63302,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_0_1"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 70142,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_0_2"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 64507,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_0_3"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 69053,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_0_4"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 56744,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_0_5"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 55723,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_0_6"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 50194,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_0_7"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 56618,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_0_8"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 60185,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_0_9"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 56227,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_0_10"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        44
+      ],
+      "blocks": 56080,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_0_11"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 0,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 810,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_1_0"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 5136,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_1_1"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4373,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_1_2"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 344,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_1_3"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 582,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_1_4"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1809,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_1_5"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1413,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_1_6"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3379,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_1_7"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1116,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_1_8"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4011,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_1_9"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 5624,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_1_10"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        44
+      ],
+      "blocks": 9676,
+      "structure": "tierborne_dungeon_qa:mira/tile_1_1_11"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 0,
+      "size": [
+        35,
+        48,
+        48
+      ],
+      "blocks": 48083,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_0_0"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 1,
+      "size": [
+        35,
+        48,
+        48
+      ],
+      "blocks": 43230,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_0_1"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 2,
+      "size": [
+        35,
+        48,
+        48
+      ],
+      "blocks": 45490,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_0_2"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 3,
+      "size": [
+        35,
+        48,
+        48
+      ],
+      "blocks": 52360,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_0_3"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 4,
+      "size": [
+        35,
+        48,
+        48
+      ],
+      "blocks": 45822,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_0_4"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 5,
+      "size": [
+        35,
+        48,
+        48
+      ],
+      "blocks": 38910,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_0_5"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 6,
+      "size": [
+        35,
+        48,
+        48
+      ],
+      "blocks": 40077,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_0_6"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 7,
+      "size": [
+        35,
+        48,
+        48
+      ],
+      "blocks": 40076,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_0_7"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 8,
+      "size": [
+        35,
+        48,
+        48
+      ],
+      "blocks": 39387,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_0_8"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 9,
+      "size": [
+        35,
+        48,
+        48
+      ],
+      "blocks": 41279,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_0_9"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 10,
+      "size": [
+        35,
+        48,
+        48
+      ],
+      "blocks": 45123,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_0_10"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 11,
+      "size": [
+        35,
+        48,
+        44
+      ],
+      "blocks": 41059,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_0_11"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 0,
+      "size": [
+        35,
+        48,
+        48
+      ],
+      "blocks": 632,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_1_0"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 1,
+      "size": [
+        35,
+        48,
+        48
+      ],
+      "blocks": 395,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_1_1"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 2,
+      "size": [
+        35,
+        48,
+        48
+      ],
+      "blocks": 254,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_1_2"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 3,
+      "size": [
+        35,
+        48,
+        48
+      ],
+      "blocks": 692,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_1_3"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 4,
+      "size": [
+        35,
+        48,
+        48
+      ],
+      "blocks": 74,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_1_4"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 7,
+      "size": [
+        35,
+        48,
+        48
+      ],
+      "blocks": 7,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_1_7"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 8,
+      "size": [
+        35,
+        48,
+        48
+      ],
+      "blocks": 2,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_1_8"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 9,
+      "size": [
+        35,
+        48,
+        48
+      ],
+      "blocks": 1393,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_1_9"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 10,
+      "size": [
+        35,
+        48,
+        48
+      ],
+      "blocks": 5403,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_1_10"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 11,
+      "size": [
+        35,
+        48,
+        44
+      ],
+      "blocks": 3711,
+      "structure": "tierborne_dungeon_qa:mira/tile_2_1_11"
+    }
+  ],
+  "sanitization": {
+    "block_entities_removed": 1002,
+    "entities_removed": 0,
+    "portal_blocks_removed": true,
+    "leaf_decay_disabled": true
+  },
+  "entrance": {
+    "position": [
+      72.5,
+      24.0,
+      33.5
+    ],
+    "yaw": -0.0004934370517730713,
+    "pitch": -1.6500369310379028
+  }
+}

@@ -50,6 +50,7 @@ final class RpgTabBar {
             case PLAYER -> minecraft.setScreen(new PlayerMenuScreen());
             case CLASS_SKILLTREE -> minecraft.setScreen(new SkillTreeScreen(false));
             case GENERAL_SKILLTREE -> minecraft.setScreen(new SkillTreeScreen(true));
+            case PARTY -> minecraft.setScreen(new PartyScreen());
         }
     }
 }

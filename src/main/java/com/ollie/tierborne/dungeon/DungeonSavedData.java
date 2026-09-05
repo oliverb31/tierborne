@@ -58,6 +58,7 @@ public final class DungeonSavedData extends SavedData {
         public long seed;
         public long lastOccupiedTick;
         public int partySizeSnapshot;
+        public boolean authoring;
         public UUID leader;
         public final List<UUID> party = new ArrayList<>();
         public final Map<UUID, Checkpoint> checkpoints = new HashMap<>();
@@ -91,6 +92,7 @@ public final class DungeonSavedData extends SavedData {
             tag.putLong("Seed", seed);
             tag.putLong("LastOccupiedTick", lastOccupiedTick);
             tag.putInt("PartySizeSnapshot", partySizeSnapshot);
+            tag.putBoolean("Authoring", authoring);
             if (leader != null) tag.putUUID("Leader", leader);
             ListTag members = new ListTag();
             for (UUID member : party) {
@@ -135,6 +137,7 @@ public final class DungeonSavedData extends SavedData {
             instance.seed = tag.getLong("Seed");
             instance.lastOccupiedTick = tag.getLong("LastOccupiedTick");
             instance.partySizeSnapshot = Math.max(1, tag.getInt("PartySizeSnapshot"));
+            instance.authoring = tag.getBoolean("Authoring");
             if (tag.hasUUID("Leader")) instance.leader = tag.getUUID("Leader");
             ListTag members = tag.getList("Party", Tag.TAG_COMPOUND);
             for (int i = 0; i < members.size(); i++) instance.party.add(members.getCompound(i).getUUID("Id"));

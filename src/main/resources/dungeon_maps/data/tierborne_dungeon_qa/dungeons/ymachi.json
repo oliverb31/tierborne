@@ -1,0 +1,3452 @@
+{
+  "format": 1,
+  "name": "ymachi",
+  "namespace": "tierborne_dungeon_qa",
+  "source_sha256": "da7478212de64d7ea86d50fc1e9e0540f5e7fed110591a8499fdf7f5173d659a",
+  "source_dimensions": [
+    415,
+    324,
+    991
+  ],
+  "decoded_blocks": 133249860,
+  "manifest_only": false,
+  "non_air_blocks": 5245671,
+  "tile_size": 48,
+  "tiles": [
+    {
+      "x": 1,
+      "y": 0,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2758,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_0_7"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 28767,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_0_8"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 49070,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_0_9"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 27906,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_0_10"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7172,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_0_11"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 13,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 117,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_0_13"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 648,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_1_7"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 21405,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_1_8"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 38681,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_1_9"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 35342,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_1_10"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 939,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_1_11"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 12,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 69,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_1_12"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 13,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3481,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_1_13"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 15,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4673,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_1_15"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 16,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1159,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_1_16"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6887,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_2_8"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 13866,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_2_9"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 8197,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_2_10"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1083,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_2_11"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 14,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 78,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_2_14"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 15,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4383,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_2_15"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 16,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6300,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_2_16"
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2336,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_3_8"
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4824,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_3_9"
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2984,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_3_10"
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 8,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_1_3_11"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 41204,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_0_7"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 58198,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_0_8"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 26738,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_0_9"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 45593,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_0_10"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 56596,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_0_11"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 12,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7256,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_0_12"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 13,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 9456,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_0_13"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 14,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7089,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_0_14"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 15,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2444,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_0_15"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 16,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2577,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_0_16"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 17,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1110,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_0_17"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 23284,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_1_7"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 70904,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_1_8"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 34175,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_1_9"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 46562,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_1_10"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 51026,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_1_11"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 12,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 33757,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_1_12"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 13,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 52823,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_1_13"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 14,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 58066,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_1_14"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 15,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 72980,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_1_15"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 16,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 71789,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_1_16"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 17,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 24364,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_1_17"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 18,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1221,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_1_18"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 540,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_2_4"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 8483,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_2_7"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 73979,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_2_8"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 67057,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_2_9"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 53076,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_2_10"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 18906,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_2_11"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 12,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 9055,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_2_12"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 13,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4418,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_2_13"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 14,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6028,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_2_14"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 15,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 13753,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_2_15"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 16,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 54150,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_2_16"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 17,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 15078,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_2_17"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 18,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 462,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_2_18"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 31,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_3_1"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 12983,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_3_2"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 13086,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_3_3"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 21584,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_3_4"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 11658,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_3_5"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 30035,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_3_6"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 20172,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_3_7"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 14379,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_3_8"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 34029,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_3_9"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 19354,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_3_10"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 5008,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_3_11"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 12,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_3_12"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 13,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 662,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_3_13"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 14,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 334,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_3_14"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 15,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 923,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_3_15"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 16,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 869,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_3_16"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 17,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 19,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_3_17"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1066,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_4_2"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 90,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_4_3"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2781,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_4_4"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2630,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_4_5"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7329,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_4_6"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2419,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_4_7"
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 118,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_5_2"
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 101,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_5_4"
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 122,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_5_5"
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 889,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_5_6"
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 178,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_2_5_7"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 10344,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_0_6"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 71581,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_0_7"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 13144,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_0_8"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 18601,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_0_9"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 15907,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_0_10"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 47559,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_0_11"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 12,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 12629,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_0_12"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 13,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 10762,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_0_13"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 14,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 9722,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_0_14"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 15,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 5443,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_0_15"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 16,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4082,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_0_16"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 17,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_0_17"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 53732,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_1_7"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 14441,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_1_8"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6683,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_1_9"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1574,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_1_10"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 54293,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_1_11"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 12,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 54022,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_1_12"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 13,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 28112,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_1_13"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 14,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 29616,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_1_14"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 15,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 95368,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_1_15"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 16,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 83058,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_1_16"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 17,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 17600,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_1_17"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 18,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 12802,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_1_18"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 24078,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_2_7"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 48304,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_2_8"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7522,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_2_9"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 31450,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_2_10"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 69671,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_2_11"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 12,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 43451,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_2_12"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 13,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 888,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_2_13"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 14,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 869,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_2_14"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 15,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 20655,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_2_15"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 16,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 44992,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_2_16"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 17,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 29051,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_2_17"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 18,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 5349,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_2_18"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 26518,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_3_1"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 37514,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_3_2"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 22035,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_3_3"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 47098,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_3_4"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 65625,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_3_5"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 13466,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_3_6"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 25272,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_3_7"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 31026,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_3_8"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 11795,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_3_9"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 40783,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_3_10"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 15145,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_3_11"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 12,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7807,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_3_12"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 13,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2312,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_3_13"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 14,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2326,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_3_14"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 15,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1556,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_3_15"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 16,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 16596,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_3_16"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 17,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 10270,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_3_17"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4426,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_4_1"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 5231,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_4_2"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3617,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_4_3"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7933,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_4_4"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6271,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_4_5"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2169,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_4_6"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4179,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_4_7"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4376,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_4_8"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 770,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_4_10"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "z": 16,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 271,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_4_16"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "z": 17,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 75,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_4_17"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2206,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_5_2"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2200,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_5_3"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2440,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_5_4"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2316,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_5_5"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2458,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_5_6"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2505,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_5_7"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1267,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_3_5_8"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3749,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_0_6"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 66450,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_0_7"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 53652,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_0_8"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 13317,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_0_9"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 25848,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_0_10"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 56029,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_0_11"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 12,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 11981,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_0_12"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 13,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 10652,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_0_13"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 14,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 10213,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_0_14"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 15,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 5810,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_0_15"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 16,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1997,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_0_16"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 17,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 16,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_0_17"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 31970,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_1_7"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 45515,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_1_8"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1952,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_1_9"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 19678,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_1_10"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 67026,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_1_11"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 12,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 67181,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_1_12"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 13,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 27462,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_1_13"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 14,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 32995,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_1_14"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 15,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 84857,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_1_15"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 16,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 80227,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_1_16"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 17,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 23491,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_1_17"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 18,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 9019,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_1_18"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 90,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_2_3"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 293,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_2_4"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 22134,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_2_7"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 60160,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_2_8"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 21566,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_2_9"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 46923,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_2_10"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 58213,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_2_11"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": 12,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 39923,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_2_12"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": 13,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4897,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_2_13"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": 14,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 8142,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_2_14"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": 15,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 17304,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_2_15"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": 16,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 22534,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_2_16"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": 17,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 21165,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_2_17"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": 18,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3116,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_2_18"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 16097,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_3_1"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 37405,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_3_2"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 25959,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_3_3"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 33402,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_3_4"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 33745,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_3_5"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 24832,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_3_6"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 39661,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_3_7"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 30494,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_3_8"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 21800,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_3_9"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 34156,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_3_10"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 14143,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_3_11"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 12,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1037,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_3_12"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 13,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1998,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_3_13"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 14,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2064,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_3_14"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 15,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1232,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_3_15"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 16,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3059,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_3_16"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 17,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7251,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_3_17"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "z": 1,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1651,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_4_1"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3748,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_4_2"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3073,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_4_3"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4314,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_4_4"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 5308,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_4_5"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4420,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_4_6"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4069,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_4_7"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3264,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_4_8"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 252,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_4_10"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "z": 16,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 10,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_4_16"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "z": 2,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 748,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_5_2"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1052,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_5_3"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 867,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_5_4"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "z": 5,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 691,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_5_5"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1780,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_5_6"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1205,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_5_7"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 922,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_4_5_8"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 10091,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_0_7"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 61611,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_0_8"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 58312,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_0_9"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 59056,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_0_10"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7996,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_0_11"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 12,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2382,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_0_12"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 13,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6089,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_0_13"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 14,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4952,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_0_14"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 15,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 111,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_0_15"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 16,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1819,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_0_16"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 17,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 620,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_0_17"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2077,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_1_7"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 40043,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_1_8"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 62378,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_1_9"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 50217,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_1_10"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 12236,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_1_11"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": 12,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7360,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_1_12"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": 13,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 41178,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_1_13"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": 14,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 40425,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_1_14"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": 15,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 31985,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_1_15"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": 16,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 46990,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_1_16"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "z": 17,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6825,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_1_17"
+    },
+    {
+      "x": 5,
+      "y": 2,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1056,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_2_7"
+    },
+    {
+      "x": 5,
+      "y": 2,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 21784,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_2_8"
+    },
+    {
+      "x": 5,
+      "y": 2,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 50541,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_2_9"
+    },
+    {
+      "x": 5,
+      "y": 2,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 30675,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_2_10"
+    },
+    {
+      "x": 5,
+      "y": 2,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3532,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_2_11"
+    },
+    {
+      "x": 5,
+      "y": 2,
+      "z": 13,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 907,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_2_13"
+    },
+    {
+      "x": 5,
+      "y": 2,
+      "z": 14,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1668,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_2_14"
+    },
+    {
+      "x": 5,
+      "y": 2,
+      "z": 15,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 10837,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_2_15"
+    },
+    {
+      "x": 5,
+      "y": 2,
+      "z": 16,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 43448,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_2_16"
+    },
+    {
+      "x": 5,
+      "y": 2,
+      "z": 17,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4646,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_2_17"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "z": 3,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 6,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_3_3"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "z": 4,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 747,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_3_4"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "z": 6,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7117,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_3_6"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 4295,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_3_7"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "z": 8,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 7492,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_3_8"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 9653,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_3_9"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 8100,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_3_10"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "z": 11,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1726,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_3_11"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "z": 13,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 1,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_3_13"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "z": 14,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 88,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_3_14"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "z": 15,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 78,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_3_15"
+    },
+    {
+      "x": 5,
+      "y": 4,
+      "z": 7,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 396,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_5_4_7"
+    },
+    {
+      "x": 6,
+      "y": 0,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 3007,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_6_0_9"
+    },
+    {
+      "x": 6,
+      "y": 0,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 324,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_6_0_10"
+    },
+    {
+      "x": 6,
+      "y": 1,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2304,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_6_1_9"
+    },
+    {
+      "x": 6,
+      "y": 1,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 336,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_6_1_10"
+    },
+    {
+      "x": 6,
+      "y": 2,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 2304,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_6_2_9"
+    },
+    {
+      "x": 6,
+      "y": 2,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 336,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_6_2_10"
+    },
+    {
+      "x": 6,
+      "y": 3,
+      "z": 9,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 792,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_6_3_9"
+    },
+    {
+      "x": 6,
+      "y": 3,
+      "z": 10,
+      "size": [
+        48,
+        48,
+        48
+      ],
+      "blocks": 68,
+      "structure": "tierborne_dungeon_qa:ymachi/tile_6_3_10"
+    }
+  ],
+  "sanitization": {
+    "block_entities_removed": 4321,
+    "entities_removed": 0,
+    "portal_blocks_removed": true,
+    "leaf_decay_disabled": true
+  },
+  "entrance": {
+    "position": [
+      178.5,
+      165.0,
+      112.5
+    ],
+    "yaw": 0.0,
+    "pitch": 0.0
+  }
+}

@@ -46,6 +46,8 @@ public final class ModItems {
             "runebound_colossus_spawn_egg", () -> ModEntities.RUNEBOUND_COLOSSUS.get(), 0x292B2F, 0xB33C2E);
     public static final RegistryObject<Item> ABYSSAL_WATCHER_SPAWN_EGG = registerSpawnEgg(
             "abyssal_watcher_spawn_egg", () -> ModEntities.ABYSSAL_WATCHER.get(), 0x87957F, 0x266B70);
+    public static final RegistryObject<Item> GOOFY_GOBLIN_SPAWN_EGG = registerSpawnEgg(
+            "goofy_goblin_spawn_egg", () -> ModEntities.GOOFY_GOBLIN.get(), 0x4D9991, 0x302936);
 
     public static final RegistryObject<Item> COPPER_UPGRADE_TEMPLATE = registerBasicItem("copper_upgrade_template");
     public static final RegistryObject<Item> CHAINMAIL_UPGRADE_TEMPLATE = registerBasicItem("chainmail_upgrade_template");

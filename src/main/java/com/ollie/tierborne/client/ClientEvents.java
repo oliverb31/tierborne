@@ -11,6 +11,7 @@ import com.ollie.tierborne.playerclass.SkillBonusType;
 import com.ollie.tierborne.playerclass.GeneralSkillRules;
 import com.ollie.tierborne.network.ModNetwork;
 import com.ollie.tierborne.network.AbilityActionPacket;
+import com.ollie.tierborne.network.ToggleMovementSpeedPacket;
 import com.ollie.tierborne.combat.AbilityAction;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -97,6 +98,9 @@ public final class ClientEvents {
             "key.categories.tierborne");
     private static final KeyMapping ALTERNATE_ATTACK = new KeyMapping("key.tierborne.alternate_attack", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_C, "key.categories.tierborne");
     private static final KeyMapping SUBCLASS_UTILITY = new KeyMapping("key.tierborne.subclass_utility", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Z, "key.categories.tierborne");
+    private static final KeyMapping TOGGLE_MOVEMENT_SPEED = new KeyMapping(
+            "key.tierborne.toggle_movement_speed", InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_V, "key.categories.tierborne");
 
     private ClientEvents() {}
 
@@ -111,6 +115,13 @@ public final class ClientEvents {
         if (OPEN_PLAYER_MENU.matches(event.getKey(), event.getScanCode())) {
             if (inRpgMenu) minecraft.setScreen(null);
             else if (minecraft.screen == null) minecraft.setScreen(new PlayerMenuScreen());
+            return;
+        }
+
+        if (TOGGLE_MOVEMENT_SPEED.matches(event.getKey(), event.getScanCode())) {
+            if (minecraft.screen == null) {
+                ModNetwork.CHANNEL.sendToServer(new ToggleMovementSpeedPacket());
+            }
             return;
         }
 
@@ -175,6 +186,7 @@ public final class ClientEvents {
         Minecraft minecraft=Minecraft.getInstance();
         if(minecraft.player==null||minecraft.options.hideGui)return;
         renderTargetHealth(event,minecraft);
+        renderProgressionBar(event, minecraft);
         if(ClientAbilityState.comboBonus()>0)minecraft.font.drawShadow(event.getPoseStack(),"COMBO +"+ClientAbilityState.comboBonus()+"%",8,event.getWindow().getGuiScaledHeight()-58,0xFFFFD46A);
         java.util.List<com.ollie.tierborne.combat.AbilityStatus> statuses=ClientAbilityState.statuses();
         int width=COOLDOWN_BAR_WIDTH,x=event.getWindow().getGuiScaledWidth()-width-8;
@@ -187,6 +199,26 @@ public final class ClientEvents {
             GuiComponent.fill(event.getPoseStack(),x+1,barY+1,x+1+fill,barY+6,status.active()?0xFF4EA56B:0xFFD7AD55);
             String timer=status.stateLabel().equals("CHARGING")?Math.round(100.0*status.remainingTicks()/Math.max(1,status.totalTicks()))+"%":String.format(java.util.Locale.ROOT,"%.1fs",status.remainingTicks()/20.0);minecraft.font.drawShadow(event.getPoseStack(),timer,x+(width-minecraft.font.width(timer))/2.0F,barY+10,0xFF9B968A);y+=COOLDOWN_ENTRY_HEIGHT+COOLDOWN_ENTRY_GAP;
         }
+    }
+
+    private static void renderProgressionBar(RenderGuiOverlayEvent.Post event, Minecraft minecraft) {
+        int screenWidth = event.getWindow().getGuiScaledWidth();
+        int screenHeight = event.getWindow().getGuiScaledHeight();
+        int width = 182;
+        int left = (screenWidth - width) / 2;
+        int top = screenHeight - 32;
+        int required = ClientProgress.experienceToNextLevel();
+        float progress = required <= 0 ? 1.0F
+                : Mth.clamp(ClientProgress.progressionExperience() / (float) required, 0.0F, 1.0F);
+        GuiComponent.fill(event.getPoseStack(), left, top, left + width, top + 5, 0xD0000000);
+        GuiComponent.fill(event.getPoseStack(), left + 1, top + 1,
+                left + 1 + Math.round((width - 2) * progress), top + 4, 0xFF59C7A5);
+        String text = ClientProgress.level() >= 30
+                ? "Level 30 - MAX"
+                : "Level " + ClientProgress.level() + "  "
+                + ClientProgress.progressionExperience() + "/" + required;
+        minecraft.font.drawShadow(event.getPoseStack(), text,
+                (screenWidth - minecraft.font.width(text)) / 2.0F, top - 9, 0xFFE9E2D0);
     }
 
     private static void renderTargetHealth(RenderGuiOverlayEvent.Post event,Minecraft minecraft){
@@ -232,6 +264,10 @@ public final class ClientEvents {
 
     @SubscribeEvent
     public static void onRenderCrosshair(RenderGuiOverlayEvent.Pre event) {
+        if (event.getOverlay() == VanillaGuiOverlay.EXPERIENCE_BAR.type()) {
+            event.setCanceled(true);
+            return;
+        }
         if(event.getOverlay()!=VanillaGuiOverlay.CROSSHAIR.type()
                 ||(!ClientAbilityState.dualWielding()&&!ClientAbilityState.multislashActive()))return;
         Minecraft minecraft=Minecraft.getInstance();
@@ -411,6 +447,7 @@ public final class ClientEvents {
     /** Removes only Tierborne's intrinsic speed contribution from the vanilla FOV calculation. */
     @SubscribeEvent
     public static void onComputeFov(ComputeFovModifierEvent event) {
+        if (!ClientProgress.moddedMovementSpeedEnabled()) return;
         double bonus = ClientProgress.totalBonus(SkillBonusType.MOVEMENT_SPEED);
         if(ClientProgress.hasSkill(SwordsmanPlayerClass.SWORDMASTER))bonus+=RpgBalanceConfig.SWORDMASTER_SPEED.get();
         if(ClientProgress.hasSkill(SwordsmanPlayerClass.SM_SPEED))bonus+=RpgBalanceConfig.SWORDMASTER_UPGRADE_SPEED.get();
@@ -444,6 +481,7 @@ public final class ClientEvents {
             event.register(OPEN_PLAYER_MENU);
             event.register(ALTERNATE_ATTACK);
             event.register(SUBCLASS_UTILITY);
+            event.register(TOGGLE_MOVEMENT_SPEED);
         }
     }
 }

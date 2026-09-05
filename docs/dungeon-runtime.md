@@ -16,7 +16,7 @@ operations per server tick and resume from saved progress after a restart.
 - `/tierborne party invite <player>` invites a player.
 - `/tierborne party accept <leader>` accepts an invitation.
 - `/tierborne party leave` leaves or disbands the staging party.
-- `/tierborne dungeon start <mira|tartarus|ymachi|zeta>` starts preparation.
+- `/tierborne dungeon start <mira|tartarus|ymachi|zeta|orc_lush>` starts preparation.
   Every accepted member must be online, in the same dimension, and within 16
   blocks of the leader.
 - `/tierborne dungeon checkpoint` records the player's current safe position.

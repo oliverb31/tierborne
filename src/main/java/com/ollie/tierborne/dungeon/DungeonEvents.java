@@ -7,14 +7,20 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ChorusFruitItem;
 import net.minecraft.world.item.EnderpearlItem;
 import net.minecraft.world.item.FireChargeItem;
 import net.minecraft.world.item.FlintAndSteelItem;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ConcretePowderBlock;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -200,7 +206,21 @@ public final class DungeonEvents {
 
     @SubscribeEvent
     public void onEntityJoin(EntityJoinLevelEvent event) {
-        if (!event.getLevel().isClientSide && event.getEntity() instanceof Mob mob) DungeonManager.scaleEncounterMob(mob);
+        if (!(event.getLevel() instanceof ServerLevel level)) return;
+
+        if (level.dimension().equals(DungeonManager.DUNGEON_LEVEL)
+                && event.getEntity() instanceof FallingBlockEntity fallingBlock
+                && (fallingBlock.getBlockState().is(BlockTags.SAND)
+                || fallingBlock.getBlockState().is(Blocks.GRAVEL)
+                || fallingBlock.getBlockState().getBlock() instanceof ConcretePowderBlock)) {
+            event.setCanceled(true);
+            level.setBlock(fallingBlock.getStartPos(), fallingBlock.getBlockState(),
+                    Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+            level.getBlockTicks().clearArea(new BoundingBox(fallingBlock.getStartPos()));
+            return;
+        }
+
+        if (event.getEntity() instanceof Mob mob) DungeonManager.scaleEncounterMob(mob);
     }
 
     private static void deny(ServerPlayer player, String message) {

@@ -6,6 +6,7 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Guardian;
 import net.minecraft.world.entity.monster.AbstractSkeleton;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -40,6 +41,19 @@ public final class ModEntities {
             () -> EntityType.Builder.of(AbyssalWatcher::new, MobCategory.MONSTER)
                     .sized(2.0F, 2.0F).clientTrackingRange(12)
                     .build(Tierborne.MOD_ID + ":abyssal_watcher"));
+    public static final RegistryObject<EntityType<GoofyGoblin>> GOOFY_GOBLIN = ENTITIES.register("goofy_goblin",
+            () -> EntityType.Builder.of(GoofyGoblin::new, MobCategory.MONSTER)
+                    .sized(0.9F, 2.45F).clientTrackingRange(10)
+                    .build(Tierborne.MOD_ID + ":goofy_goblin"));
+    public static final RegistryObject<EntityType<OrcMob>> ORC_WARRIOR = registerOrc("orc_warrior", 0.95F, 2.5F);
+    public static final RegistryObject<EntityType<OrcMob>> ORC_SPEARTHROWER = registerOrc("orc_spearthrower", 0.95F, 2.5F);
+    public static final RegistryObject<EntityType<OrcMob>> ORC_SHAMAN = registerOrc("orc_shaman", 0.95F, 2.5F);
+    public static final RegistryObject<EntityType<OrcMob>> ORC_ELITE = registerOrc("orc_elite", 1.05F, 2.7F);
+    public static final RegistryObject<EntityType<OrcMob>> ORC_BOSS = registerOrc("orc_boss", 1.8F, 3.9F);
+    public static final RegistryObject<EntityType<OrcProjectile>> ORC_PROJECTILE = ENTITIES.register("orc_projectile",
+            () -> EntityType.Builder.<OrcProjectile>of(OrcProjectile::new, MobCategory.MISC)
+                    .sized(0.4F, 0.4F).clientTrackingRange(12).updateInterval(1)
+                    .build(Tierborne.MOD_ID + ":orc_projectile"));
 
     public static void createAttributes(EntityAttributeCreationEvent event) {
         event.put(DUNE_REVENANT.get(), Zombie.createAttributes()
@@ -65,6 +79,35 @@ public final class ModEntities {
                 .add(Attributes.ARMOR, 6.0D)
                 .add(Attributes.FOLLOW_RANGE, 40.0D)
                 .build());
+        event.put(GOOFY_GOBLIN.get(), Monster.createMonsterAttributes()
+                .add(Attributes.MAX_HEALTH, 24.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.27D)
+                .add(Attributes.ATTACK_DAMAGE, 5.0D)
+                .add(Attributes.FOLLOW_RANGE, 28.0D)
+                .build());
+        event.put(ORC_WARRIOR.get(), orcAttributes(40.0D, 0.25D, 7.0D, 2.0D));
+        event.put(ORC_SPEARTHROWER.get(), orcAttributes(34.0D, 0.24D, 7.0D, 1.0D));
+        event.put(ORC_SHAMAN.get(), orcAttributes(38.0D, 0.23D, 8.0D, 1.0D));
+        event.put(ORC_ELITE.get(), orcAttributes(80.0D, 0.27D, 11.0D, 5.0D));
+        event.put(ORC_BOSS.get(), orcAttributes(600.0D, 0.24D, 18.0D, 10.0D));
+    }
+
+    private static RegistryObject<EntityType<OrcMob>> registerOrc(String name, float width, float height) {
+        return ENTITIES.register(name, () -> EntityType.Builder.of(OrcMob::new, MobCategory.MONSTER)
+                .sized(width, height).clientTrackingRange(12)
+                .build(Tierborne.MOD_ID + ":" + name));
+    }
+
+    private static net.minecraft.world.entity.ai.attributes.AttributeSupplier orcAttributes(
+            double health, double speed, double damage, double armor) {
+        return Monster.createMonsterAttributes()
+                .add(Attributes.MAX_HEALTH, health)
+                .add(Attributes.MOVEMENT_SPEED, speed)
+                .add(Attributes.ATTACK_DAMAGE, damage)
+                .add(Attributes.ARMOR, armor)
+                .add(Attributes.KNOCKBACK_RESISTANCE, armor >= 10.0D ? 0.85D : 0.25D)
+                .add(Attributes.FOLLOW_RANGE, 40.0D)
+                .build();
     }
 
     private ModEntities() {}

@@ -76,9 +76,24 @@ public final class PlayerMenuScreen extends Screen {
 
         drawCenteredString(poseStack, font, minecraft.player.getDisplayName(),
                 (left + right) / 2, top + 10, RpgUi.TEXT);
+        drawCenteredString(poseStack, font, Component.literal("Level " + ClientProgress.level()),
+                (left + right) / 2, top + 21, RpgUi.GOLD);
+        int experienceLeft = left + 10;
+        int experienceRight = right - 10;
+        int experienceTop = top + 33;
+        int experienceRequired = ClientProgress.experienceToNextLevel();
+        float experienceProgress = experienceRequired <= 0 ? 1.0F
+                : Math.min(1.0F, ClientProgress.progressionExperience() / (float) experienceRequired);
+        GuiComponent.fill(poseStack, experienceLeft, experienceTop,
+                experienceRight, experienceTop + 7, RpgUi.LOCKED);
+        int experienceFilled = Math.round((experienceRight - experienceLeft) * experienceProgress);
+        GuiComponent.fill(poseStack, experienceLeft, experienceTop,
+                experienceLeft + experienceFilled, experienceTop + 7, RpgUi.GOLD);
+        RpgUi.border(poseStack, experienceLeft, experienceTop,
+                experienceRight, experienceTop + 7, RpgUi.GOLD_DARK);
         int speedPanelTop = bottom - 52;
-        GuiComponent.fill(poseStack, left + 8, top + 26, right - 8, speedPanelTop - 4, 0x80101318);
-        int modelAreaHeight = Math.max(50, speedPanelTop - top - 30);
+        GuiComponent.fill(poseStack, left + 8, top + 44, right - 8, speedPanelTop - 4, 0x80101318);
+        int modelAreaHeight = Math.max(50, speedPanelTop - top - 48);
         InventoryScreen.renderEntityInInventory(
                 (left + right) / 2,
                 speedPanelTop - 7,
@@ -88,7 +103,8 @@ public final class PlayerMenuScreen extends Screen {
                 minecraft.player);
         speedLimitLeft=left+10;speedLimitRight=right-10;speedLimitTop=bottom-22;
         GuiComponent.fill(poseStack,left+6,speedPanelTop,right-6,bottom-6,0xE0101319);
-        RpgUi.drawCenteredFitted(poseStack,font,Component.literal("Movement Speed Limit"),(left+right)/2,bottom-48,speedLimitRight-speedLimitLeft,RpgUi.TEXT);
+        String movementMode = ClientProgress.moddedMovementSpeedEnabled() ? "ON" : "VANILLA";
+        RpgUi.drawCenteredFitted(poseStack,font,Component.literal("Modded Speed: "+movementMode+" (V)"),(left+right)/2,bottom-48,speedLimitRight-speedLimitLeft,RpgUi.TEXT);
         RpgUi.drawCenteredFitted(poseStack,font,Component.literal(ClientProgress.movementSpeedLimitPercent()+"%"),(left+right)/2,bottom-37,speedLimitRight-speedLimitLeft,RpgUi.GOLD);
         GuiComponent.fill(poseStack,speedLimitLeft,speedLimitTop,speedLimitRight,speedLimitTop+7,RpgUi.LOCKED);
         int filled=(speedLimitRight-speedLimitLeft)*ClientProgress.movementSpeedLimitPercent()/100;
